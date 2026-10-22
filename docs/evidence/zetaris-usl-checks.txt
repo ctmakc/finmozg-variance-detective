@@ -1,0 +1,92 @@
+finance_usl run 2026-10-22T00:42:59.068Z
+
+RUN DQ TABLE lightning.metastore.finmozg.finance_usl.vendor_bill
+name              | table       | type                   | total_record | valid_record | invalid_record
+------------------|-------------|------------------------|--------------|--------------|---------------
+vendor_invoice_no | vendor_bill | Primary Key Constraint | 31           | 29           | 2             
+vendor_id         | vendor_bill | Foreign Key Constraint | 31           | 31           | 0             
+
+RUN DQ TABLE lightning.metastore.finmozg.finance_usl.vendor_payment
+name              | table          | type                   | total_record | valid_record | invalid_record
+------------------|----------------|------------------------|--------------|--------------|---------------
+txn_id            | vendor_payment | Primary Key Constraint | 31           | 31           | 0             
+vendor_invoice_no | vendor_payment | Foreign Key Constraint | 31           | 30           | 1             
+
+RUN DQ TABLE lightning.metastore.finmozg.finance_usl.sales_line
+name          | table      | type                   | total_record | valid_record | invalid_record
+--------------|------------|------------------------|--------------|--------------|---------------
+sales_line_id | sales_line | Primary Key Constraint | 3846         | 3846         | 0             
+customer_id   | sales_line | Foreign Key Constraint | 3846         | 3846         | 0             
+sku           | sales_line | Foreign Key Constraint | 3846         | 3846         | 0             
+
+RUN DQ TABLE lightning.metastore.finmozg.finance_usl.purchase_line
+name             | table         | type                   | total_record | valid_record | invalid_record
+-----------------|---------------|------------------------|--------------|--------------|---------------
+purchase_line_id | purchase_line | Primary Key Constraint | 79           | 79           | 0             
+vendor_id        | purchase_line | Foreign Key Constraint | 79           | 79           | 0             
+
+SELECT 'vendor' AS t, COUNT(*) AS n FROM lightning.metastore.finmozg.finance_usl.vendor
+UNION ALL SELECT 'vendor_bill', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.vendor_bill
+UNION ALL SELECT 'vendor_payment', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.vendor_payment
+UNION ALL SELECT 'product', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.product
+UNION ALL SELECT 'customer', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.customer
+UNION ALL SELECT 'sales_line', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.sales_line
+UNION ALL SELECT 'purchase_line', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.purchase_line
+UNION ALL SELECT 'gl_balance', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.gl_balance
+UNION ALL SELECT 'fx_rate', COUNT(*) FROM lightning.metastore.finmozg.finance_usl.fx_rate
+
+t              | n   
+---------------|-----
+vendor         | 6   
+vendor_bill    | 31  
+vendor_payment | 31  
+product        | 12  
+customer       | 21  
+sales_line     | 3846
+purchase_line  | 79  
+gl_balance     | 24  
+fx_rate        | 131 
+
+SHOW DQ ALL INVALID TABLE lightning.metastore.finmozg.finance_usl.vendor_bill
+
+records                                                     
+------------------------------------------------------------
+{"vendor_invoice_no":"MRP-88213","vendor_id":"VEND-MRP","ap_
+{"vendor_invoice_no":"MRP-88213","vendor_id":"VEND-MRP","ap_
+
+SELECT p.txn_id, p.vendor_invoice_no, p.counterparty, p.amount_cad
+FROM lightning.metastore.finmozg.finance_usl.vendor_payment p
+LEFT JOIN lightning.metastore.finmozg.finance_usl.vendor_bill b ON b.vendor_invoice_no = p.vendor_invoice_no
+WHERE b.vendor_invoice_no IS NULL
+
+txn_id    | vendor_invoice_no | counterparty                | amount_cad
+----------|-------------------|-----------------------------|-----------
+BNK-00031 | MKT-SEP-2026      | Northbound Marketing Agency | 42000.0   
+
+SELECT b.vendor_invoice_no, COUNT(DISTINCT b.ap_doc_id) AS ap_docs, SUM(b.amount_cad) AS booked_cad, MAX(p.n) AS bank_payments
+FROM lightning.metastore.finmozg.finance_usl.vendor_bill b
+LEFT JOIN (SELECT vendor_invoice_no, COUNT(*) AS n FROM lightning.metastore.finmozg.finance_usl.vendor_payment GROUP BY vendor_invoice_no) p
+  ON p.vendor_invoice_no = b.vendor_invoice_no
+WHERE b.period = '2026-09'
+GROUP BY b.vendor_invoice_no ORDER BY ap_docs DESC
+
+vendor_invoice_no | ap_docs | booked_cad | bank_payments
+------------------|---------|------------|--------------
+MRP-88213         | 2       | 24900.0    | 1            
+PRV-202609-01     | 1       | 36248.94   | 1            
+LOI-202609-01     | 1       | 55661.6    | 1            
+RCK-202609-01     | 1       | 52550.55   | 1            
+SNC-202609-01     | 1       | 85295.93   | 1            
+
+SELECT period, account_type, ROUND(SUM(amount_cad), 2) AS amount_cad
+FROM lightning.metastore.finmozg.finance_usl.gl_balance
+WHERE period IN ('2026-08', '2026-09') GROUP BY period, account_type ORDER BY period, account_type
+
+period  | account_type | amount_cad
+--------|--------------|-----------
+2026-08 | cogs         | 204733.8  
+2026-08 | opex         | 8004.08   
+2026-08 | revenue      | 319554.56 
+2026-09 | cogs         | 254657.02 
+2026-09 | opex         | 42000.0   
+2026-09 | revenue      | 359443.84 

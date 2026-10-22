@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "fetch-fx": "tsx scripts/fetch-fx.ts",
     "generate": "tsx scripts/generate-data.ts",
-    "bankfeed": "tsx services/bankfeed/server.ts"
+    "bankfeed": "tsx services/bankfeed/server.ts",
+    "zetaris:register": "tsx scripts/zetaris-register.ts",
+    "zetaris:usl": "tsx scripts/zetaris-usl.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
