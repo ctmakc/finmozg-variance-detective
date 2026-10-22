@@ -22,6 +22,8 @@ export function factsBlock(plan: Plan, quant: QuantResult | null, findings: Find
       lines.push(`- ${c.label}: ${fmt(c.amountCad)} (${pp >= 0 ? "+" : ""}${pp} pp)`);
     }
     if (quant.duplicates.length) lines.push(`Invoices booked more times than paid: ${quant.duplicates.map((d) => `${d.vendorInvoiceNo} booked ${d.apDocs}× paid ${d.payments}×, ${fmt(d.amountCad)} each`).join("; ")}. [Q-duplicates]`);
+    if (quant.overContract.length) lines.push(`Invoiced above contract in ${plan.periodB}: ${quant.overContract.map((o) => `${o.vendorName} (${o.vendorId}) ${o.lines} lines, ${fmt(o.excessCad)} above contract`).join("; ")}. [Q-overContract]`);
+    if (quant.customerShift.length) lines.push(`Largest volume increases ${plan.periodA} → ${plan.periodB}: ${quant.customerShift.slice(0, 3).map((c) => `${c.customerName} (${c.customerId}, ${c.channel}) ${c.qtyA} → ${c.qtyB} units`).join("; ")}. [Q-customerShift]`);
     lines.push(`Reconciliation: ${quant.reconciliation.map((r) => `${r.check}: ${r.ok ? "ties" : `differs by ${r.periodB}`}`).join("; ")}.`);
     const opex = quant.glByAccount.filter((g) => g.type === "opex");
     if (opex.length) lines.push(`Opex accounts: ${opex.map((g) => `${g.period} ${g.account} ${g.name} ${fmt(g.amountCad)}`).join("; ")}. [Q-gl]`);
@@ -29,7 +31,8 @@ export function factsBlock(plan: Plan, quant: QuantResult | null, findings: Find
   lines.push("Accepted findings (Skeptic-approved):");
   for (const f of findings.filter((x) => x.verdict?.verdict === "accepted")) {
     const ev = f.evidenceIds.filter((id) => evidence.has(id));
-    lines.push(`- ${f.id} [${f.driverType}] ${f.claim} | Skeptic: ${f.verdict?.reason} | evidence ${ev.map((e) => `[${e}]`).join(" ") || "none"}`);
+    const who = f.entities.map((e) => (quant?.names[e] ? `${quant.names[e]} (${e})` : e)).join(", ");
+    lines.push(`- ${f.id} [${f.driverType}] ${f.claim}${who ? ` | named: ${who}` : ""} | Skeptic: ${f.verdict?.reason} | evidence ${ev.map((e) => `[${e}]`).join(" ") || "none"}`);
   }
   const unresolved = findings.filter((x) => x.verdict?.verdict === "needs_more");
   if (unresolved.length) {
@@ -81,7 +84,7 @@ export async function runWriter(args: {
   const ids = new Set([...args.evidence.keys()]);
   const system = `You are the Writer. Write a variance memo for a controller and the company owner.
 Use ONLY the facts given. Every sentence with a number cites its evidence id in square brackets, e.g. [E3] or [Q-gl]. Never compute new numbers; copy them.
-Structure (markdown): "## Answer" (2-3 sentences), "## Drivers" (bullets for every non-zero bridge line, largest first, amount and pp, the named vendor/SKU/customer/invoice when a finding names it, evidence, and the action for the controller, e.g. claim a credit from a vendor or reverse a duplicate entry), "## Rejected explanations" (bullets with the reason), "## Unexplained residual" (one line), "## Open questions" (at most 4 bullets the data cannot answer). Plain business English, no hype.`;
+Structure (markdown): "## Answer" (2-3 sentences), "## Drivers" (bullets for every non-zero bridge line, largest first, amount and pp, the named vendor/customer/invoice with its full name (from the findings or the drill-downs), evidence, and the action for the controller, e.g. claim a credit from a vendor or reverse a duplicate entry), "## Rejected explanations" (bullets with the reason), "## Unexplained residual" (one line), "## Open questions" (at most 4 bullets the data cannot answer). Plain business English, no hype.`;
   let messages = [
     { role: "system" as const, content: system },
     { role: "user" as const, content: `Question: ${args.question}\n\nFACTS:\n${facts}` },

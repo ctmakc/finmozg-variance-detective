@@ -90,6 +90,19 @@ export function ruleCheck(f: Finding, ev: EvidenceItem[], plan: Plan, quant: Qua
   if (need && !headersSeen.some((h) => need.re.test(h)) && !last) {
     return { findingId: f.id, verdict: "needs_more", reason: "Aggregate totals only; the claim does not name who caused it.", sendBack: need.ask };
   }
+  // Entity cross-check against Quant's deterministic drill-down: the finding must name who caused it.
+  if (quant && !last) {
+    const said = `${f.claim} ${f.entities.join(" ")}`.toLowerCase();
+    const named = (id: string) => said.includes(id.toLowerCase()) || said.includes((quant.names[id] ?? "~").toLowerCase());
+    const topVendor = quant.overContract[0];
+    if (f.driverType === "supplier_price" && topVendor && !named(topVendor.vendorId)) {
+      return { findingId: f.id, verdict: "needs_more", reason: `The claim does not name the vendor; Quant's drill-down shows ${topVendor.vendorId} invoicing above contract.`, sendBack: `Quant's drill-down shows ${topVendor.vendorId} (${topVendor.vendorName}) invoicing above contract on ${topVendor.lines} lines in ${plan.periodB}. Confirm or refute with line-level rows (vendor_id, sku, qty, unit_price_orig, contract_unit_price) and name the vendor in your claim.` };
+    }
+    const topCustomer = quant.customerShift[0];
+    if (f.driverType === "mix" && topCustomer && !named(topCustomer.customerId) && !/wholesale/.test(said)) {
+      return { findingId: f.id, verdict: "needs_more", reason: "The claim does not name the customer or channel behind the mix shift.", sendBack: `Quant's drill-down shows ${topCustomer.customerId} (${topCustomer.customerName}, ${topCustomer.channel}) with the largest volume increase (${topCustomer.qtyA} → ${topCustomer.qtyB} units). Confirm with rows by customer and channel and name them in your claim.` };
+    }
+  }
   const key = COMPONENT_FOR[f.driverType];
   if (plan.metric === "gross_margin" && quant && key && GM_DRIVERS.includes(f.driverType)) {
     const comp = quant.components.find((c) => c.key === key)?.amountCad ?? 0;

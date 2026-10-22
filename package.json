@@ -17,7 +17,9 @@
     "provider:check": "tsx scripts/provider-check.ts",
     "conformance": "bash scripts/conformance.sh",
     "agent": "tsx src/cli.ts",
-    "feedback": "tsx src/cli.ts feedback"
+    "feedback": "tsx src/cli.ts feedback",
+    "eval": "tsx scripts/eval.ts",
+    "serve": "tsx src/server.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

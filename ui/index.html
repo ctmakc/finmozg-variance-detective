@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FINMOZG Variance Detective</title>
+<meta name="description" content="Agents that explain why gross margin moved, with every claim traced to rows in the ledger, purchasing, sales and bank systems through Zetaris.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;800&family=Fragment+Mono&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E1714'/%3E%3Cpath d='M7 17l5 5 13-13' stroke='%238DD3AE' stroke-width='3.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="mast">
+  <div class="mast__brand">
+    <span class="mast__mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 17l5.5 5.5L26 8" /></svg></span>
+    <div>
+      <div class="mast__name">FINMOZG <em>Variance Detective</em></div>
+      <div class="mast__co" id="company">Northbound Pantry Co. · fictional company, synthetic data</div>
+    </div>
+  </div>
+  <ul class="mast__status" id="status" aria-label="System status">
+    <li data-k="zetaris"><span class="dot"></span><b>Zetaris</b><span class="val">…</span></li>
+    <li data-k="llm"><span class="dot"></span><b>Meterless Runtime</b><span class="val">…</span></li>
+    <li data-k="memory"><span class="dot"></span><b>H-MEM</b><span class="val">…</span></li>
+  </ul>
+</header>
+
+<main class="sheet">
+  <section class="ask" aria-labelledby="ask-h">
+    <h2 class="colhead" id="ask-h"><span>A</span> Question</h2>
+    <form id="ask-form">
+      <label class="sr" for="q">Question for the agents</label>
+      <textarea id="q" rows="3" maxlength="500">Why did gross margin fall in September vs August?</textarea>
+      <div class="ask__actions">
+        <button type="submit" id="run-btn" class="btn btn--run"><span class="lamp" aria-hidden="true"></span><span class="btn__label">Investigate</span></button>
+        <span class="ask__hint" id="run-hint">Agents query Zetaris live. A full run takes 4–7 minutes.</span>
+      </div>
+    </form>
+    <ol class="examples" id="examples" aria-label="Example questions">
+      <li><button type="button">Why did gross margin fall in September vs August?</button></li>
+      <li><button type="button">Which vendors drove the cost-of-goods increase in September, and is any of it recoverable?</button></li>
+      <li><button type="button">Was the September USD/CAD move material to gross margin?</button></li>
+      <li><button type="button">Why did total operating expenses rise in September vs August?</button></li>
+      <li><button type="button">Why did headcount cost rise in September?</button></li>
+    </ol>
+
+  </section>
+
+  <section class="logcol" aria-labelledby="log-h">
+    <h2 class="colhead" id="log-h"><span>B</span> Investigation log <small id="log-count"></small></h2>
+    <ol class="log" id="log" aria-live="polite"></ol>
+  </section>
+
+  <section class="result" aria-labelledby="res-h">
+    <div class="headline" id="headline">
+      <h1 id="res-h" class="headline__q">Load a run or ask a question.</h1>
+    </div>
+
+    <section class="block" id="bridge-block" hidden>
+      <h2 class="colhead"><span>C</span> Margin bridge <small id="bridge-periods"></small></h2>
+      <div class="ledger ledger--bridge" role="table" aria-label="Margin bridge">
+        <div class="lrow lrow--head" role="row">
+          <span role="columnheader">Driver</span><span role="columnheader" class="num">CAD</span><span role="columnheader" class="num">pp</span><span role="columnheader">Ticks</span><span role="columnheader" class="bar-h">Effect on gross margin</span>
+        </div>
+        <div id="bridge-rows"></div>
+      </div>
+      <p class="note" id="recon"></p>
+    </section>
+
+    <section class="block" id="findings-block" hidden>
+      <h2 class="colhead"><span>D</span> Findings the Skeptic let through</h2>
+      <div class="legend" aria-hidden="true">
+        <span><svg class="tk" viewBox="0 0 24 24"><path d="M4 13l5 5L20 6"/></svg> agreed to source rows</span>
+        <span><svg class="tk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 6v12M6 12h12"/></svg> confirmed in two systems</span>
+        <span><svg class="tk" viewBox="0 0 24 24"><path d="M17 5H7l6 7-6 7h10"/></svg> ties to the bridge</span>
+      </div>
+      <div class="ledger" id="findings"></div>
+    </section>
+
+    <section class="block" id="struck-block" hidden>
+      <h2 class="colhead"><span>E</span> Struck out</h2>
+      <div class="ledger" id="struck"></div>
+    </section>
+
+    <section class="block" id="memo-block" hidden>
+      <h2 class="colhead"><span>F</span> Variance memo</h2>
+      <article class="memo" id="memo"></article>
+    </section>
+
+    <section class="block" id="memory-block" hidden>
+      <h2 class="colhead"><span>G</span> Memory between closes <small>Meterless H-MEM</small></h2>
+      <div class="ledger" id="memory"></div>
+    </section>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Decision support on synthetic data. A controller reviews the evidence and signs off before any entry, vendor claim or report.</p>
+  <p>Data through Zetaris (local) · models: NVIDIA Nemotron 3 Super via Meterless Runtime · FX: Bank of Canada Valet API · Open Agent Hackathon 2026, Track 02.</p>
+</footer>
+
+<template id="evidence-tpl">
+  <div class="evi">
+    <div class="evi__meta"></div>
+    <pre class="evi__sql"></pre>
+    <div class="evi__table"></div>
+  </div>
+</template>
+<script src="/app.js" type="module"></script>
+</body>
+</html>

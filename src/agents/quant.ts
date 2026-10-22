@@ -18,6 +18,10 @@ export interface QuantResult {
   reconciliation: { check: string; periodA: number; periodB: number; ok: boolean }[];
   glByAccount: { period: string; account: string; name: string; type: string; amountCad: number }[];
   duplicates: { period: string; vendorInvoiceNo: string; apDocs: number; payments: number; amountCad: number }[];
+  /** Drill-downs for period B: who caused it. */
+  overContract: { vendorId: string; vendorName: string; lines: number; excessCad: number }[];
+  customerShift: { customerId: string; customerName: string; channel: string; qtyA: number; qtyB: number }[];
+  names: Record<string, string>;
   evidence: EvidenceItem[];
 }
 
@@ -39,6 +43,16 @@ FROM ${USL}.vendor_bill b
 LEFT JOIN (SELECT vendor_invoice_no, COUNT(*) AS n FROM ${USL}.vendor_payment GROUP BY vendor_invoice_no) p ON p.vendor_invoice_no = b.vendor_invoice_no
 WHERE b.period IN ${periods}
 GROUP BY b.period, b.vendor_invoice_no HAVING COUNT(DISTINCT b.ap_doc_id) > GREATEST(COALESCE(MAX(p.n), 0), 1)`,
+    overContract: `SELECT l.vendor_id, v.vendor_name, COUNT(*) AS lines, ROUND(SUM((l.unit_price_orig - l.contract_unit_price) * l.qty * l.fx_rate), 2) AS excess_cad
+FROM ${USL}.purchase_line l JOIN ${USL}.vendor v ON v.vendor_id = l.vendor_id
+WHERE l.period = '${b}' AND l.contract_unit_price IS NOT NULL AND l.unit_price_orig > l.contract_unit_price + 0.0001
+GROUP BY l.vendor_id, v.vendor_name ORDER BY excess_cad DESC`,
+    customerShift: `SELECT s.customer_id, c.customer_name, c.channel,
+SUM(CASE WHEN s.period = '${a}' THEN s.qty ELSE 0 END) AS qty_a, SUM(CASE WHEN s.period = '${b}' THEN s.qty ELSE 0 END) AS qty_b
+FROM ${USL}.sales_line s JOIN ${USL}.customer c ON c.customer_id = s.customer_id
+WHERE s.period IN ${periods} GROUP BY s.customer_id, c.customer_name, c.channel
+ORDER BY SUM(CASE WHEN s.period = '${b}' THEN s.qty ELSE 0 END) - SUM(CASE WHEN s.period = '${a}' THEN s.qty ELSE 0 END) DESC LIMIT 5`,
+    vendorNames: `SELECT vendor_id, vendor_name FROM ${USL}.vendor`,
   };
 }
 
@@ -108,6 +122,12 @@ export async function runQuant(runSql: RunSql, periodA: string, periodB: string,
   const costs = await exec("costs", ["finance_usl.purchase_line"]);
   const gl = await exec("gl", ["finance_usl.gl_balance"]);
   const dups = await exec("duplicates", ["finance_usl.vendor_bill", "finance_usl.vendor_payment"]);
+  const over = await exec("overContract", ["finance_usl.purchase_line", "finance_usl.vendor"]);
+  const shift = await exec("customerShift", ["finance_usl.sales_line", "finance_usl.customer"]);
+  const vnames = await exec("vendorNames", ["finance_usl.vendor"]);
+  const overContract = over.map((o) => ({ vendorId: o.vendor_id, vendorName: o.vendor_name, lines: num(o.lines), excessCad: num(o.excess_cad) }));
+  const customerShift = shift.map((s) => ({ customerId: s.customer_id, customerName: s.customer_name, channel: s.channel, qtyA: num(s.qty_a), qtyB: num(s.qty_b) }));
+  const names: Record<string, string> = Object.fromEntries([...vnames.map((v) => [v.vendor_id, v.vendor_name]), ...customerShift.map((c) => [c.customerId, c.customerName])]);
 
   const glAmount = (period: string, account: string) => num(gl.find((g) => g.period === period && g.account_code === account)?.amount_cad);
   const duplicates = dups.map((d) => ({ period: d.period, vendorInvoiceNo: d.vendor_invoice_no, apDocs: num(d.ap_docs), payments: num(d.payments), amountCad: num(d.amount_cad) }));
@@ -141,6 +161,8 @@ export async function runQuant(runSql: RunSql, periodA: string, periodB: string,
     components: components.map((c) => ({ key: c.key, amountCad: c.amountCad })),
     reconciliation,
     duplicates,
+    overContract: overContract.slice(0, 3),
+    topCustomerShift: customerShift.slice(0, 2),
   });
-  return { bridge, components, rate, reconciliation, glByAccount, duplicates, evidence };
+  return { bridge, components, rate, reconciliation, glByAccount, duplicates, overContract, customerShift, names, evidence };
 }

@@ -1,0 +1,616 @@
+{
+ "at": "2026-10-22T01:35:21.798Z",
+ "runs": 5,
+ "meanScore": 0.8545454545454545,
+ "perCheckPassRate": {
+  "bridge.volume": 1,
+  "bridge.mix": 1,
+  "bridge.price": 1,
+  "bridge.supplierPrice": 1,
+  "bridge.fx": 1,
+  "bridge.otherCost": 1,
+  "bridge.bookingError": 1,
+  "bridge.packagingReal": 1,
+  "bridge.residual": 1,
+  "cause.duplicate_invoice": 0.8,
+  "cause.duplicate_invoice.bank_confirmed": 0.8,
+  "cause.supplier_price": 1,
+  "cause.supplier_price.vendor_named_in_memo": 0,
+  "cause.mix": 0.6,
+  "cause.mix.named_in_memo": 0.2,
+  "cause.fx_measured": 0.8,
+  "red_herring.rejected": 1,
+  "memo.complete": 0.8,
+  "memo.residual_stated": 0.8,
+  "memo.signoff_caveat": 1,
+  "memo.citations_resolve": 1,
+  "evidence.rows_exist": 1
+ },
+ "results": [
+  {
+   "runId": "r-20261022-005438-57c1",
+   "checks": [
+    {
+     "id": "bridge.volume",
+     "pass": true,
+     "detail": "got 18872.66 want 18872.64"
+    },
+    {
+     "id": "bridge.mix",
+     "pass": true,
+     "detail": "got -6516.72 want -6516.72"
+    },
+    {
+     "id": "bridge.price",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "bridge.supplierPrice",
+     "pass": true,
+     "detail": "got -9115.74 want -9115.74"
+    },
+    {
+     "id": "bridge.fx",
+     "pass": true,
+     "detail": "got -425.39 want -425.39"
+    },
+    {
+     "id": "bridge.otherCost",
+     "pass": true,
+     "detail": "got 0.01 want 0.07"
+    },
+    {
+     "id": "bridge.bookingError",
+     "pass": true,
+     "detail": "got -12450.00 want -12450.00"
+    },
+    {
+     "id": "bridge.packagingReal",
+     "pass": true,
+     "detail": "got -398.74 want -398.74"
+    },
+    {
+     "id": "bridge.residual",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "cause.duplicate_invoice",
+     "pass": false,
+     "detail": "not accepted"
+    },
+    {
+     "id": "cause.duplicate_invoice.bank_confirmed",
+     "pass": false,
+     "detail": "no bank evidence cited"
+    },
+    {
+     "id": "cause.supplier_price",
+     "pass": true,
+     "detail": "accepted: Average purchase cost per unit rose from 14.059 CAD in Aug to 15.222 CAD in Sep, increasing cost by 1.163 CAD per unit a"
+    },
+    {
+     "id": "cause.supplier_price.vendor_named_in_memo",
+     "pass": false,
+     "detail": "not named"
+    },
+    {
+     "id": "cause.mix",
+     "pass": false,
+     "detail": "rejected: Gross margin percentage fell from 20.22% to 18.92% while the share of nuts (the lowest‑margin category in Sep) declined "
+    },
+    {
+     "id": "cause.mix.named_in_memo",
+     "pass": false,
+     "detail": "not named in memo"
+    },
+    {
+     "id": "cause.fx_measured",
+     "pass": false,
+     "detail": "rejected: The deterministic bridge puts this driver at CAD -425, which is immaterial; the claimed CAD -1224 is"
+    },
+    {
+     "id": "red_herring.rejected",
+     "pass": true,
+     "detail": "not investigated; not in drivers"
+    },
+    {
+     "id": "memo.complete",
+     "pass": true,
+     "detail": "all sections, no unresolved reviewer notes"
+    },
+    {
+     "id": "memo.residual_stated",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.signoff_caveat",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.citations_resolve",
+     "pass": true,
+     "detail": "3 citations"
+    },
+    {
+     "id": "evidence.rows_exist",
+     "pass": true,
+     "detail": "duplicate invoice appears in returned rows"
+    }
+   ],
+   "score": 16,
+   "max": 22
+  },
+  {
+   "runId": "r-20261022-005951-9485",
+   "checks": [
+    {
+     "id": "bridge.volume",
+     "pass": true,
+     "detail": "got 18872.66 want 18872.64"
+    },
+    {
+     "id": "bridge.mix",
+     "pass": true,
+     "detail": "got -6516.72 want -6516.72"
+    },
+    {
+     "id": "bridge.price",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "bridge.supplierPrice",
+     "pass": true,
+     "detail": "got -9115.74 want -9115.74"
+    },
+    {
+     "id": "bridge.fx",
+     "pass": true,
+     "detail": "got -425.39 want -425.39"
+    },
+    {
+     "id": "bridge.otherCost",
+     "pass": true,
+     "detail": "got 0.01 want 0.07"
+    },
+    {
+     "id": "bridge.bookingError",
+     "pass": true,
+     "detail": "got -12450.00 want -12450.00"
+    },
+    {
+     "id": "bridge.packagingReal",
+     "pass": true,
+     "detail": "got -398.74 want -398.74"
+    },
+    {
+     "id": "bridge.residual",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "cause.duplicate_invoice",
+     "pass": true,
+     "detail": "accepted: Duplicate booking of vendor invoice MRP-88213 added an extra CAD 12,450 cost in September 2026 versus August."
+    },
+    {
+     "id": "cause.duplicate_invoice.bank_confirmed",
+     "pass": true,
+     "detail": "bank feed cited"
+    },
+    {
+     "id": "cause.supplier_price",
+     "pass": true,
+     "detail": "accepted: Average unit purchase cost increased by 1.16 CAD from August to September, raising September purchase costs by 19,456 CA"
+    },
+    {
+     "id": "cause.supplier_price.vendor_named_in_memo",
+     "pass": false,
+     "detail": "named in findings only"
+    },
+    {
+     "id": "cause.mix",
+     "pass": false,
+     "detail": "rejected: The mix effect derived from the sales and purchase line data does not reconcile with the deterministic margin bridge of "
+    },
+    {
+     "id": "cause.mix.named_in_memo",
+     "pass": false,
+     "detail": "not named in memo"
+    },
+    {
+     "id": "cause.fx_measured",
+     "pass": true,
+     "detail": "accepted: Real but immaterial: the bridge measures CAD -425 for this driver."
+    },
+    {
+     "id": "red_herring.rejected",
+     "pass": true,
+     "detail": "not investigated; not in drivers"
+    },
+    {
+     "id": "memo.complete",
+     "pass": true,
+     "detail": "all sections, no unresolved reviewer notes"
+    },
+    {
+     "id": "memo.residual_stated",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.signoff_caveat",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.citations_resolve",
+     "pass": true,
+     "detail": "40 citations"
+    },
+    {
+     "id": "evidence.rows_exist",
+     "pass": true,
+     "detail": "duplicate invoice appears in returned rows"
+    }
+   ],
+   "score": 19,
+   "max": 22
+  },
+  {
+   "runId": "r-20261022-010915-289f",
+   "checks": [
+    {
+     "id": "bridge.volume",
+     "pass": true,
+     "detail": "got 18872.66 want 18872.64"
+    },
+    {
+     "id": "bridge.mix",
+     "pass": true,
+     "detail": "got -6516.72 want -6516.72"
+    },
+    {
+     "id": "bridge.price",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "bridge.supplierPrice",
+     "pass": true,
+     "detail": "got -9115.74 want -9115.74"
+    },
+    {
+     "id": "bridge.fx",
+     "pass": true,
+     "detail": "got -425.39 want -425.39"
+    },
+    {
+     "id": "bridge.otherCost",
+     "pass": true,
+     "detail": "got 0.01 want 0.07"
+    },
+    {
+     "id": "bridge.bookingError",
+     "pass": true,
+     "detail": "got -12450.00 want -12450.00"
+    },
+    {
+     "id": "bridge.packagingReal",
+     "pass": true,
+     "detail": "got -398.74 want -398.74"
+    },
+    {
+     "id": "bridge.residual",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "cause.duplicate_invoice",
+     "pass": true,
+     "detail": "accepted: Duplicate booking of vendor invoice MRP-88213 in September 2026 added an extra CAD 12,450 cost versus August, lowering g"
+    },
+    {
+     "id": "cause.duplicate_invoice.bank_confirmed",
+     "pass": true,
+     "detail": "bank feed cited"
+    },
+    {
+     "id": "cause.supplier_price",
+     "pass": true,
+     "detail": "accepted: Average purchase cost per unit increased from 14.06 CAD in August 2026 to 15.22 CAD in September 2026, raising purchase "
+    },
+    {
+     "id": "cause.supplier_price.vendor_named_in_memo",
+     "pass": false,
+     "detail": "not named"
+    },
+    {
+     "id": "cause.mix",
+     "pass": true,
+     "detail": "accepted: The shift in product mix toward lower‑margin items reduced gross margin by about 15,169 CAD in September 2026 compared w"
+    },
+    {
+     "id": "cause.mix.named_in_memo",
+     "pass": false,
+     "detail": "not named in memo"
+    },
+    {
+     "id": "cause.fx_measured",
+     "pass": true,
+     "detail": "accepted: Real but immaterial: the bridge measures CAD -425 for this driver."
+    },
+    {
+     "id": "red_herring.rejected",
+     "pass": true,
+     "detail": "rejected: Operating expenses sit below gross margin (account type opex), so they cannot explain a gross-margin"
+    },
+    {
+     "id": "memo.complete",
+     "pass": true,
+     "detail": "all sections, no unresolved reviewer notes"
+    },
+    {
+     "id": "memo.residual_stated",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.signoff_caveat",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.citations_resolve",
+     "pass": true,
+     "detail": "36 citations"
+    },
+    {
+     "id": "evidence.rows_exist",
+     "pass": true,
+     "detail": "duplicate invoice appears in returned rows"
+    }
+   ],
+   "score": 20,
+   "max": 22
+  },
+  {
+   "runId": "r-20261022-011852-731d",
+   "checks": [
+    {
+     "id": "bridge.volume",
+     "pass": true,
+     "detail": "got 18872.66 want 18872.64"
+    },
+    {
+     "id": "bridge.mix",
+     "pass": true,
+     "detail": "got -6516.72 want -6516.72"
+    },
+    {
+     "id": "bridge.price",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "bridge.supplierPrice",
+     "pass": true,
+     "detail": "got -9115.74 want -9115.74"
+    },
+    {
+     "id": "bridge.fx",
+     "pass": true,
+     "detail": "got -425.39 want -425.39"
+    },
+    {
+     "id": "bridge.otherCost",
+     "pass": true,
+     "detail": "got 0.01 want 0.07"
+    },
+    {
+     "id": "bridge.bookingError",
+     "pass": true,
+     "detail": "got -12450.00 want -12450.00"
+    },
+    {
+     "id": "bridge.packagingReal",
+     "pass": true,
+     "detail": "got -398.74 want -398.74"
+    },
+    {
+     "id": "bridge.residual",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "cause.duplicate_invoice",
+     "pass": true,
+     "detail": "accepted: Vendor invoice MRP-88213 was booked twice in AP/GL (two ap_doc_ids) but paid once, resulting in an extra packaging expen"
+    },
+    {
+     "id": "cause.duplicate_invoice.bank_confirmed",
+     "pass": true,
+     "detail": "bank feed cited"
+    },
+    {
+     "id": "cause.supplier_price",
+     "pass": true,
+     "detail": "accepted: Average purchase cost per unit rose from 14.06 CAD in August 2026 to 15.22 CAD in September 2026, increasing cost by abo"
+    },
+    {
+     "id": "cause.supplier_price.vendor_named_in_memo",
+     "pass": false,
+     "detail": "named in findings only"
+    },
+    {
+     "id": "cause.mix",
+     "pass": true,
+     "detail": "accepted: The shift toward higher wholesale volume lowered gross margin by approximately CAD 6,517 in September 2026 compared to A"
+    },
+    {
+     "id": "cause.mix.named_in_memo",
+     "pass": true,
+     "detail": "channel named"
+    },
+    {
+     "id": "cause.fx_measured",
+     "pass": true,
+     "detail": "accepted: Real but immaterial: the bridge measures CAD -425 for this driver."
+    },
+    {
+     "id": "red_herring.rejected",
+     "pass": true,
+     "detail": "rejected: Operating expenses sit below gross margin (account type opex), so they cannot explain a gross-margin"
+    },
+    {
+     "id": "memo.complete",
+     "pass": true,
+     "detail": "all sections, no unresolved reviewer notes"
+    },
+    {
+     "id": "memo.residual_stated",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.signoff_caveat",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.citations_resolve",
+     "pass": true,
+     "detail": "24 citations"
+    },
+    {
+     "id": "evidence.rows_exist",
+     "pass": true,
+     "detail": "duplicate invoice appears in returned rows"
+    }
+   ],
+   "score": 21,
+   "max": 22
+  },
+  {
+   "runId": "r-20261022-012612-3e9d",
+   "checks": [
+    {
+     "id": "bridge.volume",
+     "pass": true,
+     "detail": "got 18872.66 want 18872.64"
+    },
+    {
+     "id": "bridge.mix",
+     "pass": true,
+     "detail": "got -6516.72 want -6516.72"
+    },
+    {
+     "id": "bridge.price",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "bridge.supplierPrice",
+     "pass": true,
+     "detail": "got -9115.74 want -9115.74"
+    },
+    {
+     "id": "bridge.fx",
+     "pass": true,
+     "detail": "got -425.39 want -425.39"
+    },
+    {
+     "id": "bridge.otherCost",
+     "pass": true,
+     "detail": "got 0.01 want 0.07"
+    },
+    {
+     "id": "bridge.bookingError",
+     "pass": true,
+     "detail": "got -12450.00 want -12450.00"
+    },
+    {
+     "id": "bridge.packagingReal",
+     "pass": true,
+     "detail": "got -398.74 want -398.74"
+    },
+    {
+     "id": "bridge.residual",
+     "pass": true,
+     "detail": "got 0.00 want 0.00"
+    },
+    {
+     "id": "cause.duplicate_invoice",
+     "pass": true,
+     "detail": "accepted: Vendor invoice MRP-88213 was booked twice in AP/GL (two ap_doc IDs) but paid once, overstating expenses by 12,450 CAD an"
+    },
+    {
+     "id": "cause.duplicate_invoice.bank_confirmed",
+     "pass": true,
+     "detail": "bank feed cited"
+    },
+    {
+     "id": "cause.supplier_price",
+     "pass": true,
+     "detail": "accepted: Average purchase cost per unit increased from 14.059 CAD/unit in August to 15.222 CAD/unit in September, raising Septemb"
+    },
+    {
+     "id": "cause.supplier_price.vendor_named_in_memo",
+     "pass": false,
+     "detail": "named in findings only"
+    },
+    {
+     "id": "cause.mix",
+     "pass": true,
+     "detail": "needs_more: Wholesale share rose from 8.1% to 14.0% of quantity, but the mix shift alone would have reduced September gross margin b"
+    },
+    {
+     "id": "cause.mix.named_in_memo",
+     "pass": false,
+     "detail": "not named in memo"
+    },
+    {
+     "id": "cause.fx_measured",
+     "pass": true,
+     "detail": "accepted: Real but immaterial: the bridge measures CAD -425 for this driver."
+    },
+    {
+     "id": "red_herring.rejected",
+     "pass": true,
+     "detail": "rejected: Operating expenses sit below gross margin (account type opex), so they cannot explain a gross-margin"
+    },
+    {
+     "id": "memo.complete",
+     "pass": false,
+     "detail": "all sections, no unresolved reviewer notes"
+    },
+    {
+     "id": "memo.residual_stated",
+     "pass": false,
+     "detail": ""
+    },
+    {
+     "id": "memo.signoff_caveat",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "id": "memo.citations_resolve",
+     "pass": true,
+     "detail": "7 citations"
+    },
+    {
+     "id": "evidence.rows_exist",
+     "pass": true,
+     "detail": "duplicate invoice appears in returned rows"
+    }
+   ],
+   "score": 18,
+   "max": 22
+  }
+ ]
+}
