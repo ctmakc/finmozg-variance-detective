@@ -16,10 +16,10 @@ export function factsBlock(plan: Plan, quant: QuantResult | null, findings: Find
   if (quant) {
     const b = quant.bridge;
     lines.push(`Revenue ${fmt(b.revenueA)} → ${fmt(b.revenueB)}. Gross margin ${fmt(b.gmA)} (${quant.rate.gmPctA}%) → ${fmt(b.gmB)} (${quant.rate.gmPctB}%), change ${fmt(b.deltaGm)} and ${quant.rate.deltaPp} pp. [Q-sales] [Q-gl]`);
-    lines.push("Deterministic margin bridge (Quant, exact; CAD and percentage points of margin):");
+    lines.push("Deterministic margin bridge (Quant, exact; CAD and percentage points of margin; evidence [Q-sales] [Q-costs] [Q-gl]; cite these once, not on every line):");
     for (const c of quant.components) {
       const pp = quant.rate.items.find((i) => i.key === c.key)?.pp ?? 0;
-      lines.push(`- ${c.label}: ${fmt(c.amountCad)} (${pp >= 0 ? "+" : ""}${pp} pp) [Q-sales] [Q-costs] [Q-gl]`);
+      lines.push(`- ${c.label}: ${fmt(c.amountCad)} (${pp >= 0 ? "+" : ""}${pp} pp)`);
     }
     if (quant.duplicates.length) lines.push(`Invoices booked more times than paid: ${quant.duplicates.map((d) => `${d.vendorInvoiceNo} booked ${d.apDocs}× paid ${d.payments}×, ${fmt(d.amountCad)} each`).join("; ")}. [Q-duplicates]`);
     lines.push(`Reconciliation: ${quant.reconciliation.map((r) => `${r.check}: ${r.ok ? "ties" : `differs by ${r.periodB}`}`).join("; ")}.`);
@@ -30,6 +30,11 @@ export function factsBlock(plan: Plan, quant: QuantResult | null, findings: Find
   for (const f of findings.filter((x) => x.verdict?.verdict === "accepted")) {
     const ev = f.evidenceIds.filter((id) => evidence.has(id));
     lines.push(`- ${f.id} [${f.driverType}] ${f.claim} | Skeptic: ${f.verdict?.reason} | evidence ${ev.map((e) => `[${e}]`).join(" ") || "none"}`);
+  }
+  const unresolved = findings.filter((x) => x.verdict?.verdict === "needs_more");
+  if (unresolved.length) {
+    lines.push("Measured by the bridge but not traced to named rows (say so; list under open questions):");
+    for (const f of unresolved) lines.push(`- ${f.id} [${f.driverType}] Investigator: ${f.claim} | Skeptic: ${f.verdict?.reason} | evidence ${f.evidenceIds.map((e) => `[${e}]`).join(" ")}`);
   }
   if (rejected.length) {
     lines.push("Rejected hypotheses:");
@@ -84,8 +89,20 @@ Structure (markdown): "## Answer" (2-3 sentences), "## Drivers" (bullets for eve
   let memo = "";
   let issues: string[] = [];
   for (let attempt = 0; attempt < 2; attempt++) {
-    const r = await args.llm.chat({ role: "deep", agent: "Writer", maxTokens: 6000, messages });
-    memo = r.content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    let r;
+    try {
+      r = await args.llm.chat({ role: "deep", agent: "Writer", maxTokens: 8000, messages });
+    } catch (err) {
+      if (memo) break;
+      throw err;
+    }
+    let text = r.content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    if (r.finishReason === "length" || !/##\s*Open questions/i.test(text)) {
+      args.emit("Writer", "memo_truncated", { finishReason: r.finishReason, chars: text.length });
+      const again = await args.llm.chat({ role: "deep", agent: "Writer", maxTokens: 16000, messages });
+      text = again.content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    }
+    memo = text;
     issues = reviewMemo(memo, facts, ids);
     args.emit("Writer", attempt === 0 ? "memo_draft" : "memo_rewrite", { chars: memo.length, issues });
     if (!issues.length) break;

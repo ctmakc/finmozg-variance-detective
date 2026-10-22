@@ -110,7 +110,11 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
 
     // 3. Planner.
     const periods = asObjects(await runSql(`SELECT DISTINCT period FROM ${USL}.gl_balance ORDER BY period`, "orchestrator:periods")).map((p) => p.period);
-    const { plan } = await runPlanner(llm, { question: input.question, periods, schema, recall, periodA: input.periodA, periodB: input.periodB }, emit);
+    const lastTwo = (input.periodA && input.periodB ? [input.periodA, input.periodB] : periods.slice(-2)).map((p) => `'${p}'`).join(", ");
+    const pnl = asObjects(await runSql(`SELECT period, account_code, account_name, account_type, amount_cad FROM ${USL}.gl_balance WHERE period IN (${lastTwo}) ORDER BY account_code, period`, "orchestrator:pnl"))
+      .map((g) => `${g.period} ${g.account_code} ${g.account_name} (${g.account_type}) CAD ${Math.round(Number(g.amount_cad)).toLocaleString("en-CA")}`)
+      .join("\n");
+    const { plan } = await runPlanner(llm, { question: input.question, periods, schema, pnl, recall, periodA: input.periodA, periodB: input.periodB }, emit);
     await graph.addQuestion(input.question);
     for (const h of plan.hypotheses) await graph.addHypothesis(h);
 
@@ -124,10 +128,18 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
         })
       : Promise.resolve(null);
 
-    const investigate = (h: Hypothesis, round: number, request?: string) =>
-      runInvestigator({ llm, runSql, hypothesis: h, periodA: plan.periodA, periodB: plan.periodB, schema, memoryHints, agent: `Investigator-${h.id}`, round, skepticRequest: request, nextEvidenceId, emit });
+    const investigate = async (h: Hypothesis, round: number, request?: string) => {
+      const agent = `Investigator-${h.id}`;
+      try {
+        return await runInvestigator({ llm, runSql, hypothesis: h, periodA: plan.periodA, periodB: plan.periodB, schema, memoryHints, agent, round, skepticRequest: request, nextEvidenceId, emit });
+      } catch (err) {
+        emit(agent, "error", { error: String((err as Error).message ?? err).slice(0, 300) });
+        const finding: Finding = { id: `F-${h.id}-r${round}`, hypothesisId: h.id, driverType: h.driverType, claim: `${agent} failed: ${String((err as Error).message ?? err).slice(0, 160)}`, amountCad: null, evidenceIds: [], entities: [], agent, round, supported: false, sqlCalls: 0, repairs: 0 };
+        return { finding, evidence: [] as EvidenceItem[] };
+      }
+    };
 
-    const firstRound = await pool(toInvestigate, 3, (h) => investigate(h, 1));
+    const firstRound = await pool(toInvestigate, 4, (h) => investigate(h, 1));
     quant = await quantP;
     for (const q of quant?.evidence ?? []) evidence.set(q.id, q);
 
@@ -162,7 +174,7 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
       const back = decisions.filter((d) => d.verdict === "needs_more" && d.sendBack);
       current = [];
       if (round === MAX_SKEPTIC_ROUNDS || !back.length) break;
-      const redo = await pool(back, 3, (d) => {
+      const redo = await pool(back, 4, (d) => {
         const f = findings.find((x) => x.id === d.findingId)!;
         const h = plan.hypotheses.find((x) => x.id === f.hypothesisId)!;
         emit("Skeptic", "send_back", { hypothesisId: h.id, request: d.sendBack });

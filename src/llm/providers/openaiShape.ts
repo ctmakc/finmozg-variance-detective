@@ -71,6 +71,7 @@ export async function postChat({ provider, baseUrl, headers, model, req, fetchIm
     servedBy: receipt?.routed_model ?? j.model ?? model,
     receiptId: receipt?.receipt_id,
     latencyMs: Date.now() - started,
+    finishReason: j.choices?.[0]?.finish_reason,
     usage: j.usage ? { promptTokens: j.usage.prompt_tokens, completionTokens: j.usage.completion_tokens } : undefined,
   };
 }

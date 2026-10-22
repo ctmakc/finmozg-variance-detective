@@ -9,9 +9,22 @@ import { ZetarisError } from "../zetaris/client.js";
 import type { RunSql } from "./quant.js";
 import { type Emit, type EvidenceItem, type Finding, FindingSchema, type Hypothesis } from "./types.js";
 
-export const MAX_TOOL_CALLS = 6;
+export const MAX_TOOL_CALLS = 5;
 export const MAX_REPAIRS = 3;
 const ROWS_TO_MODEL = 30;
+
+/** Analyst playbooks: how a controller tests each kind of driver in this semantic layer. */
+export const PLAYBOOKS: Record<string, string> = {
+  price: "Compare revenue_cad/qty by sku and channel (sales_line join customer) for both periods at the same sku+channel.",
+  volume: "Compare SUM(qty) and revenue by period, then by channel and customer.",
+  mix: "Join sales_line to customer: compare qty share and revenue by channel and by customer for both periods; find the customer or channel whose share grew and its margin (wholesale prices are lower).",
+  supplier_price: "In purchase_line, compare unit_price_orig with contract_unit_price per vendor_id and sku for both periods; list lines above contract with qty and the excess (unit_price_orig - contract_unit_price) * qty * fx_rate in CAD.",
+  fx: "For currency = 'USD' lines in purchase_line, compare fx_rate by period and compute qty * unit_price_orig * (fx_rate_B - fx_rate_A) on the later period's lines.",
+  booking_error: "Find vendor_invoice_no values booked under more than one ap_doc_id in vendor_bill, then count payments for the same vendor_invoice_no in vendor_payment; show both row sets.",
+  packaging: "Compare purchase_line rows with sku = 'PKG' and gl_balance account 5100 by period, excluding invoices booked twice.",
+  opex: "Compare gl_balance rows with account_type = 'opex' by account and period; note that opex sits below gross margin.",
+  other_cost: "Compare unit_cost_cad by sku across periods for CAD vendors.",
+};
 
 const RUN_SQL: ToolDef = {
   type: "function",
@@ -61,9 +74,9 @@ export async function runInvestigator(a: InvestigatorArgs): Promise<{ finding: F
   const system = `You are ${a.agent}, an Investigator on a month-end variance team. You test ONE hypothesis with SQL through Zetaris and report only what the rows show.
 ${a.schema}
 Rules: compare ${a.periodA} (base) with ${a.periodB}. Prefer the finance_usl tables. Aggregate in SQL; never invent numbers. Drill down to the responsible vendor, SKU, customer, invoice or account and name it. For a cost claim, show the rows from more than one system (for example AP lines and bank payments). If a query fails, read the error and fix the SQL. Stop after at most ${MAX_TOOL_CALLS} queries.
-When done, reply with JSON only: {"supported": true|false, "claim": "one sentence with the key numbers", "amount_cad": <effect on gross margin in CAD for ${a.periodB} vs ${a.periodA}, negative if it lowers margin, null if not measurable>, "evidence": ["E#", ...], "entities": ["vendor/sku/customer/account ids"], "confidence": "high|medium|low"}`;
+When done, reply with JSON only: {"supported": true|false, "claim": "one sentence that names the responsible vendor, SKU, customer, channel, invoice or account and gives the key numbers from your most specific query", "amount_cad": <effect on gross margin in CAD for ${a.periodB} vs ${a.periodA}, negative if it lowers margin, null if not measurable>, "evidence": ["E#", ...], "entities": ["vendor/sku/customer/account ids"], "confidence": "high|medium|low"}`;
   const user = `Hypothesis ${a.hypothesis.id} [${a.hypothesis.driverType}]: ${a.hypothesis.text}
-Suggested checks: ${a.hypothesis.checks || "your choice"}
+Suggested checks: ${a.hypothesis.checks || "your choice"}\nAnalyst playbook for ${a.hypothesis.driverType} (your FIRST query must follow it; then go wherever the rows lead): ${PLAYBOOKS[a.hypothesis.driverType] ?? "use the tables that hold the evidence"}
 ${a.memoryHints ? `Memory from earlier closes: ${a.memoryHints}\n` : ""}${a.skepticRequest ? `The Skeptic sent this back with a request: ${a.skepticRequest}\n` : ""}Each query result you get is labelled with an evidence id (E#). Cite them.`;
   const messages: ChatMessage[] = [
     { role: "system", content: system },

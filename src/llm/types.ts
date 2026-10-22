@@ -39,6 +39,7 @@ export interface ChatResult {
   servedBy: string;
   receiptId?: string;
   latencyMs: number;
+  finishReason?: string;
   usage?: { promptTokens?: number; completionTokens?: number };
   recorded?: boolean;
 }

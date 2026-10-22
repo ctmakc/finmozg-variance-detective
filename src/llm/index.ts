@@ -98,7 +98,17 @@ export class Llm {
       return r;
     }
     try {
-      const r = await this.provider.chat(req);
+      let r: ChatResult;
+      try {
+        r = await this.provider.chat(req);
+      } catch (err) {
+        // One retry for transient provider errors; a reasoning model that ran out of budget gets a bigger one.
+        const status = (err as LlmError).status ?? 0;
+        const msg = (err as Error).message;
+        if (!(status >= 500 || /timed out|exhausted_budget|ECONNRESET/i.test(msg))) throw err;
+        this.onEvent?.({ type: "llm_call", agent: req.agent, role: req.role, provider: this.provider.id, requestedModel: "", latencyMs: 0, ok: false, error: `retrying after: ${msg.slice(0, 200)}` });
+        r = await this.provider.chat({ ...req, maxTokens: Math.min(16000, (req.maxTokens ?? 4096) * 2) });
+      }
       if (this.mode === "record") {
         mkdirSync(this.dir, { recursive: true });
         writeFileSync(path, JSON.stringify({ agent: req.agent, result: r }, null, 1));

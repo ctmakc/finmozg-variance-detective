@@ -55,6 +55,12 @@ export function ruleCheck(f: Finding, ev: EvidenceItem[], plan: Plan, quant: Qua
         bridgeAmountCad: comp0,
       };
     }
+    if (quant && key0 && Math.abs(comp0) >= tolerance(comp0, quant.bridge.revenueB)) {
+      return { findingId: f.id, verdict: "needs_more", reason: `Measured by the bridge (CAD ${comp0.toFixed(0)}) but not traced to named rows after ${round} rounds: reported as an open question, not as a confirmed cause.`, bridgeAmountCad: comp0 };
+    }
+    if (quant && key0 && Math.abs(comp0) < 100) {
+      return { findingId: f.id, verdict: "rejected", reason: `No effect: the deterministic bridge measures CAD ${comp0.toFixed(0)} for ${key0}, and the Investigator found no change either.`, bridgeAmountCad: comp0 };
+    }
     return { findingId: f.id, verdict: "rejected", reason: `Investigator's own queries do not support it: ${f.claim}` };
   }
   if (!withRows.length) {
@@ -74,6 +80,15 @@ export function ruleCheck(f: Finding, ev: EvidenceItem[], plan: Plan, quant: Qua
     return last
       ? { findingId: f.id, verdict: "rejected", reason: "Supplier-price claim has no AP line evidence." }
       : { findingId: f.id, verdict: "needs_more", reason: "No AP invoice line evidence.", sendBack: "Compare unit_price_orig with contract_unit_price in finance_usl.purchase_line for both periods." };
+  }
+  const headersSeen = withRows.flatMap((e) => e.headers.map((h) => h.toLowerCase()));
+  const needEntity: Partial<Record<DriverType, { re: RegExp; ask: string }>> = {
+    supplier_price: { re: /contract/, ask: "Show line-level rows from finance_usl.purchase_line with vendor_id, sku, unit_price_orig and contract_unit_price for both periods, and name the vendor invoicing above contract." },
+    mix: { re: /channel|customer/, ask: "Break the change down by customer and channel (finance_usl.sales_line join finance_usl.customer) and name the customer or channel whose share grew." },
+  };
+  const need = needEntity[f.driverType];
+  if (need && !headersSeen.some((h) => need.re.test(h)) && !last) {
+    return { findingId: f.id, verdict: "needs_more", reason: "Aggregate totals only; the claim does not name who caused it.", sendBack: need.ask };
   }
   const key = COMPONENT_FOR[f.driverType];
   if (plan.metric === "gross_margin" && quant && key && GM_DRIVERS.includes(f.driverType)) {
