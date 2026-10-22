@@ -7,69 +7,69 @@
   "fxAttribution": "Bank of Canada Valet API (FXUSDCAD)",
   "gmByMonth": {
     "2026-04": {
-      "revenue": 199561.08,
-      "gm": 93392.47,
-      "gmPct": 0.468
+      "revenue": 306820.52,
+      "gm": 111124.52,
+      "gmPct": 0.3622
     },
     "2026-05": {
-      "revenue": 205387.2,
-      "gm": 94564.86,
-      "gmPct": 0.4604
+      "revenue": 326156.4,
+      "gm": 118991.93,
+      "gmPct": 0.3648
     },
     "2026-06": {
-      "revenue": 191052.32,
-      "gm": 86947.24,
-      "gmPct": 0.4551
+      "revenue": 318224.88,
+      "gm": 113048.01,
+      "gmPct": 0.3552
     },
     "2026-07": {
-      "revenue": 202165.2,
-      "gm": 92671.87,
-      "gmPct": 0.4584
+      "revenue": 333624.48,
+      "gm": 118493.6,
+      "gmPct": 0.3552
     },
     "2026-08": {
-      "revenue": 198052.16,
-      "gm": 90474.62,
-      "gmPct": 0.4568
+      "revenue": 319554.56,
+      "gm": 114820.62,
+      "gmPct": 0.3593
     },
     "2026-09": {
-      "revenue": 232251.32,
-      "gm": 63456.6,
-      "gmPct": 0.2732
+      "revenue": 359443.84,
+      "gm": 104786.74,
+      "gmPct": 0.2915
     }
   },
   "bridge": {
-    "gmA": 90474.62,
-    "gmB": 63456.6,
-    "revenueA": 198052.16,
-    "revenueB": 232251.32,
-    "gmPctA": 0.4568,
-    "gmPctB": 0.2732,
-    "deltaGm": -27018.02,
-    "volume": 24193.39,
-    "mix": -9066.46,
+    "gmA": 114820.62,
+    "gmB": 104786.74,
+    "revenueA": 319554.56,
+    "revenueB": 359443.84,
+    "gmPctA": 0.3593,
+    "gmPctB": 0.2915,
+    "deltaGm": -10033.88,
+    "volume": 18872.64,
+    "mix": -6516.72,
     "price": 0,
-    "goodsCost": -5377.53,
-    "fx": -235.58,
-    "supplierPrice": -5141.98,
-    "overContract": 5157.54,
-    "otherCost": 0.02,
-    "packaging": -36767.41,
-    "bookingError": -18450,
-    "packagingReal": -18317.41,
+    "goodsCost": -9541.06,
+    "fx": -425.39,
+    "supplierPrice": -9115.74,
+    "overContract": 9143.33,
+    "otherCost": 0.07,
+    "packaging": -12848.74,
+    "bookingError": -12450,
+    "packagingReal": -398.74,
     "residual": 0,
     "componentsPpOfBRevenue": {
-      "volume": 10.4169,
-      "mix": -3.9037,
+      "volume": 5.2505,
+      "mix": -1.813,
       "price": 0,
-      "goodsCost": -2.3154,
-      "fx": -0.1014,
-      "supplierPrice": -2.214,
+      "goodsCost": -2.6544,
+      "fx": -0.1183,
+      "supplierPrice": -2.5361,
       "otherCost": 0,
-      "packaging": -15.8309,
-      "bookingError": -7.944,
-      "packagingReal": -7.8869,
+      "packaging": -3.5746,
+      "bookingError": -3.4637,
+      "packagingReal": -0.1109,
       "residual": 0,
-      "deltaGm": -11.6331
+      "deltaGm": -2.7915
     }
   },
   "plantedCauses": [
@@ -85,20 +85,20 @@
     {
       "id": "duplicate_invoice",
       "vendor_invoice_no": "MRP-88213",
-      "amount_cad": 18450,
-      "description": "Maple Ridge Packaging invoice entered twice in AP/GL; bank pays once"
+      "amount_cad": 12450,
+      "description": "September Maple Ridge Packaging invoice MRP-88213 (CAD 12,450) entered twice in AP/GL; bank pays once"
     },
     {
       "id": "mix_shift",
       "customer_id": "CUST-W01",
       "description": "Capital Wholesale Grocers September volume ~2.2× Apr–Aug average",
       "w01QtyByMonth": {
-        "2026-04": 1490,
-        "2026-05": 1564,
-        "2026-06": 1473,
-        "2026-07": 1331,
-        "2026-08": 1486,
-        "2026-09": 3231
+        "2026-04": 921,
+        "2026-05": 1017,
+        "2026-06": 1187,
+        "2026-07": 1119,
+        "2026-08": 1102,
+        "2026-09": 2353
       }
     },
     {
@@ -109,11 +109,11 @@
     }
   ],
   "counts": {
-    "orders": 538,
-    "orderLines": 2753,
-    "apInvoices": 32,
-    "apLines": 80,
-    "glLines": 576,
-    "bankTxns": 32
+    "orders": 635,
+    "orderLines": 3846,
+    "apInvoices": 31,
+    "apLines": 79,
+    "glLines": 672,
+    "bankTxns": 31
   }
 }

@@ -30,7 +30,7 @@ Entities:
 Planted causes for September (2026-09) vs August (2026-08):
 1. **Supplier price above contract:** Sierra Nut Co. invoices all September nut SKUs at contract × 1.12.
 2. **FX:** USD invoices convert at the real BoC FXUSDCAD rate on the invoice date. Whatever reality says is the FX effect.
-3. **Duplicate invoice (booking error):** Maple Ridge Packaging invoice number `MRP-88213` (CAD 18,450.00, packaging, account 5100) is entered twice in AP (two AP document ids) and posted twice in GL; the bank feed shows one payment.
+3. **Duplicate invoice (booking error):** Maple Ridge Packaging's regular September invoice `MRP-88213` (CAD 12,450.00, packaging, account 5100; it replaces the usual monthly packaging invoice, so the real packaging spend stays flat) is entered twice in AP (two AP document ids) and posted twice in GL; the bank feed shows one payment.
 4. **Mix shift:** CUST-W01 volume in September is ~2.2× its April–August average (wholesale price, so lower margin).
 5. **Red herring:** a September marketing campaign raises opex account 6100 by ~CAD 42,000. It is below gross margin and must be rejected as a margin driver.
 Everything else: stable volumes with small seeded noise (±4 %), stable prices.

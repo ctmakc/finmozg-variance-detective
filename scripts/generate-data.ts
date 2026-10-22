@@ -214,18 +214,22 @@ const VENDORS: Vendor[] = [
   },
 ];
 
-/** Contract unit prices: USD for USD vendors, CAD otherwise. Tuned for ~30-40% goods GM at retail. */
+/** Planning FX for deriving USD contract prices from CAD-equivalent cost. Real BoC FX used at invoice. */
+const PLANNING_FX_USDCAD = 1.37;
+
+/** Contract unit prices: CAD-equivalent cost ≈ 0.60 × retail list (specialty-food distributor margins). */
 function buildContracts(): Contract[] {
   const contracts: Contract[] = [];
   let n = 1;
   for (const sku of SKUS) {
     const vendor = VENDORS.find((v) => v.categories.includes(sku.category));
     if (!vendor) continue;
-    // Target CAD cost ≈ 55% of wholesale price
-    const targetCad = sku.wholesalePriceCad * 0.55;
+    // Target CAD cost ≈ 0.585 × retail list (about 0.60×): wholesale at 0.78×list stays
+    // low-margin; blended after packaging lands in the 33–36% / 29–31% bands.
+    const targetCad = sku.listPriceCad * 0.585;
     const unitPrice =
       vendor.currency === "USD"
-        ? round2(targetCad / 1.35) // approx FX; actual cost uses real FX
+        ? round2(targetCad / PLANNING_FX_USDCAD)
         : round2(targetCad);
     contracts.push({
       contract_id: `CTR-${String(n++).padStart(3, "0")}`,
@@ -400,11 +404,17 @@ async function main(): Promise<void> {
   }
 
   // --- Orders ---
+  // Channel mix: retail-heavy so blended GM% at 0.60×list cost lands ~33–36% after
+  // packaging; W01 stays large enough that a 2.2× September spike drives mix.
   for (const period of MONTHS) {
     for (const customer of CUSTOMERS) {
       const isW01 = customer.customer_id === "CUST-W01";
       const nOrders =
-        customer.channel === "wholesale" ? 3 : randInt(rng, 4, 5);
+        customer.channel === "wholesale"
+          ? isW01
+            ? 3
+            : 2
+          : randInt(rng, 5, 6);
       let monthQty = 0;
 
       for (let o = 0; o < nOrders; o++) {
@@ -421,20 +431,21 @@ async function main(): Promise<void> {
         const nLines =
           customer.channel === "wholesale"
             ? randInt(rng, 5, 7)
-            : randInt(rng, 4, 6);
+            : randInt(rng, 5, 7);
         const skus = pickN(rng, SKUS, nLines);
         let lineNo = 1;
         for (const sku of skus) {
           let qty: number;
           if (customer.channel === "wholesale") {
-            const base = isW01 ? randInt(rng, 60, 100) : randInt(rng, 50, 90);
+            // W01: meaningful baseline; W02/W03: small (low-margin channel stays minority)
+            const base = isW01 ? randInt(rng, 45, 75) : randInt(rng, 12, 28);
             qty = Math.max(1, Math.round(base * noiseFactor()));
             if (isW01 && period === "2026-09") {
               // Placeholder; scaled after Apr–Aug average known
               qty = Math.max(1, Math.round(base * noiseFactor()));
             }
           } else {
-            qty = Math.max(1, Math.round(randInt(rng, 6, 22) * noiseFactor()));
+            qty = Math.max(1, Math.round(randInt(rng, 12, 32) * noiseFactor()));
           }
           const price = unitPriceFor(customer, sku);
           const amount = round2(qty * price);
@@ -631,58 +642,19 @@ async function main(): Promise<void> {
     }
 
     // Packaging AP — stable monthly spend (~CAD 12k ±4%); volume does not drive it.
-    // September's planted duplicate (MRP-88213) is the main packaging bridge driver.
-    const pkgAmount = round2(12000 * noiseFactor());
-    const pkgDocId = `AP-${String(apSeq++).padStart(5, "0")}`;
-    const pkgInvNo = `MRP-${period.replace("-", "")}-PKG`;
-    apInvoices.push({
-      ap_doc_id: pkgDocId,
-      vendor_id: "VEND-MRP",
-      vendor_invoice_no: pkgInvNo,
-      invoice_date: invoiceDate,
-      currency: "CAD",
-      total_amount: pkgAmount,
-      status: "posted",
-    });
-    apLines.push({
-      ap_doc_id: pkgDocId,
-      line_no: 1,
-      sku: "PKG",
-      qty: 1,
-      unit_price: pkgAmount,
-      amount: pkgAmount,
-    });
-    packagingByPeriod.set(
-      period,
-      round2((packagingByPeriod.get(period) ?? 0) + pkgAmount),
-    );
-    postGl({
-      journal_id: `J-${String(journalSeq++).padStart(5, "0")}`,
-      posting_date: invoiceDate,
-      period,
-      account_code: "5100",
-      amount_cad: pkgAmount,
-      source_system: "procure",
-      source_doc_id: pkgDocId,
-      memo: `Packaging ${pkgInvNo}`,
-    });
-    createApPayment(
-      apInvoices[apInvoices.length - 1]!,
-      pkgAmount,
-      pkgAmount,
-    );
-
-    // Planted cause 3: duplicate packaging invoice in September
+    // September: the regular invoice IS MRP-88213 (CAD 12,450) — entered twice in AP/GL,
+    // bank pays once. No separate generic packaging invoice that month.
     if (period === "2026-09") {
-      const dupAmount = 18450.0;
+      const dupAmount = 12450.0;
       const dupInvNo = "MRP-88213";
+      const dupDate = dateInMonth(period, 15);
       for (let copy = 1; copy <= 2; copy++) {
         const dupDocId = `AP-${String(apSeq++).padStart(5, "0")}`;
         apInvoices.push({
           ap_doc_id: dupDocId,
           vendor_id: "VEND-MRP",
           vendor_invoice_no: dupInvNo,
-          invoice_date: dateInMonth(period, 18),
+          invoice_date: dupDate,
           currency: "CAD",
           total_amount: dupAmount,
           status: "posted",
@@ -701,7 +673,7 @@ async function main(): Promise<void> {
         );
         postGl({
           journal_id: `J-${String(journalSeq++).padStart(5, "0")}`,
-          posting_date: dateInMonth(period, 18),
+          posting_date: dupDate,
           period,
           account_code: "5100",
           amount_cad: dupAmount,
@@ -711,10 +683,10 @@ async function main(): Promise<void> {
         });
       }
       bookingErrorByPeriod.set(period, dupAmount);
-      // Bank shows one payment only
+      // Bank shows one payment only (real spend stays flat)
       addBank({
         account: "1000",
-        booking_date: dateInMonth(period, 28),
+        booking_date: dateInMonth(period, 25),
         amount_cad: -dupAmount,
         amount_orig: -dupAmount,
         currency_orig: "CAD",
@@ -722,6 +694,46 @@ async function main(): Promise<void> {
         reference: dupInvNo,
         period,
       });
+    } else {
+      const pkgAmount = round2(12000 * noiseFactor());
+      const pkgDocId = `AP-${String(apSeq++).padStart(5, "0")}`;
+      const pkgInvNo = `MRP-${period.replace("-", "")}-PKG`;
+      apInvoices.push({
+        ap_doc_id: pkgDocId,
+        vendor_id: "VEND-MRP",
+        vendor_invoice_no: pkgInvNo,
+        invoice_date: invoiceDate,
+        currency: "CAD",
+        total_amount: pkgAmount,
+        status: "posted",
+      });
+      apLines.push({
+        ap_doc_id: pkgDocId,
+        line_no: 1,
+        sku: "PKG",
+        qty: 1,
+        unit_price: pkgAmount,
+        amount: pkgAmount,
+      });
+      packagingByPeriod.set(
+        period,
+        round2((packagingByPeriod.get(period) ?? 0) + pkgAmount),
+      );
+      postGl({
+        journal_id: `J-${String(journalSeq++).padStart(5, "0")}`,
+        posting_date: invoiceDate,
+        period,
+        account_code: "5100",
+        amount_cad: pkgAmount,
+        source_system: "procure",
+        source_doc_id: pkgDocId,
+        memo: `Packaging ${pkgInvNo}`,
+      });
+      createApPayment(
+        apInvoices[apInvoices.length - 1]!,
+        pkgAmount,
+        pkgAmount,
+      );
     }
 
     // Planted cause 5: marketing opex red herring
@@ -896,9 +908,9 @@ async function main(): Promise<void> {
       {
         id: "duplicate_invoice",
         vendor_invoice_no: "MRP-88213",
-        amount_cad: 18450,
+        amount_cad: 12450,
         description:
-          "Maple Ridge Packaging invoice entered twice in AP/GL; bank pays once",
+          "September Maple Ridge Packaging invoice MRP-88213 (CAD 12,450) entered twice in AP/GL; bank pays once",
       },
       {
         id: "mix_shift",
@@ -1100,20 +1112,25 @@ async function main(): Promise<void> {
       `  ${m}: revenue=${g.revenue.toFixed(2)} GM=${g.gm.toFixed(2)} GM%=${(g.gmPct * 100).toFixed(2)}%`,
     );
   }
-  console.log("\nSeptember vs August bridge components (CAD):");
+  const deltaGm = bridge.deltaGm;
+  const share = (v: number): string =>
+    deltaGm === 0
+      ? "n/a"
+      : `${((v / deltaGm) * 100).toFixed(1)}% of ΔGM`;
+  console.log("\nSeptember vs August bridge components (CAD | share of ΔGM):");
   console.log(`  ΔGM:            ${bridge.deltaGm.toFixed(2)}`);
-  console.log(`  volume:         ${bridge.volume.toFixed(2)}`);
-  console.log(`  mix:            ${bridge.mix.toFixed(2)}`);
-  console.log(`  price:          ${bridge.price.toFixed(2)}`);
-  console.log(`  goodsCost:      ${bridge.goodsCost.toFixed(2)}`);
-  console.log(`    fx:           ${bridge.fx.toFixed(2)}`);
-  console.log(`    supplierPrice:${bridge.supplierPrice.toFixed(2)}`);
+  console.log(`  volume:         ${bridge.volume.toFixed(2)}  (${share(bridge.volume)})`);
+  console.log(`  mix:            ${bridge.mix.toFixed(2)}  (${share(bridge.mix)})`);
+  console.log(`  price:          ${bridge.price.toFixed(2)}  (${share(bridge.price)})`);
+  console.log(`  goodsCost:      ${bridge.goodsCost.toFixed(2)}  (${share(bridge.goodsCost)})`);
+  console.log(`    fx:           ${bridge.fx.toFixed(2)}  (${share(bridge.fx)})`);
+  console.log(`    supplierPrice:${bridge.supplierPrice.toFixed(2)}  (${share(bridge.supplierPrice)})`);
   console.log(`    overContract: ${bridge.overContract.toFixed(2)} (info)`);
-  console.log(`    otherCost:    ${bridge.otherCost.toFixed(2)}`);
-  console.log(`  packaging:      ${bridge.packaging.toFixed(2)}`);
-  console.log(`    bookingError: ${bridge.bookingError.toFixed(2)}`);
-  console.log(`    packagingReal:${bridge.packagingReal.toFixed(2)}`);
-  console.log(`  residual:       ${bridge.residual.toFixed(2)}`);
+  console.log(`    otherCost:    ${bridge.otherCost.toFixed(2)}  (${share(bridge.otherCost)})`);
+  console.log(`  packaging:      ${bridge.packaging.toFixed(2)}  (${share(bridge.packaging)})`);
+  console.log(`    bookingError: ${bridge.bookingError.toFixed(2)}  (${share(bridge.bookingError)})`);
+  console.log(`    packagingReal:${bridge.packagingReal.toFixed(2)}  (${share(bridge.packagingReal)})`);
+  console.log(`  residual:       ${bridge.residual.toFixed(2)}  (${share(bridge.residual)})`);
   console.log(
     `\nW01 qty Apr–Aug avg=${priorAvg.toFixed(0)} Sep=${w01QtyByMonth.get("2026-09")} (target ~${targetSep})`,
   );
