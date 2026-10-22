@@ -1,0 +1,26 @@
+{
+  "name": "finmozg-variance-detective",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "fetch-fx": "tsx scripts/fetch-fx.ts",
+    "generate": "tsx scripts/generate-data.ts",
+    "bankfeed": "tsx services/bankfeed/server.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
+  }
+}

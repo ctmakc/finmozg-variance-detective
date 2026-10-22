@@ -1,0 +1,22 @@
+customer_id,name,channel
+CUST-R01,Byward Market Pantry,retail
+CUST-R02,Glebe Specialty Foods,retail
+CUST-R03,Westboro Cellar,retail
+CUST-R04,Kanata Kitchen Co.,retail
+CUST-R05,Barrhaven Bites,retail
+CUST-R06,Orleans Olive Bar,retail
+CUST-R07,Nepean Nibbles,retail
+CUST-R08,Hintonburg Hearth,retail
+CUST-R09,Centretown Cravings,retail
+CUST-R10,Sandy Hill Spices,retail
+CUST-R11,Vanier Village Grocer,retail
+CUST-R12,Riverview Relish,retail
+CUST-R13,Stittsville Staples,retail
+CUST-R14,Manotick Mercantile,retail
+CUST-R15,Carleton Place Cupboard,retail
+CUST-R16,Almonte Aisle,retail
+CUST-R17,Perth Pantry,retail
+CUST-R18,Smiths Falls Select,retail
+CUST-W01,Capital Wholesale Grocers,wholesale
+CUST-W02,Laurentian Foodservice Dist.,wholesale
+CUST-W03,Ottawa Valley Distributors,wholesale

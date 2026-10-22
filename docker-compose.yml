@@ -1,0 +1,48 @@
+# Sources for FINMOZG Variance Detective.
+# Host has no free address pools — use ONLY the external network zetaris_default.
+services:
+  erp-db:
+    image: postgres:16-alpine
+    container_name: fm-erp-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-finmozg}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-finmozg}
+      POSTGRES_DB: ${POSTGRES_DB:-finmozg}
+    volumes:
+      - ./data/generated/erp.sql:/docker-entrypoint-initdb.d/01-erp.sql:ro
+    networks:
+      zetaris_default:
+        aliases:
+          - erp-db
+
+  procure-db:
+    image: postgres:16-alpine
+    container_name: fm-procure-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-finmozg}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-finmozg}
+      POSTGRES_DB: ${POSTGRES_DB:-finmozg}
+    volumes:
+      - ./data/generated/procure.sql:/docker-entrypoint-initdb.d/01-procure.sql:ro
+    networks:
+      zetaris_default:
+        aliases:
+          - procure-db
+
+  bankfeed:
+    build:
+      context: .
+      dockerfile: services/bankfeed/Dockerfile
+    container_name: fm-bankfeed
+    environment:
+      BANKFEED_PORT: ${BANKFEED_PORT:-8080}
+    ports:
+      - "127.0.0.1:18080:8080"
+    networks:
+      zetaris_default:
+        aliases:
+          - bankfeed
+
+networks:
+  zetaris_default:
+    external: true

@@ -1,0 +1,13 @@
+sku,name,category,list_price_cad,wholesale_price_cad
+NUT-ALM,Almonds 1kg,nuts,28,21.84
+NUT-PEC,Pecans 1kg,nuts,34,26.52
+NUT-CAS,Cashews 1kg,nuts,32,24.96
+OIL-EVO,EVOO 750ml,olive_oil,22,17.16
+OIL-ORG,Organic EVOO 750ml,olive_oil,26,20.28
+OIL-FLT,Flavoured Oil 500ml,olive_oil,18,14.04
+PRS-JAM,Berry Jam 250g,preserves,12,9.36
+PRS-HNY,Wildflower Honey 500g,preserves,16,12.48
+PRS-OLV,Olive Tapenade 200g,preserves,14,10.92
+COF-ETH,Ethiopia Beans 1kg,coffee,24,18.72
+COF-COL,Colombia Beans 1kg,coffee,22,17.16
+COF-SUM,Sumatra Beans 1kg,coffee,20,15.6

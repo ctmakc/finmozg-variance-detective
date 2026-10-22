@@ -1,0 +1,119 @@
+{
+  "company": "Northbound Pantry Co. (synthetic)",
+  "question": "Why did gross margin fall in September vs August?",
+  "periodA": "2026-08",
+  "periodB": "2026-09",
+  "seed": 20261022,
+  "fxAttribution": "Bank of Canada Valet API (FXUSDCAD)",
+  "gmByMonth": {
+    "2026-04": {
+      "revenue": 199561.08,
+      "gm": 93392.47,
+      "gmPct": 0.468
+    },
+    "2026-05": {
+      "revenue": 205387.2,
+      "gm": 94564.86,
+      "gmPct": 0.4604
+    },
+    "2026-06": {
+      "revenue": 191052.32,
+      "gm": 86947.24,
+      "gmPct": 0.4551
+    },
+    "2026-07": {
+      "revenue": 202165.2,
+      "gm": 92671.87,
+      "gmPct": 0.4584
+    },
+    "2026-08": {
+      "revenue": 198052.16,
+      "gm": 90474.62,
+      "gmPct": 0.4568
+    },
+    "2026-09": {
+      "revenue": 232251.32,
+      "gm": 63456.6,
+      "gmPct": 0.2732
+    }
+  },
+  "bridge": {
+    "gmA": 90474.62,
+    "gmB": 63456.6,
+    "revenueA": 198052.16,
+    "revenueB": 232251.32,
+    "gmPctA": 0.4568,
+    "gmPctB": 0.2732,
+    "deltaGm": -27018.02,
+    "volume": 24193.39,
+    "mix": -9066.46,
+    "price": 0,
+    "goodsCost": -5377.53,
+    "fx": -235.58,
+    "supplierPrice": -5141.98,
+    "overContract": 5157.54,
+    "otherCost": 0.02,
+    "packaging": -36767.41,
+    "bookingError": -18450,
+    "packagingReal": -18317.41,
+    "residual": 0,
+    "componentsPpOfBRevenue": {
+      "volume": 10.4169,
+      "mix": -3.9037,
+      "price": 0,
+      "goodsCost": -2.3154,
+      "fx": -0.1014,
+      "supplierPrice": -2.214,
+      "otherCost": 0,
+      "packaging": -15.8309,
+      "bookingError": -7.944,
+      "packagingReal": -7.8869,
+      "residual": 0,
+      "deltaGm": -11.6331
+    }
+  },
+  "plantedCauses": [
+    {
+      "id": "supplier_price_above_contract",
+      "vendor": "VEND-SNC",
+      "description": "Sierra Nut Co. invoices all September nut SKUs at contract × 1.12"
+    },
+    {
+      "id": "fx",
+      "description": "USD invoices convert at real BoC FXUSDCAD on invoice date"
+    },
+    {
+      "id": "duplicate_invoice",
+      "vendor_invoice_no": "MRP-88213",
+      "amount_cad": 18450,
+      "description": "Maple Ridge Packaging invoice entered twice in AP/GL; bank pays once"
+    },
+    {
+      "id": "mix_shift",
+      "customer_id": "CUST-W01",
+      "description": "Capital Wholesale Grocers September volume ~2.2× Apr–Aug average",
+      "w01QtyByMonth": {
+        "2026-04": 1490,
+        "2026-05": 1564,
+        "2026-06": 1473,
+        "2026-07": 1331,
+        "2026-08": 1486,
+        "2026-09": 3231
+      }
+    },
+    {
+      "id": "red_herring_opex",
+      "account_code": "6100",
+      "amount_cad": 42000,
+      "description": "Marketing campaign raises opex; not a gross-margin driver"
+    }
+  ],
+  "counts": {
+    "orders": 538,
+    "orderLines": 2753,
+    "apInvoices": 32,
+    "apLines": 80,
+    "glLines": 576,
+    "bankTxns": 32
+  }
+}
