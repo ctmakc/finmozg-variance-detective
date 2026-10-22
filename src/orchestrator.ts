@@ -92,8 +92,14 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
 
   emit("Orchestrator", "run_start", { question: input.question, company: COMPANY, provider: llm.provider.name, zetarisMode: zetaris.mode });
   const evidence = new Map<string, EvidenceItem>();
-  let evSeq = 0;
-  const nextEvidenceId = () => `E${++evSeq}`;
+  // Evidence ids are namespaced per hypothesis (E3-2 = hypothesis 3, query 2) so they do not depend on which
+  // parallel Investigator happens to finish first: recorded runs replay byte-for-byte in SAMPLE_MODE.
+  const evSeqByHyp = new Map<string, number>();
+  const evidenceIdFor = (hypId: string) => () => {
+    const n = (evSeqByHyp.get(hypId) ?? 0) + 1;
+    evSeqByHyp.set(hypId, n);
+    return `E${hypId.replace(/^h/, "")}-${n}`;
+  };
   let quant: QuantResult | null = null;
   const findings: Finding[] = [];
 
@@ -131,7 +137,7 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
     const investigate = async (h: Hypothesis, round: number, request?: string) => {
       const agent = `Investigator-${h.id}`;
       try {
-        return await runInvestigator({ llm, runSql, hypothesis: h, periodA: plan.periodA, periodB: plan.periodB, schema, memoryHints, agent, round, skepticRequest: request, nextEvidenceId, emit });
+        return await runInvestigator({ llm, runSql, hypothesis: h, periodA: plan.periodA, periodB: plan.periodB, schema, memoryHints, agent, round, skepticRequest: request, nextEvidenceId: evidenceIdFor(h.id), emit });
       } catch (err) {
         emit(agent, "error", { error: String((err as Error).message ?? err).slice(0, 300) });
         const finding: Finding = { id: `F-${h.id}-r${round}`, hypothesisId: h.id, driverType: h.driverType, claim: `${agent} failed: ${String((err as Error).message ?? err).slice(0, 160)}`, amountCad: null, evidenceIds: [], entities: [], agent, round, supported: false, sqlCalls: 0, repairs: 0 };

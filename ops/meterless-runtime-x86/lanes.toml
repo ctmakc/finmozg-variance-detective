@@ -1,0 +1,16 @@
+# x86_64 user-mode install: no llama.cpp/CUDA here. The single lane is
+# served by shim/llama-server, which forwards to the local Ollama daemon
+# (nemotron-3-super:cloud). The .gguf is a header-only placeholder.
+[defaults]
+backend = "llamacpp"
+flags = ["--jinja"]
+
+[[lane]]
+id = "nemotron"
+model = "nemotron-3-super-ollama.gguf"
+port = 11511
+ctx_per_slot = 32768
+parallel = 4
+autostart = true
+active_gb = 12.0
+family = "nvidia"

@@ -1,0 +1,21 @@
+{
+  "name": "FINMOZG Variance Detective",
+  "tagline": "Agents that tell a controller why gross margin moved, with every claim traced to rows in the ledger, purchasing, sales and bank systems through Zetaris.",
+  "track": "The Agent That Can Explain Why",
+  "hackathon": "Open Agent Hackathon 2026 (GenAI.Works)",
+  "team": [{ "name": "Maksym Stepanenko", "github": "ctmakc", "role": "everything", "primaryContact": true }],
+  "entrypoints": {
+    "cli": "npm run agent -- --input input_examples/01-gm-drop-sep.json",
+    "api": "POST http://127.0.0.1:8795/run {\"question\": \"...\"}  (add ?wait=1 for the full result)",
+    "ui": "http://127.0.0.1:8795/",
+    "sampleMode": "SAMPLE_MODE=true npm run agent -- --input input_examples/01-gm-drop-sep.json"
+  },
+  "sponsorTech": {
+    "zetaris": "Local Zetaris instance; 5 sources (2 JDBC Postgres, CSV file store, 2 REST tables incl. live Bank of Canada FX); finance_usl Unified Semantic Layer with PK/FK DQ rules; all agent data access through POST /sql-editor/sqls/run",
+    "meterless": "Build: H-MEM (cross-run memory), World Model (shared evidence graph), Markovian (chunked evidence review), vendored Apache-2.0 references with conformance suites passing. Power: Meterless Runtime provider (contract v4) as the primary AI provider",
+    "nvidia": "Nemotron 3 Super serves every model call (planning, SQL tool calls, skepticism, writing) through a Meterless Runtime lane",
+    "cursor": "Cursor Agent CLI sessions logged in docs/cursor-sessions.md"
+  },
+  "data": "Synthetic, fictional company (Northbound Pantry Co.); real Bank of Canada USD/CAD rates",
+  "license": "Apache-2.0"
+}

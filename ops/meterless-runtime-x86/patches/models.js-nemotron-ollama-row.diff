@@ -1,0 +1,25 @@
+--- /data/projects/finmozg-open-agent/prep-1022/nightshift-dl/x/usr/lib/meterless/engine/js/engine/models.js	2026-10-18 20:00:00.000000000 -0400
++++ /data/projects/finmozg-open-agent/meterless-runtime/opt/usr/lib/meterless/engine/js/engine/models.js	2026-10-21 20:30:44.817066699 -0400
+@@ -1739,6 +1739,22 @@
+     // MoE workhorse for DGX Spark (GB10 unified memory): 35B total /
+     // 3B active experts keeps decode compute-light where dense 30B+
+     // models are bandwidth-bound.
++    // LOCAL PATCH (x86 user-mode install, finmozg-open-agent): curated row for
++    // the Ollama-backed Nemotron lane. The lane's llama-server is a shim that
++    // forwards to Ollama (nemotron-3-super:cloud); Ollama /api/show reports
++    // capabilities [completion, thinking, tools], so tools:true is declared
++    // here the way every curated row declares it.
++    {
++      id: 'local-runtime/nemotron-3-super-ollama',
++      caps: { tools: true },
++      provider: 'local-runtime', apiShape: 'local-runtime',
++      nativeId: 'nemotron-3-super-ollama', filename: 'nemotron-3-super-ollama.gguf',
++      name: 'Nemotron 3 Super 120B-A12B via Ollama (Runtime lane)', tier: 'B', ctx: 131072, maxOut: 16384,
++      tags: ['local', 'gguf', 'moe', 'reasoning', 'tools', 'nemotron'], costInM: 0, costOutM: 0,
++      kind: 'local', vramMb: 0, ramMb: 0,
++      family: 'nvidia', activeGb: 12.0,
++      matchNames: ['nemotron-3-super-ollama'],
++    },
+     {
+       id: 'local-runtime/qwen3.6-35b-a3b-mtp',
+       caps: { tools: true },

@@ -1,0 +1,17 @@
+# User-mode Meterless Runtime config (x86_64 host, daemon under qemu-aarch64).
+[engine]
+public_listen = "127.0.0.1:8088"
+fabric_listen = "127.0.0.1:11435"
+control_socket = "${RUNTIME_DIR}/run/runtime.sock"
+core_socket = "${RUNTIME_DIR}/run/core.sock"
+models_dir = "${RUNTIME_DIR}/models"
+log_dir = "${RUNTIME_DIR}/log"
+llama_server_bin = "${RUNTIME_DIR}/shim/llama-server"
+llama_cpp_ref = ""
+engine_pool_size = 1
+node_bin = "${RUNTIME_DIR}/node-dl/current/bin/node"
+engine_dir = "${RUNTIME_DIR}/opt/usr/lib/meterless/engine"
+
+[memory]
+system_reserve_mb = 4096
+emergency_headroom_mb = 2048

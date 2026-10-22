@@ -10,6 +10,7 @@ import { applyFeedback } from "./agents/steward.js";
 import type { RunInput, RunOutput } from "./agents/types.js";
 import { DetectiveMemory } from "./memory/hmem.js";
 import { runInvestigation } from "./orchestrator.js";
+import { isSampleMode, sampleMemoryDir } from "./sample.js";
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -25,6 +26,7 @@ async function main() {
   }
   const input: RunInput = arg("input") ? JSON.parse(readFileSync(arg("input")!, "utf8")) : { question: arg("question") ?? "Why did gross margin fall in September vs August?" };
   const out = await runInvestigation(input, {
+    memory: isSampleMode() ? new DetectiveMemory(sampleMemoryDir(input.question)) : undefined,
     onEvent: (e) => {
       if (process.env.QUIET === "true") return;
       const { ts, runId, seq, agent, type, ...rest } = e;

@@ -17,6 +17,7 @@ import type { RunOutput, TraceEvent } from "./agents/types.js";
 import { providerFromEnv } from "./llm/index.js";
 import { DetectiveMemory } from "./memory/hmem.js";
 import { newRunId, runInvestigation } from "./orchestrator.js";
+import { isSampleMode, sampleMemoryDir } from "./sample.js";
 import { ZetarisClient, zetarisConfigFromEnv } from "./zetaris/client.js";
 
 const PORT = Number(process.env.PORT ?? 8795);
@@ -61,7 +62,7 @@ function startRun(input: { question: string; periodA?: string; periodB?: string 
   running++;
   entry.done = runInvestigation(input, {
     runId,
-    memory,
+    memory: isSampleMode() ? new DetectiveMemory(sampleMemoryDir(input.question)) : memory,
     onEvent: (e) => {
       entry.events.push(e);
       for (const c of entry.clients) c.write(`data: ${JSON.stringify(e)}\n\n`);
@@ -192,6 +193,6 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, "127.0.0.1", () => {
-  console.log(`FINMOZG Variance Detective on http://127.0.0.1:${PORT} (SAMPLE_MODE=${process.env.SAMPLE_MODE === "true"})`);
+server.listen(PORT, process.env.HOST ?? "127.0.0.1", () => {
+  console.log(`FINMOZG Variance Detective on http://${process.env.HOST ?? "127.0.0.1"}:${PORT} (SAMPLE_MODE=${process.env.SAMPLE_MODE === "true"})`);
 });

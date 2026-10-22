@@ -100,7 +100,7 @@ Structure (markdown): "## Answer" (2-3 sentences), "## Drivers" (bullets for eve
       throw err;
     }
     let text = r.content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
-    if (r.finishReason === "length" || !/##\s*Open questions/i.test(text)) {
+    if (r.finishReason === "length" || text.length < 600) {
       args.emit("Writer", "memo_truncated", { finishReason: r.finishReason, chars: text.length });
       const again = await args.llm.chat({ role: "deep", agent: "Writer", maxTokens: 16000, messages });
       text = again.content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();

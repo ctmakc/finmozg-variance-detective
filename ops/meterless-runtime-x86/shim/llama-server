@@ -1,0 +1,6 @@
+#!/bin/sh
+# Stand-in for llama-server (aarch64/CUDA, unusable on this x86 box).
+# meterlessd spawns this per lane; it serves the llama-server HTTP surface
+# on the lane port and forwards inference to the local Ollama daemon.
+HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+exec "$HERE/../node-dl/current/bin/node" "$HERE/ollama-lane.mjs" "$@"
