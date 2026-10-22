@@ -13,7 +13,8 @@
     "generate": "tsx scripts/generate-data.ts",
     "bankfeed": "tsx services/bankfeed/server.ts",
     "zetaris:register": "tsx scripts/zetaris-register.ts",
-    "zetaris:usl": "tsx scripts/zetaris-usl.ts"
+    "zetaris:usl": "tsx scripts/zetaris-usl.ts",
+    "provider:check": "tsx scripts/provider-check.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

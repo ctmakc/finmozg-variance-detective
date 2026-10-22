@@ -1,0 +1,8 @@
+provider check 2026-10-22T00:46:05.964Z
+provider: Meterless Runtime (meterless)
+status: online at http://127.0.0.1:8088/v1; 20 meterless/* routes
+routes: meterless/auto, meterless/fast, meterless/deep, meterless/cheap, meterless/local, meterless/fusion, meterless/cluster, meterless/text, meterless/code, meterless/vision, meterless/perception, meterless/image, meterless/video, meterless/speech, meterless/transcribe, meterless/music, meterless/mesh, meterless/texture, meterless/embed, meterless/judge
+wrong token → unauthorized (HTTP 401)
+auto detect → http://127.0.0.1:8088/v1 online
+plain text (641 ms, requested local-runtime/nemotron-3-super-ollama, served by local-runtime/nemotron-3-super-ollama, receipt rcpt_req_vz1be14q): The connection is working—I am Nemotron 3 Super.
+tool call (840 ms, served by local-runtime/nemotron-3-super-ollama): run_sql({"sql":"SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"})

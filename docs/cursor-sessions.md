@@ -15,3 +15,4 @@ Session 03 (`zetaris-layer`) stopped immediately: the Cursor free plan returned 
 | When (UTC) | What | Files |
 |---|---|---|
 | 22 Oct 00:40–01:00 | Zetaris source registration (live-tested statement by statement), finance_usl USL compile/activate/DQ, REST client with record/replay, tests | src/zetaris/*, scripts/zetaris-*.ts, sql/zetaris/*, sql/usl/*, test/zetaris-client.test.ts |
+| 22 Oct 01:00–01:15 | LLM provider layer: Meterless Runtime provider per contract v4 (primary), OpenAI-compatible/NVIDIA provider, JSON helper, engine generator, record/replay, provider check | src/llm/*, scripts/provider-check.ts, test/meterless-provider.test.ts |
