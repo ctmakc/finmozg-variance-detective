@@ -273,3 +273,19 @@ textarea:focus { border-color: var(--tick); outline: none; }
   .log .who { grid-column: 2; }
   .log .what { grid-column: 1 / -1; }
 }
+
+/* live case board */
+.brow { display: grid; grid-template-columns: 54px 130px 1fr minmax(180px, 34%); border-bottom: 1px solid var(--rule); animation: rowin var(--t-micro) var(--ease-out) both; }
+.brow > * { padding: 10px 12px; border-right: 1px solid var(--rule); display: flex; align-items: center; min-height: var(--row); }
+.brow > *:last-child { border-right: 0; }
+.brow .hid { font: 400 12px/1 var(--f-mono); color: var(--ink-faint); }
+.brow .drv { font: 400 11px/1.3 var(--f-mono); color: var(--ink-dim); text-transform: uppercase; letter-spacing: .04em; }
+.brow .txt { font-size: 14px; line-height: 1.4; }
+.brow .st { font: 400 12px/1.4 var(--f-mono); color: var(--ink-dim); gap: 8px; }
+.brow .st .dotl { width: 7px; height: 7px; border-radius: 50%; background: var(--lamp); flex: none; animation: pulse 1.4s ease-in-out infinite; }
+.brow.is-accepted .st { color: var(--tick); }
+.brow.is-rejected .txt { text-decoration: line-through; text-decoration-color: var(--redpencil); text-decoration-thickness: 2px; color: var(--ink-dim); }
+.brow.is-rejected .st { color: var(--redpencil); }
+.brow.is-back .st { color: var(--lamp); }
+.brow.is-done .st .dotl, .brow.is-accepted .st .dotl, .brow.is-rejected .st .dotl { display: none; }
+@media (max-width: 640px) { .brow { grid-template-columns: 1fr; } .brow .hid, .brow .drv { display: none; } }

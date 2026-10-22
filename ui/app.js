@@ -20,6 +20,7 @@ const SYSTEM_OF = (s) =>
 const DRIVER_LABEL = { price: "Price", volume: "Volume", mix: "Mix", supplier_price: "Supplier price", fx: "FX", booking_error: "Booking error", packaging: "Packaging", other_cost: "Other cost", opex: "Opex", data_gap: "Data gap" };
 
 let current = null; // RunOutput
+let live = false; // true while following a run that started in this page
 let evidenceById = new Map();
 
 // ------------------------------------------------------------------ status
@@ -70,8 +71,52 @@ function logLine(e) {
     default: return { what: t, kind: "" };
   }
 }
+// ------------------------------------------------------------------ live case board
+const BRIDGE_LABEL = { volume: "Volume", mix: "Customer / product mix", price: "Selling price", supplierPrice: "Supplier unit price", fx: "USD/CAD exchange rate", otherCost: "Other goods cost", bookingError: "Booking error (duplicate invoice)", packagingReal: "Packaging spend", residual: "Unexplained residual" };
+function boardRow(id) { return document.querySelector(`#board .brow[data-h="${CSS.escape(id)}"]`); }
+function setBoard(id, cls, text, live = false) {
+  const row = boardRow(id);
+  if (!row) return;
+  row.className = `brow ${cls}`;
+  $(".st", row).innerHTML = `${live ? '<span class="dotl"></span>' : ""}${esc(text)}`;
+}
+function liveUpdate(e) {
+  const hid = (e.agent || "").startsWith("Investigator-") ? e.agent.slice("Investigator-".length) : e.hypothesisId;
+  switch (e.type) {
+    case "run_start":
+      $("#board-block").hidden = false;
+      $("#board").innerHTML = `<p class="empty">Recalling memory and mapping the semantic layer…</p>`;
+      $("#board-sub").textContent = "live";
+      break;
+    case "plan":
+      $("#board").innerHTML = e.hypotheses.map((h) => `<div class="brow" data-h="${esc(h.id)}"><span class="hid">${esc(h.id)}</span><span class="drv">${esc(DRIVER_LABEL[h.driverType] || h.driverType)}</span><span class="txt">${esc(h.text)}</span><span class="st"><span class="dotl"></span>queued</span></div>`).join("");
+      $("#board-sub").textContent = `${e.hypotheses.length} hypotheses · ${e.periodA} → ${e.periodB}`;
+      break;
+    case "sql": if (hid) setBoard(hid, "", `${e.evidenceId} · ${e.rowCount} rows`, true); break;
+    case "sql_error": if (hid) setBoard(hid, "is-back", `${e.evidenceId} SQL error → repairing`, true); break;
+    case "finding": if (hid) setBoard(hid, "is-done", e.supported ? "finding filed → Skeptic" : "no support found → Skeptic", true); break;
+    case "verdict":
+      if (e.verdict === "accepted") setBoard(e.hypothesisId, "is-accepted", "✓ accepted");
+      else if (e.verdict === "rejected") setBoard(e.hypothesisId, "is-rejected", "✗ struck out");
+      else setBoard(e.hypothesisId, "is-back", e.sendBack ? "↩ sent back" : "measured, not traced", !!e.sendBack);
+      break;
+    case "send_back": setBoard(e.hypothesisId, "is-back", "↩ re-investigating", true); break;
+    case "bridge": {
+      const head = $("#headline");
+      if (!head.querySelector(".headline__fig")) head.insertAdjacentHTML("beforeend", `<div class="headline__fig reveal"><span class="fig fig--from">${e.gmPctA.toFixed(2)}%</span><span class="fig__arrow">→</span><span class="fig">${e.gmPctB.toFixed(2)}%</span><span class="delta">${pp(e.gmPctB - e.gmPctA)} pp · GM ${cad(e.deltaGm)} CAD</span></div>`);
+      $("#bridge-block").hidden = false;
+      $("#bridge-periods").textContent = "computed by Quant, findings still under review";
+      const max = Math.max(...e.components.map((c) => Math.abs(c.amountCad)), 1);
+      $("#bridge-rows").innerHTML = e.components.filter((c) => c.key !== "residual" || Math.abs(c.amountCad) >= 0.5).map((c, i) => `<div class="lrow reveal" style="--d:${i * 0.05}s"><span class="label">${esc(BRIDGE_LABEL[c.key] || c.key)}</span><span class="num ${cls(c.amountCad)}">${cad(c.amountCad)}</span><span class="num"></span><span class="ticks"></span><span><span class="bar">${Math.abs(c.amountCad) >= 0.5 ? `<i class="${c.amountCad < 0 ? "neg" : "pos"}" style="width:${(Math.abs(c.amountCad) / max) * 50}%;--d:${0.2 + i * 0.06}s"></i>` : ""}</span></span></div>`).join("");
+      break;
+    }
+    case "memo_draft": $("#board-sub").textContent = "Writer drafting the memo"; break;
+  }
+}
+
 let llmSeen = 0;
 function appendLog(e) {
+  if (live) liveUpdate(e);
   const log = $("#log");
   if (e.type === "llm_call") llmSeen++;
   const { what, kind } = logLine(e);
@@ -87,6 +132,7 @@ function appendLog(e) {
 // ------------------------------------------------------------------ render run
 function renderRun(r) {
   current = r;
+  $("#board-block").hidden = true;
   evidenceById = new Map(r.evidence.map((e) => [e.id, e]));
   const h = r.headline || {};
   const head = $("#headline");
@@ -323,7 +369,10 @@ $("#ask-form").addEventListener("submit", async (ev) => {
   const j = await res.json();
   if (!res.ok) { $("#run-hint").textContent = j.error; btn.disabled = false; $(".btn__label", btn).textContent = "Investigate"; return; }
   history.replaceState(null, "", `?run=${j.runId}`);
-  follow(j.runId, () => { btn.disabled = false; $(".btn__label", btn).textContent = "Investigate"; });
+  live = true;
+  $("#headline").innerHTML = `<h1 id="res-h" class="headline__q">${esc(question)}</h1>`;
+  ["#bridge-block", "#findings-block", "#struck-block", "#memo-block", "#memory-block"].forEach((s) => ($(s).hidden = true));
+  follow(j.runId, () => { live = false; btn.disabled = false; $(".btn__label", btn).textContent = "Investigate"; });
 });
 
 function follow(runId, onDone) {

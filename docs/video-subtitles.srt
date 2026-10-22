@@ -1,0 +1,111 @@
+1
+00:00:00,050 --> 00:00:02,127
+FINMOZG Variance Detective.
+
+2
+00:00:02,127 --> 00:00:05,204
+Track 02: the agent that can explain why.
+
+3
+00:00:06,006 --> 00:00:11,196
+A controller closes September and sees gross margin down almost 7 points.
+
+4
+00:00:11,196 --> 00:00:18,311
+The reasons sit in four systems that share no keys: the ledger, purchasing, the order system, and the bank.
+
+5
+00:00:18,311 --> 00:00:24,129
+Today that is one or two days of spreadsheets, and a booking error can look like a real cost.
+
+6
+00:00:24,946 --> 00:00:26,614
+So we ask in plain English.
+
+7
+00:00:26,614 --> 00:00:33,441
+What you see is a real live run, recorded and replayed here: a fictional company with synthetic data.
+
+8
+00:00:33,441 --> 00:00:39,968
+Every query went through Zetaris, and every model call through the Meterless Runtime to NVIDIA Nemotron.
+
+9
+00:00:40,766 --> 00:00:46,280
+The agents recall memory, map the Zetaris semantic layer, and plan hypotheses.
+
+10
+00:00:46,280 --> 00:00:51,905
+Investigators write SQL in parallel and repair it when Zetaris returns an error.
+
+11
+00:00:51,905 --> 00:00:54,730
+Quant computes the exact margin bridge in code.
+
+12
+00:00:54,730 --> 00:01:03,660
+The Skeptic holds the veto: it sends a claim back when the amount does not reconcile, when the bank does not confirm a cost, or when nobody is named.
+
+13
+00:01:04,458 --> 00:01:05,261
+The result.
+
+14
+00:01:05,261 --> 00:01:09,816
+Gross margin fell from 35.9 to 29.2%.
+
+15
+00:01:09,816 --> 00:01:14,335
+Every line ties to the bridge, and the residual is shown openly.
+
+16
+00:01:14,335 --> 00:01:20,585
+The ticks mean: agreed to source rows, confirmed in two systems, ties to the bridge.
+
+17
+00:01:21,382 --> 00:01:22,882
+Open the biggest driver.
+
+18
+00:01:22,882 --> 00:01:29,601
+Invoice MRP-88213 was booked twice in accounts payable, but the bank paid it once.
+
+19
+00:01:29,601 --> 00:01:31,944
+Here are both queries and their rows.
+
+20
+00:01:31,944 --> 00:01:35,719
+The supplier line names Sierra Nut, billing above contract.
+
+21
+00:01:35,719 --> 00:01:38,231
+The mix line names Capital Wholesale.
+
+22
+00:01:39,026 --> 00:01:48,230
+The Skeptic struck out two explanations: prices did not change, and marketing spend is an operating expense, so it cannot explain gross margin.
+
+23
+00:01:48,230 --> 00:01:51,536
+Every figure in the memo cites its evidence.
+
+24
+00:01:52,350 --> 00:02:01,218
+Zetaris is the only door to the data: 5 sources and a unified semantic layer, whose data-quality rule flags the duplicate on its own.
+
+25
+00:02:01,218 --> 00:02:08,225
+Meterless gives the team a shared World Model, H-MEM memory, and Markovian review of long evidence.
+
+26
+00:02:09,034 --> 00:02:11,099
+The controller confirms the finding.
+
+27
+00:02:11,099 --> 00:02:17,517
+The next question starts warm: the schema map comes from memory and the confirmed duplicate is checked first.
+
+28
+00:02:17,517 --> 00:02:24,512
+Running on Nemotron through Meterless, and scored against planted ground truth: 22 of 22 checks.

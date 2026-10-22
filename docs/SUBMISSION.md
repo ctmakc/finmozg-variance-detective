@@ -17,7 +17,7 @@ Maksym Stepanenko · ctmakc@gmail.com · GitHub ctmakc · everything · primary 
 
 ## Links
 - GitHub: https://github.com/ctmakc/finmozg-variance-detective
-- Demo video: [[YouTube link]]
+- Demo video: https://www.youtube.com/watch?v=ecg3c5Whjeg (2:24; a real live run, recorded and replayed; TTS voice, subtitles)
 - Slide deck: https://github.com/ctmakc/finmozg-variance-detective/blob/main/docs/deck.pdf
 
 ## Sponsor technology
