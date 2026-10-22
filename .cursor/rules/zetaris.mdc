@@ -1,0 +1,5 @@
+---
+description: Working with Zetaris
+globs: ["src/zetaris/**", "scripts/zetaris*", "sql/**"]
+---
+Follow docs/reference/zetaris-AGENTS.md. Use Lightning SQL from docs/reference/zetaris-lightning-sql-commands.md and the USL lifecycle from docs/reference/zetaris-usl-howto.md and docs/reference/zetaris-usl-companion-sec8.md (examples: docs/reference/0*_usl_create.sql). Dry-run before creating objects. Treat "already exists" as reuse.

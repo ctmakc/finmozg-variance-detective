@@ -1,0 +1,14 @@
+---
+description: FINMOZG Variance Detective project rules
+alwaysApply: true
+---
+- Spec: docs/ARCHITECTURE.md is the source of truth. Read it before any change.
+- TypeScript, Node 20, ESM ("type": "module"), run with tsx, test with vitest. Validate every LLM JSON output with zod.
+- Secrets live only in .env (gitignored). Never print, log or commit API keys or tokens. .env.example lists names with placeholder values.
+- Docker: this host has no free address pools. docker-compose.yml must use only the EXTERNAL network `zetaris_default`; never create a new network.
+- Zetaris: one SQL statement per REST call (POST {ZETARIS_REST_URL}/sql-editor/sqls/run, headers Authorization Bearer, X-Org-ID, fresh UUID X-Request-ID, body {queryId, sql, source:"SqlEditor", limit}). Lightning SQL syntax is in docs/reference/. "already exists" means reuse, not failure.
+- LLM calls go through src/llm (provider layer). The Meterless Runtime provider follows docs/reference/meterless-provider-contract-v4.md exactly.
+- Data is synthetic. Never present it as real. FX is real Bank of Canada data; attribute it.
+- No arithmetic in LLM prompts for final numbers: the Quant bridge is deterministic code with unit tests.
+- Every agent step writes a JSONL trace event (logs/trace-<runId>.jsonl).
+- Keep modules small, typed, and tested. Run `npm test` and `npx tsc --noEmit` before finishing a task, and fix failures.
