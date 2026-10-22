@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT pl.period, \n       SUM(pl.qty * pl.contract_unit_price) / SUM(pl.qty) AS weighted_avg_contract_price_cad,\n       SUM(pl.amount_cad) / SUM(pl.qty) AS avg_actual_cost_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
+ "result": {
+  "headers": [
+   "period",
+   "weighted_avg_contract_price_cad",
+   "avg_actual_cost_cad"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "10.981400219750034",
+    "14.059457492102732"
+   ],
+   [
+    "2026-09",
+    "10.969813497519278",
+    "15.222489090800408"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1135,
+  "queryId": "3f0b1bf7-c1bf-4afc-a080-86ef8a4ecd1b"
+ }
+}

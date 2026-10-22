@@ -1,0 +1,18 @@
+{
+ "sql": "SELECT vb.vendor_invoice_no, COUNT(*) AS invoice_cnt FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb WHERE vb.period IN ('2026-08','2026-09') GROUP BY vb.vendor_invoice_no HAVING COUNT(*) > 1",
+ "result": {
+  "headers": [
+   "vendor_invoice_no",
+   "invoice_cnt"
+  ],
+  "rows": [
+   [
+    "MRP-88213",
+    "2"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1072,
+  "queryId": "82b66249-91f9-4e2a-8fde-a93b6c928536"
+ }
+}

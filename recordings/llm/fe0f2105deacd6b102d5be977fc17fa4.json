@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h7",
+ "result": {
+  "content": "{\n  \"supported\": false,\n  \"claim\": \"No purchase lines were found for vendor VEND-SNC (Sierra Nut Co.) for SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, so the hypothesis of above-contract pricing cannot be verified.\",\n  \"amount_cad\": null,\n  \"evidence\": [\n    \"E7-1\",\n    \"E7-2\",\n    \"E7-3\",\n    \"E7-4\",\n    \"E7-5\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\"\n  ],\n  \"confidence\": \"low\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_r0r24zxu",
+  "latencyMs": 3664,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2571,
+   "completionTokens": 603
+  }
+ }
+}

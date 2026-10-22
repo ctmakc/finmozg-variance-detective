@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Total quantity purchased increased by 2,167 units from August to September, driven mainly by VEND-PRV (Prairie Preserve Co.) raising purchases of PRS-HNY, PRS-JAM, and PRS-OLV.\",\n  \"amount_cad\": null,\n  \"evidence\": [\"E2-1\", \"E2-4\", \"E2-5\"],\n  \"entities\": [\"VEND-PRV\", \"VEND-RCK\", \"VEND-LOI\", \"VEND-SNC\", \"VEND-MRP\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_b94vc31v",
+  "latencyMs": 19315,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2909,
+   "completionTokens": 430
+  }
+ }
+}

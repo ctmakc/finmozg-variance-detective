@@ -1,0 +1,13 @@
+{
+ "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor WHERE vendor_name = 'VEND-SNC'",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name"
+  ],
+  "rows": [],
+  "total": 0,
+  "timeUsedMs": 182,
+  "queryId": "51819d5a-d3af-47f7-97d6-2f8aced8d21e"
+ }
+}

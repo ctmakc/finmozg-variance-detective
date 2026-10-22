@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Duplicate booking of vendor invoice MRP-88213 for vendor VEND-MRP (Maple Ridge Packaging) SKU PKG inflated COGS by 12,450 CAD in September 2026.\",\n  \"amount_cad\": -12450,\n  \"evidence\": [\"E5-2\", \"E5-4\", \"E5-3\"],\n  \"entities\": [\"VEND-MRP\", \"PKG\", \"MRP-88213\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_buyryc1x",
+  "latencyMs": 3491,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2635,
+   "completionTokens": 570
+  }
+ }
+}

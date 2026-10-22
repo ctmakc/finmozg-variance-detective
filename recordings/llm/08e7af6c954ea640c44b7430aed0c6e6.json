@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Total units sold increased from 14,561 in August to 16,727 in September (+2,166 units), driven by higher sales across both retail and wholesale channels.\",\n  \"amount_cad\": 17080,\n  \"evidence\": [\n    \"E2-4\"\n  ],\n  \"entities\": [],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_09vyimrf",
+  "latencyMs": 33407,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 5898,
+   "completionTokens": 2463
+  }
+ }
+}

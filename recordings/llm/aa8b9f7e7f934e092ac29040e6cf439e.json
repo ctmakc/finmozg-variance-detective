@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "\n",
+  "toolCalls": [
+   {
+    "id": "call_vr150tmu",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT vendor_id, sku, period, SUM(qty) as qty FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY vendor_id, sku, period ORDER BY vendor_id, sku, period\",\"purpose\":\"Purchase quantity by vendor, SKU, period\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_3cmw849d",
+  "latencyMs": 17156,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2145,
+   "completionTokens": 475
+  }
+ }
+}

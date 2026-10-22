@@ -1,0 +1,397 @@
+{
+ "sql": "SELECT sl.period, c.customer_id, c.customer_name, c.channel,\n       SUM(sl.qty) AS qty,\n       SUM(sl.revenue_cad) AS revenue,\n       SUM(sl.qty * p.wholesale_price_cad) AS wholesale_cost\nFROM lightning.metastore.finmozg.finance_usl.sales_line sl\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\nJOIN lightning.metastore.finmozg.finance_usl.product p ON sl.sku = p.sku\nWHERE sl.period IN ('2026-08','2026-09')\nGROUP BY sl.period, c.customer_id, c.customer_name, c.channel\nORDER BY sl.period, qty DESC",
+ "result": {
+  "headers": [
+   "period",
+   "customer_id",
+   "customer_name",
+   "channel",
+   "qty",
+   "revenue",
+   "wholesale_cost"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "CUST-W01",
+    "Capital Wholesale Grocers",
+    "wholesale",
+    "1102.0",
+    "17526.6",
+    "17526.6"
+   ],
+   [
+    "2026-08",
+    "CUST-R07",
+    "Nepean Nibbles",
+    "retail",
+    "871.0",
+    "19170.0",
+    "14952.599999999999"
+   ],
+   [
+    "2026-08",
+    "CUST-R03",
+    "Westboro Cellar",
+    "retail",
+    "803.0",
+    "18600.0",
+    "14508.000000000002"
+   ],
+   [
+    "2026-08",
+    "CUST-R16",
+    "Almonte Aisle",
+    "retail",
+    "788.0",
+    "17578.0",
+    "13710.84"
+   ],
+   [
+    "2026-08",
+    "CUST-R12",
+    "Riverview Relish",
+    "retail",
+    "785.0",
+    "18780.0",
+    "14648.399999999998"
+   ],
+   [
+    "2026-08",
+    "CUST-R09",
+    "Centretown Cravings",
+    "retail",
+    "780.0",
+    "17734.0",
+    "13832.519999999997"
+   ],
+   [
+    "2026-08",
+    "CUST-R05",
+    "Barrhaven Bites",
+    "retail",
+    "749.0",
+    "16270.0",
+    "12690.6"
+   ],
+   [
+    "2026-08",
+    "CUST-R01",
+    "Byward Market Pantry",
+    "retail",
+    "732.0",
+    "16618.0",
+    "12962.039999999999"
+   ],
+   [
+    "2026-08",
+    "CUST-R06",
+    "Orleans Olive Bar",
+    "retail",
+    "724.0",
+    "15976.0",
+    "12461.279999999997"
+   ],
+   [
+    "2026-08",
+    "CUST-R13",
+    "Stittsville Staples",
+    "retail",
+    "719.0",
+    "15838.0",
+    "12353.640000000001"
+   ],
+   [
+    "2026-08",
+    "CUST-R08",
+    "Hintonburg Hearth",
+    "retail",
+    "719.0",
+    "15302.0",
+    "11935.560000000001"
+   ],
+   [
+    "2026-08",
+    "CUST-R17",
+    "Perth Pantry",
+    "retail",
+    "709.0",
+    "16918.0",
+    "13196.039999999997"
+   ],
+   [
+    "2026-08",
+    "CUST-R04",
+    "Kanata Kitchen Co.",
+    "retail",
+    "708.0",
+    "16726.0",
+    "13046.280000000002"
+   ],
+   [
+    "2026-08",
+    "CUST-R15",
+    "Carleton Place Cupboard",
+    "retail",
+    "693.0",
+    "15524.0",
+    "12108.72"
+   ],
+   [
+    "2026-08",
+    "CUST-R14",
+    "Manotick Mercantile",
+    "retail",
+    "680.0",
+    "16606.0",
+    "12952.680000000004"
+   ],
+   [
+    "2026-08",
+    "CUST-R02",
+    "Glebe Specialty Foods",
+    "retail",
+    "669.0",
+    "14992.0",
+    "11693.760000000004"
+   ],
+   [
+    "2026-08",
+    "CUST-R18",
+    "Smiths Falls Select",
+    "retail",
+    "646.0",
+    "15030.0",
+    "11723.400000000003"
+   ],
+   [
+    "2026-08",
+    "CUST-R11",
+    "Vanier Village Grocer",
+    "retail",
+    "615.0",
+    "13164.0",
+    "10267.919999999998"
+   ],
+   [
+    "2026-08",
+    "CUST-R10",
+    "Sandy Hill Spices",
+    "retail",
+    "571.0",
+    "12870.0",
+    "10038.6"
+   ],
+   [
+    "2026-08",
+    "CUST-W02",
+    "Laurentian Foodservice Dist.",
+    "wholesale",
+    "292.0",
+    "4570.8",
+    "4570.799999999999"
+   ],
+   [
+    "2026-08",
+    "CUST-W03",
+    "Ottawa Valley Distributors",
+    "wholesale",
+    "206.0",
+    "3761.16",
+    "3761.16"
+   ],
+   [
+    "2026-09",
+    "CUST-W01",
+    "Capital Wholesale Grocers",
+    "wholesale",
+    "2353.0",
+    "42505.31999999999",
+    "42505.32"
+   ],
+   [
+    "2026-09",
+    "CUST-R11",
+    "Vanier Village Grocer",
+    "retail",
+    "934.0",
+    "22508.0",
+    "17556.239999999998"
+   ],
+   [
+    "2026-09",
+    "CUST-R07",
+    "Nepean Nibbles",
+    "retail",
+    "916.0",
+    "19910.0",
+    "15529.8"
+   ],
+   [
+    "2026-09",
+    "CUST-R17",
+    "Perth Pantry",
+    "retail",
+    "866.0",
+    "18644.0",
+    "14542.32"
+   ],
+   [
+    "2026-09",
+    "CUST-R04",
+    "Kanata Kitchen Co.",
+    "retail",
+    "841.0",
+    "18952.0",
+    "14782.56"
+   ],
+   [
+    "2026-09",
+    "CUST-R08",
+    "Hintonburg Hearth",
+    "retail",
+    "841.0",
+    "17992.0",
+    "14033.759999999998"
+   ],
+   [
+    "2026-09",
+    "CUST-R12",
+    "Riverview Relish",
+    "retail",
+    "826.0",
+    "18618.0",
+    "14522.04"
+   ],
+   [
+    "2026-09",
+    "CUST-R14",
+    "Manotick Mercantile",
+    "retail",
+    "799.0",
+    "17908.0",
+    "13968.239999999996"
+   ],
+   [
+    "2026-09",
+    "CUST-R15",
+    "Carleton Place Cupboard",
+    "retail",
+    "795.0",
+    "17870.0",
+    "13938.600000000002"
+   ],
+   [
+    "2026-09",
+    "CUST-R10",
+    "Sandy Hill Spices",
+    "retail",
+    "794.0",
+    "16878.0",
+    "13164.840000000004"
+   ],
+   [
+    "2026-09",
+    "CUST-R01",
+    "Byward Market Pantry",
+    "retail",
+    "761.0",
+    "16176.0",
+    "12617.279999999995"
+   ],
+   [
+    "2026-09",
+    "CUST-R05",
+    "Barrhaven Bites",
+    "retail",
+    "759.0",
+    "17012.0",
+    "13269.359999999999"
+   ],
+   [
+    "2026-09",
+    "CUST-R13",
+    "Stittsville Staples",
+    "retail",
+    "758.0",
+    "18416.0",
+    "14364.48"
+   ],
+   [
+    "2026-09",
+    "CUST-R03",
+    "Westboro Cellar",
+    "retail",
+    "738.0",
+    "15828.0",
+    "12345.840000000004"
+   ],
+   [
+    "2026-09",
+    "CUST-R09",
+    "Centretown Cravings",
+    "retail",
+    "723.0",
+    "15660.0",
+    "12214.8"
+   ],
+   [
+    "2026-09",
+    "CUST-R02",
+    "Glebe Specialty Foods",
+    "retail",
+    "700.0",
+    "14506.0",
+    "11314.680000000002"
+   ],
+   [
+    "2026-09",
+    "CUST-R06",
+    "Orleans Olive Bar",
+    "retail",
+    "638.0",
+    "14382.0",
+    "11217.959999999997"
+   ],
+   [
+    "2026-09",
+    "CUST-R18",
+    "Smiths Falls Select",
+    "retail",
+    "634.0",
+    "14078.0",
+    "10980.839999999998"
+   ],
+   [
+    "2026-09",
+    "CUST-R16",
+    "Almonte Aisle",
+    "retail",
+    "615.0",
+    "13852.0",
+    "10804.560000000001"
+   ],
+   [
+    "2026-09",
+    "CUST-W02",
+    "Laurentian Foodservice Dist.",
+    "wholesale",
+    "227.0",
+    "4358.639999999999",
+    "4358.639999999999"
+   ],
+   [
+    "2026-09",
+    "CUST-W03",
+    "Ottawa Valley Distributors",
+    "wholesale",
+    "209.0",
+    "3389.88",
+    "3389.88"
+   ]
+  ],
+  "total": 42,
+  "timeUsedMs": 796,
+  "queryId": "f51e4a0c-84e4-4025-8475-2b00048643c9"
+ }
+}

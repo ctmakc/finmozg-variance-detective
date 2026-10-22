@@ -1,0 +1,38 @@
+{
+ "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor LIMIT 20",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name"
+  ],
+  "rows": [
+   [
+    "VEND-SNC",
+    "Sierra Nut Co."
+   ],
+   [
+    "VEND-LOI",
+    "Lakeshore Olive Imports"
+   ],
+   [
+    "VEND-MRP",
+    "Maple Ridge Packaging"
+   ],
+   [
+    "VEND-PRV",
+    "Prairie Preserve Co."
+   ],
+   [
+    "VEND-RCK",
+    "Rockies Coffee Roasters"
+   ],
+   [
+    "VEND-OTW",
+    "Ottawa Dry Goods"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 158,
+  "queryId": "dfa6d6ec-40f5-428a-afb4-cde7d803f247"
+ }
+}

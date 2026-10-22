@@ -1,0 +1,19 @@
+{
+ "sql": "SELECT pl.vendor_id, pl.sku, pl.period, pl.unit_price_orig, pl.contract_unit_price, pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period = '2026-08'\n  AND pl.unit_price_orig > pl.contract_unit_price\n  AND pl.vendor_id = 'VEND-SNC'\n  AND pl.sku IN ('NUT-ALM','NUT-CAS','NUT-PEC')\nORDER BY pl.vendor_id, pl.sku, pl.period",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "sku",
+   "period",
+   "unit_price_orig",
+   "contract_unit_price",
+   "qty",
+   "fx_rate",
+   "excess_cad"
+  ],
+  "rows": [],
+  "total": 0,
+  "timeUsedMs": 1900,
+  "queryId": "6dd55129-97ac-4dca-b6dc-03a2646c054e"
+ }
+}

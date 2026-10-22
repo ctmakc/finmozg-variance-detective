@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h7",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_04awolav",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT pl.vendor_id, pl.sku, pl.period, COUNT(*) as cnt\\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\\nWHERE v.vendor_name = 'VEND-SNC'\\nGROUP BY pl.vendor_id, pl.sku, pl.period\\nORDER BY pl.period, pl.sku\",\"purpose\":\"See purchase lines for VEND-SNC\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_v12h9b3b",
+  "latencyMs": 1713,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2401,
+   "completionTokens": 174
+  }
+ }
+}

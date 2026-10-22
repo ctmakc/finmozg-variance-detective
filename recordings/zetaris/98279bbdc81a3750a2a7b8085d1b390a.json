@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT pl.period, SUM(pl.qty * p.wholesale_price_cad) / SUM(pl.qty) AS weighted_avg_wholesale_price_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period",
+ "result": {
+  "headers": [
+   "period",
+   "weighted_avg_wholesale_price_cad"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "17.422253841095237"
+   ],
+   [
+    "2026-08",
+    "17.508511778037224"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1664,
+  "queryId": "c886466f-341c-48e8-9223-ff7dfcd64e00"
+ }
+}

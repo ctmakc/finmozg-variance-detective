@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": false,\n  \"claim\": \"Changes in USD/CAD exchange rate increased the CAD cost of USD-denominated vendor invoices in September by approximately 425 CAD, which is insufficient to explain the ~9,143 CAD excess cost noted by the controller for vendor VEND-SNC on SKUs NUT-ALM, NUT-CAS, NUT-PEC.\",\n  \"amount_cad\": -425.39,\n  \"evidence\": [\"E4-1\", \"E4-2\"],\n  \"entities\": [],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_h5xryasq",
+  "latencyMs": 6729,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2210,
+   "completionTokens": 393
+  }
+ }
+}

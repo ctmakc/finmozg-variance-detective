@@ -1,0 +1,43 @@
+{
+ "sql": "SELECT pl.purchase_line_id, pl.vendor_invoice_no, pl.sku, pl.qty, pl.unit_price_orig, pl.contract_unit_price, pl.fx_rate, pl.unit_cost_cad, pl.amount_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl WHERE pl.vendor_invoice_no = 'MRP-88213' AND pl.period IN ('2026-08','2026-09')",
+ "result": {
+  "headers": [
+   "purchase_line_id",
+   "vendor_invoice_no",
+   "sku",
+   "qty",
+   "unit_price_orig",
+   "contract_unit_price",
+   "fx_rate",
+   "unit_cost_cad",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "AP-00030-1",
+    "MRP-88213",
+    "PKG",
+    "1.0",
+    "12450.0",
+    "",
+    "1.0",
+    "12450.0",
+    "12450.0"
+   ],
+   [
+    "AP-00031-1",
+    "MRP-88213",
+    "PKG",
+    "1.0",
+    "12450.0",
+    "",
+    "1.0",
+    "12450.0",
+    "12450.0"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1240,
+  "queryId": "947a80ce-ced5-4abd-a489-f18dd25f25ea"
+ }
+}

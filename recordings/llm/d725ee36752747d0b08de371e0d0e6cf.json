@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h3",
+ "result": {
+  "content": "{\n  \"supported\": false,\n  \"claim\": \"Channel mix shifted toward wholesale (lower margin) reducing September gross margin by approximately CAD 10,985 versus August unit margins, whereas the deterministic margin bridge attributes only CAD -6,517 to mix, leaving a gap of CAD 4,468 unexplained by mix alone.\",\n  \"amount_cad\": -10985.45,\n  \"evidence\": [\n    \"E3-9\"\n  ],\n  \"entities\": [\n    \"wholesale\",\n    \"retail\"\n  ],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_fgc38vqi",
+  "latencyMs": 28778,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 4630,
+   "completionTokens": 3244
+  }
+ }
+}

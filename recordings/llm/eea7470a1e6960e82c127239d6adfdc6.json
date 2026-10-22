@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h3",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"The mix shifted toward higher‑cost items in September, driven by increased wholesale sales to Capital Wholesale Grocers (CUST-W01) and higher purchase costs for VEND‑SNC’s nut SKUs (NUT‑ALM, NUT‑CAS, NUT‑PEC), raising average purchase cost per unit from 14.06 to 15.22 CAD and adding roughly 9,100 CAD of excess cost.\",\n  \"amount_cad\": -9143,\n  \"evidence\": [\n    \"E3-6\",\n    \"E3-7\",\n    \"E3-9\",\n    \"E3-10\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\",\n    \"NUT-ALM\",\n    \"NUT-CAS\",\n    \"NUT-PEC\",\n    \"CUST-W01\",\n    \"wholesale\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_tf53e0ng",
+  "latencyMs": 9950,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 7738,
+   "completionTokens": 1409
+  }
+ }
+}

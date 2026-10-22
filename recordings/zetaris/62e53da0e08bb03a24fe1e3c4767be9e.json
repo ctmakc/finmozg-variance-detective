@@ -1,0 +1,94 @@
+{
+ "sql": "WITH slc AS (\n  SELECT\n    sl.period,\n    c.customer_id,\n    c.customer_name,\n    c.channel,\n    SUM(sl.qty) AS qty,\n    SUM(sl.revenue_cad) AS revenue\n  FROM lightning.metastore.finmozg.finance_usl.sales_line sl\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\n  WHERE sl.period IN ('2026-08','2026-09')\n    AND c.channel = 'wholesale'\n  GROUP BY sl.period, c.customer_id, c.customer_name, c.channel\n),\ntotals AS (\n  SELECT\n    period,\n    SUM(qty) AS total_qty,\n    SUM(revenue) AS total_revenue\n  FROM slc\n  GROUP BY period\n)\nSELECT\n  s.period,\n  s.customer_id,\n  s.customer_name,\n  s.channel,\n  s.qty,\n  s.revenue,\n  t.total_qty,\n  t.total_revenue,\n  s.qty / t.total_qty AS qty_share,\n  s.revenue / t.total_revenue AS rev_share\nFROM slc s\nJOIN totals t ON s.period = t.period\nORDER BY s.period, s.customer_id",
+ "result": {
+  "headers": [
+   "period",
+   "customer_id",
+   "customer_name",
+   "channel",
+   "qty",
+   "revenue",
+   "total_qty",
+   "total_revenue",
+   "qty_share",
+   "rev_share"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "CUST-W01",
+    "Capital Wholesale Grocers",
+    "wholesale",
+    "1102.0",
+    "17526.6",
+    "1600.0",
+    "25858.559999999998",
+    "0.68875",
+    "0.6777871621621622"
+   ],
+   [
+    "2026-08",
+    "CUST-W02",
+    "Laurentian Foodservice Dist.",
+    "wholesale",
+    "292.0",
+    "4570.799999999999",
+    "1600.0",
+    "25858.559999999998",
+    "0.1825",
+    "0.176761583011583"
+   ],
+   [
+    "2026-08",
+    "CUST-W03",
+    "Ottawa Valley Distributors",
+    "wholesale",
+    "206.0",
+    "3761.1600000000003",
+    "1600.0",
+    "25858.559999999998",
+    "0.12875",
+    "0.14545125482625484"
+   ],
+   [
+    "2026-09",
+    "CUST-W01",
+    "Capital Wholesale Grocers",
+    "wholesale",
+    "2353.0",
+    "42505.32",
+    "2789.0",
+    "50253.84",
+    "0.8436715668698458",
+    "0.8458123797106849"
+   ],
+   [
+    "2026-09",
+    "CUST-W02",
+    "Laurentian Foodservice Dist.",
+    "wholesale",
+    "227.0",
+    "4358.64",
+    "2789.0",
+    "50253.84",
+    "0.08139117963427751",
+    "0.08673247656298505"
+   ],
+   [
+    "2026-09",
+    "CUST-W03",
+    "Ottawa Valley Distributors",
+    "wholesale",
+    "209.0",
+    "3389.8799999999997",
+    "2789.0",
+    "50253.84",
+    "0.07493725349587665",
+    "0.06745514372633017"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 979,
+  "queryId": "2a38fd98-033b-4e8e-a577-1c8169da6d38"
+ }
+}

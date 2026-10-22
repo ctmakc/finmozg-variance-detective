@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT pl.period,\n       SUM(pl.amount_cad)/SUM(pl.qty) AS avg_purchase_cost_per_unit_cad,\n       SUM(CASE WHEN v.vendor_name = 'VEND-SNC' AND pl.sku IN ('NUT-ALM','NUT-CAS','NUT-PEC') THEN pl.amount_cad END) /\n       NULLIF(SUM(CASE WHEN v.vendor_name = 'VEND-SNC' AND pl.sku IN ('NUT-ALM','NUT-CAS','NUT-PEC') THEN pl.qty END),0) AS vendor_sku_avg_cost\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
+ "result": {
+  "headers": [
+   "period",
+   "avg_purchase_cost_per_unit_cad",
+   "vendor_sku_avg_cost"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "14.059457492102734",
+    ""
+   ],
+   [
+    "2026-09",
+    "15.222489090800408",
+    ""
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1635,
+  "queryId": "cade4baa-8305-43cc-9d44-a35baeb9691e"
+ }
+}

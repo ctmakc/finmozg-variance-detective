@@ -1,0 +1,18 @@
+{
+ "sql": "SELECT DISTINCT account_code, account_name\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex'",
+ "result": {
+  "headers": [
+   "account_code",
+   "account_name"
+  ],
+  "rows": [
+   [
+    "6100",
+    "Marketing expense"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 422,
+  "queryId": "9c298bcb-fb54-4ed7-844f-dd2906784d6e"
+ }
+}

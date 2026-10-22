@@ -1,0 +1,13 @@
+{
+ "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor WHERE vendor_name LIKE '%SNC%'",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name"
+  ],
+  "rows": [],
+  "total": 0,
+  "timeUsedMs": 153,
+  "queryId": "f34a0158-fa98-416b-877a-56d8e2d3cbfe"
+ }
+}

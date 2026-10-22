@@ -1,5 +1,5 @@
 {
- "at": "2026-10-22T01:46:40.864Z",
+ "at": "2026-10-22T01:59:24.668Z",
  "runs": 1,
  "meanScore": 1,
  "perCheckPassRate": {
@@ -28,7 +28,7 @@
  },
  "results": [
   {
-   "runId": "r-20261022-013640-c8ea",
+   "runId": "r-20261022-014658-b25a",
    "checks": [
     {
      "id": "bridge.volume",
@@ -78,7 +78,7 @@
     {
      "id": "cause.duplicate_invoice",
      "pass": true,
-     "detail": "accepted: Vendor VEND-MRP invoice MRP-88213 for packaging (SKU PKG) was booked twice in AP/GL in 2026-09 (two entries of 12,450 CA"
+     "detail": "accepted: Vendor VEND-MRP invoice MRP-88213 was booked twice in AP (AP-00030 and AP-00031) for 12,450 CAD each in September 2026 b"
     },
     {
      "id": "cause.duplicate_invoice.bank_confirmed",
@@ -88,7 +88,7 @@
     {
      "id": "cause.supplier_price",
      "pass": true,
-     "detail": "accepted: Vendor VEND-SNC charged above contract prices for SKUs NUT-CAS, NUT-PEC, NUT-ALM in September 2026, generating an excess"
+     "detail": "accepted: Vendor VEND-SNC paid above contract prices for SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, increasing average purc"
     },
     {
      "id": "cause.supplier_price.vendor_named_in_memo",
@@ -98,7 +98,7 @@
     {
      "id": "cause.mix",
      "pass": true,
-     "detail": "accepted: Wholesale channel growth (qty up from 1,600 to 2,789, revenue up from $25,859 to $50,254) shifted mix toward lower‑margi"
+     "detail": "needs_more: Channel mix shifted toward wholesale (lower margin) reducing September gross margin by approximately CAD 10,985 versus A"
     },
     {
      "id": "cause.mix.named_in_memo",
@@ -133,7 +133,7 @@
     {
      "id": "memo.citations_resolve",
      "pass": true,
-     "detail": "23 citations"
+     "detail": "4 citations"
     },
     {
      "id": "evidence.rows_exist",
