@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT period, SUM(amount_cad) AS total_cogs FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE account_type='cogs' AND period IN ('2026-08','2026-09') GROUP BY period",
+ "result": {
+  "headers": [
+   "period",
+   "total_cogs"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "254657.02"
+   ],
+   [
+    "2026-08",
+    "204733.80000000002"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 640,
+  "queryId": "a4d2c0cf-e8ba-424f-b805-f443550aa11a"
+ }
+}

@@ -1,0 +1,27 @@
+## Answer  
+Gross margin fell from CAD 114,821 (35.93 %) in August 2026 to CAD 104,787 (29.15 %) in September 2026, a decline of CAD 10,034 (‑6.78 pp) [Q-sales][Q-gl]. The deterministic margin bridge shows the drop was driven chiefly by a duplicate‑invoice booking error, higher supplier unit prices, an adverse customer/product mix, and a positive volume effect, while the USD/CAD move contributed a small (‑CAD 425, ‑0.12 pp) immaterial impact.  
+
+## Drivers  
+- **Booking error (duplicate invoice):** –CAD 12,450 (‑3.46 pp) – Maple Ridge Packaging (VEND‑MRP) invoice MRP‑88213 was booked twice but paid once, creating excess cost of CAD 12,450; reverse the duplicate AP/GL entry and seek a credit or refund from Maple Ridge Packaging. [F-h1-r1]  
+- **Supplier unit price:** –CAD 9,116 (‑2.54 pp) – Sierra Nut Co. (VEND‑SNC) invoiced above‑contracted prices for SKUs NUT‑ALM, NUT‑CAS, NUT‑PEC, adding approximately CAD 9,143 of excess COGS; negotiate price protection or pursue a refund/adjustment with Sierra Nut Co. [F-h6-r1]  
+- **Volume:** +CAD 18,873 (+1.26 pp) – Total units sold rose from 14,561 to 16,727, driven by larger orders from Capital Wholesale Grocers (CUST‑W01) 1,102→2,353 units, Vanier Village Grocer (CUST‑R11) 615→934 units, and Sandy Hill Spices (CUST‑R10) 571→794 units; sustain this growth while monitoring profitability. [F-h4-r2]  
+- **Customer / product mix:** –CAD 6,517 (‑1.81 pp) – Growth in wholesale channel, especially to Capital Wholesale Grocers (CUST‑W01) and Vanier Village Grocer (CUST‑R11), shifted the mix toward lower‑margin sales; analyse the mix and prioritize higher‑margin SKUs while sustaining the volume increase. [F-h5-r2]  
+- **USD/CAD exchange rate:** –CAD 425 (‑0.12 pp) – The USD/CAD rate rose from 1.3875 to 1.3917, increasing the CAD cost of USD‑denominated purchases mainly from Sierra Nut Co. (VEND‑SNC) and Lakeshore Olive Imports (VEND‑LOI); monitor exposure and consider hedging for future USD purchases. [F-h2-r1]  
+- **Packaging spend:** –CAD 399 (‑0.11 pp) – After correcting the duplicate MRP‑88213 entry, packaging spend with Maple Ridge Packaging (VEND‑MRP) for SKU PKG rose slightly; ensure the invoice is posted only once and review packaging specifications or vendor contracts to control cost growth. [Q-duplicates]  
+
+## Rejected explanations  
+- **Average selling price per unit:** No change; the deterministic bridge attributes CAD 0 (+0 pp) to this driver. [Q-sales][Q-gl]  
+- **Marketing expense (account 6100):** Operating expenses sit below gross margin, so the increase from CAD 8,004 to CAD 42,000 cannot explain a gross‑margin change. [Q-gl]  
+
+## Unexplained residual  
+CAD 0 (+0 pp) [Q-sales][Q-gl]  
+
+## Open questions  
+- Why was the duplicate booking of invoice MRP‑88213 not caught before payment, and what controls can prevent recurrence?  
+- Are there any other invoices besides MRP‑88213 that were recorded more times than paid in September 2026?  
+- Does the foreign‑exchange impact differ meaningfully among other USD‑denominated vendors aside from Sierra Nut Co. (VEND‑SNC) and Lakeshore Olive Imports (VEND‑LOI)?  
+- How might changes in marketing strategy have affected sales volume or product mix, given the significant rise in marketing expense?
+
+_Decision support on synthetic data. A controller must review the evidence and sign off before any entry, vendor claim or report._
+
+run r-20261022-020228-6804 completed · 475 s · SQL 47 (2 errors, 2 repairs) · LLM 55 via Meterless Runtime [local-runtime/nemotron-3-super-ollama] · warm true · trace logs/trace-r-20261022-020228-6804.jsonl

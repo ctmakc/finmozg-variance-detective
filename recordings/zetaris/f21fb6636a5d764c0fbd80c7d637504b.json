@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT period, SUM(qty) AS total_units_sold FROM lightning.metastore.finmozg.finance_usl.sales_line WHERE period IN ('2026-08','2026-09') GROUP BY period",
+ "result": {
+  "headers": [
+   "period",
+   "total_units_sold"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "16727.0"
+   ],
+   [
+    "2026-08",
+    "14561.0"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 562,
+  "queryId": "eb6bf414-eb7a-4a94-9ae1-7be5c36c96f3"
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "sql": "SELECT period, c.channel, SUM(sl.revenue_cad)/SUM(sl.qty) AS avg_price_cad\nFROM lightning.metastore.finmozg.finance_usl.sales_line sl\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\nWHERE sl.period IN ('2026-08','2026-09')\nGROUP BY period, c.channel\nORDER BY period, c.channel",
+ "result": {
+  "headers": [
+   "period",
+   "channel",
+   "avg_price_cad"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "retail",
+    "22.659979939819458"
+   ],
+   [
+    "2026-08",
+    "wholesale",
+    "16.1616"
+   ],
+   [
+    "2026-09",
+    "retail",
+    "22.183240063136747"
+   ],
+   [
+    "2026-09",
+    "wholesale",
+    "18.01858730727859"
+   ]
+  ],
+  "total": 4,
+  "timeUsedMs": 661,
+  "queryId": "f04743e6-ff60-4669-8180-9e942f7c1c43"
+ }
+}

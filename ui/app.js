@@ -30,6 +30,7 @@ async function loadHealth() {
     const served = (h.llm.pinned?.deep || "").replace("local-runtime/", "");
     setStatus("llm", h.llm.status, h.llm.status === "online" ? `${h.llm.routes.length} routes · ${served}` : h.llm.status);
     setStatus("memory", h.memory.total ? "online" : "", `${h.memory.findings} findings · ${h.memory.rulings} rulings`);
+    if (h.sampleMode) $("#run-hint").textContent = "Sample mode: replays recorded live runs. Pick one of the five example questions.";
   } catch {
     setStatus("zetaris", "offline", "server unreachable");
   }

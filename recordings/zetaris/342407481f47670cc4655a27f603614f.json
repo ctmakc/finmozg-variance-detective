@@ -1,0 +1,18 @@
+{
+ "sql": "SELECT period, SUM((unit_price_orig - contract_unit_price) * qty * fx_rate) AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE period IN ('2026-08','2026-09')\nAND unit_price_orig > contract_unit_price\nGROUP BY period",
+ "result": {
+  "headers": [
+   "period",
+   "excess_cad"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "9143.329830000004"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1128,
+  "queryId": "36b20339-2136-4f61-a24f-da0abc15371a"
+ }
+}

@@ -1,0 +1,76 @@
+{
+ "sql": "SELECT sku,\n       SUM(CASE WHEN period='2026-08' THEN qty ELSE 0 END) AS aug_qty,\n       SUM(CASE WHEN period='2026-09' THEN qty ELSE 0 END) AS sep_qty,\n       SUM(CASE WHEN period='2026-09' THEN qty ELSE 0 END) - SUM(CASE WHEN period='2026-08' THEN qty ELSE 0 END) AS qty_change\nFROM lightning.metastore.finmozg.finance_usl.sales_line\nWHERE period IN ('2026-08','2026-09')\nGROUP BY sku\nORDER BY qty_change DESC\nLIMIT 10",
+ "result": {
+  "headers": [
+   "sku",
+   "aug_qty",
+   "sep_qty",
+   "qty_change"
+  ],
+  "rows": [
+   [
+    "PRS-JAM",
+    "1039.0",
+    "1610.0",
+    "571.0"
+   ],
+   [
+    "COF-ETH",
+    "1166.0",
+    "1555.0",
+    "389.0"
+   ],
+   [
+    "OIL-ORG",
+    "1263.0",
+    "1645.0",
+    "382.0"
+   ],
+   [
+    "OIL-EVO",
+    "1159.0",
+    "1477.0",
+    "318.0"
+   ],
+   [
+    "COF-COL",
+    "1107.0",
+    "1305.0",
+    "198.0"
+   ],
+   [
+    "NUT-CAS",
+    "1408.0",
+    "1606.0",
+    "198.0"
+   ],
+   [
+    "PRS-HNY",
+    "1187.0",
+    "1323.0",
+    "136.0"
+   ],
+   [
+    "NUT-ALM",
+    "1045.0",
+    "1142.0",
+    "97.0"
+   ],
+   [
+    "PRS-OLV",
+    "1442.0",
+    "1534.0",
+    "92.0"
+   ],
+   [
+    "NUT-PEC",
+    "1270.0",
+    "1317.0",
+    "47.0"
+   ]
+  ],
+  "total": 10,
+  "timeUsedMs": 384,
+  "queryId": "e4bcf515-9c27-4933-8469-a78f1a93ec32"
+ }
+}

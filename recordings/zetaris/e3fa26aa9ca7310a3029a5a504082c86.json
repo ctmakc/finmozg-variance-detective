@@ -1,0 +1,43 @@
+{
+ "sql": "WITH sl_agg AS (\n SELECT period, SUM(qty) AS total_qty, SUM(revenue_cad) AS total_rev\n FROM lightning.metastore.finmozg.finance_usl.sales_line\n WHERE period IN ('2026-08','2026-09')\n GROUP BY period\n),\ngl_agg AS (\n SELECT period,\n        SUM(CASE WHEN account_type = 'revenue' THEN amount_cad ELSE 0 END) AS revenue_cad,\n        SUM(CASE WHEN account_type IN ('cogs','5000 goods','5100 packaging') THEN amount_cad ELSE 0 END) AS cogs_cad\n FROM lightning.metastore.finmozg.finance_usl.gl_balance\n WHERE period IN ('2026-08','2026-09')\n GROUP BY period\n)\nSELECT s.period,\n       s.total_qty,\n       s.total_rev,\n       g.revenue_cad AS gl_revenue,\n       g.cogs_cad,\n       (g.revenue_cad - g.cogs_cad) AS gross_margin,\n       s.total_rev / s.total_qty AS avg_selling_price,\n       (g.revenue_cad - g.cogs_cad) / s.total_qty AS margin_per_unit,\n       (s.total_rev / s.total_qty) - ((g.revenue_cad - g.cogs_cad) / s.total_qty) AS implied_cost_per_unit\nFROM sl_agg s\nJOIN gl_agg g ON s.period = g.period\nORDER BY s.period",
+ "result": {
+  "headers": [
+   "period",
+   "total_qty",
+   "total_rev",
+   "gl_revenue",
+   "cogs_cad",
+   "gross_margin",
+   "avg_selling_price",
+   "margin_per_unit",
+   "implied_cost_per_unit"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "14561.0",
+    "319554.56000000006",
+    "319554.56",
+    "204733.80000000002",
+    "114820.75999999998",
+    "21.945921296614248",
+    "7.885499622278688",
+    "14.06042167433556"
+   ],
+   [
+    "2026-09",
+    "16727.0",
+    "359443.84000000014",
+    "359443.84",
+    "254657.02",
+    "104786.82000000004",
+    "21.48884079631734",
+    "6.264531595623843",
+    "15.224309200693497"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 702,
+  "queryId": "078721c1-74c5-4083-bede-7b751fde528b"
+ }
+}

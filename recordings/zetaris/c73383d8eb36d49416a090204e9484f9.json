@@ -1,0 +1,18 @@
+{
+ "sql": "SELECT vendor_invoice_no, COUNT(*) AS invoice_cnt FROM lightning.metastore.finmozg.finance_usl.vendor_bill WHERE period='2026-09' GROUP BY vendor_invoice_no HAVING COUNT(*) > 1",
+ "result": {
+  "headers": [
+   "vendor_invoice_no",
+   "invoice_cnt"
+  ],
+  "rows": [
+   [
+    "MRP-88213",
+    "2"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 707,
+  "queryId": "35e69bd0-31e5-45e2-9cab-d23737182f4a"
+ }
+}

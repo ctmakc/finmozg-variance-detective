@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"The USD/CAD rate rose from 1.3875 in August to 1.3917 in September, increasing the CAD cost of USD‑denominated vendor invoices by approximately CAD 425 in September versus August, mainly due to purchases from Sierra Nut Co. (VEND-SNC) and Lakeshore Olive Imports (VEND-LOI).\",\n  \"amount_cad\": 425.3945639999982,\n  \"evidence\": [\"E2-1\", \"E2-2\", \"E2-3\", \"E2-5\"],\n  \"entities\": [\"VEND-SNC\", \"VEND-LOI\"],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_kwl2vh0m",
+  "latencyMs": 16370,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2928,
+   "completionTokens": 639
+  }
+ }
+}

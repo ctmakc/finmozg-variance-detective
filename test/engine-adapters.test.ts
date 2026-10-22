@@ -106,3 +106,16 @@ describe("reviewEvidence (Markovian)", () => {
     expect(parseReviewJson("no verdict")).toBeNull();
   });
 });
+
+import { normaliseHeadings, unknownAmounts } from "../src/agents/writer.js";
+describe("Writer reviewer", () => {
+  it("normalises bold section lines to ## headings", () => {
+    const m = normaliseHeadings("**Answer**  \nText\n**Unexplained residual:**\nCAD 0\n## Drivers\n- **Volume:** +CAD 1");
+    expect(m).toContain("## Answer");
+    expect(m).toContain("## Unexplained residual");
+    expect(m).toContain("- **Volume:** +CAD 1");
+  });
+  it("flags amounts that are not in the facts", () => {
+    expect(unknownAmounts("lost CAD 12,450 and CAD 99,999", "booking error CAD 12,450")).toEqual(["CAD 99,999"]);
+  });
+});

@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Wholesale channel share rose from 11.0% to 16.7% (retail fell correspondingly), which at September volumes and August unit margins reduces gross margin by about 5,085 CAD.\",\n  \"amount_cad\": -5085,\n  \"evidence\": [\n    \"E5-6\",\n    \"E5-7\"\n  ],\n  \"entities\": [\n    \"retail\",\n    \"wholesale\"\n  ],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_wrqltt0r",
+  "latencyMs": 22201,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 7030,
+   "completionTokens": 1998
+  }
+ }
+}

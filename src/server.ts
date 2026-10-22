@@ -60,15 +60,22 @@ function startRun(input: { question: string; periodA?: string; periodB?: string 
   const entry: LiveRun = { events: [], clients: new Set(), done: Promise.resolve(null as never) };
   live.set(runId, entry);
   running++;
+  const pace = isSampleMode() ? Number(process.env.SAMPLE_PACE_MS ?? 110) : 0;
+  let paced = 0;
   entry.done = runInvestigation(input, {
     runId,
     memory: isSampleMode() ? new DetectiveMemory(sampleMemoryDir(input.question)) : memory,
     onEvent: (e) => {
-      entry.events.push(e);
-      for (const c of entry.clients) c.write(`data: ${JSON.stringify(e)}\n\n`);
+      // Sample mode replays in milliseconds; pace the stream so the timeline is readable (labelled as a replay).
+      const send = () => {
+        entry.events.push(e);
+        for (const c of entry.clients) c.write(`data: ${JSON.stringify(e)}\n\n`);
+      };
+      if (pace) { paced += pace; setTimeout(send, paced); } else send();
     },
   })
-    .then((r) => {
+    .then(async (r) => {
+      if (pace) await new Promise((res) => setTimeout(res, paced + 200));
       entry.result = r;
       for (const c of entry.clients) {
         c.write(`event: done\ndata: ${JSON.stringify({ runId, status: r.status })}\n\n`);

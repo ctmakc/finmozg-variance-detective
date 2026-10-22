@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT v.vendor_id, v.vendor_name, SUM(pl.qty * pl.unit_price_orig) AS usd_value_sep\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.currency = 'USD' AND pl.period = '2026-09'\nGROUP BY v.vendor_id, v.vendor_name\nORDER BY usd_value_sep DESC\nLIMIT 5",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name",
+   "usd_value_sep"
+  ],
+  "rows": [
+   [
+    "VEND-SNC",
+    "Sierra Nut Co.",
+    "61289.020000000004"
+   ],
+   [
+    "VEND-LOI",
+    "Lakeshore Olive Imports",
+    "39995.4"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1406,
+  "queryId": "6b8d3fc7-99fc-4c2f-9add-98370564e753"
+ }
+}

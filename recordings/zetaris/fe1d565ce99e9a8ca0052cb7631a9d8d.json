@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT period,\n       SUM(CASE WHEN account_type = 'revenue' THEN amount_cad ELSE 0 END) AS revenue_cad,\n       SUM(CASE WHEN account_type IN ('cogs', '5000 goods', '5100 packaging') THEN amount_cad ELSE 0 END) AS cogs_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE period IN ('2026-08','2026-09')\nGROUP BY period\nORDER BY period",
+ "result": {
+  "headers": [
+   "period",
+   "revenue_cad",
+   "cogs_cad"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "319554.56",
+    "204733.80000000002"
+   ],
+   [
+    "2026-09",
+    "359443.84",
+    "254657.02"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 469,
+  "queryId": "b288ceb6-e975-4e73-8c44-62a093bf35be"
+ }
+}

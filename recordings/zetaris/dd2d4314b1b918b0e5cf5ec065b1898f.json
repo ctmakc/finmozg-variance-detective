@@ -1,0 +1,34 @@
+{
+ "sql": "SELECT period, vendor_id, sku, SUM((unit_price_orig - contract_unit_price) * qty * fx_rate) AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE period IN ('2026-08','2026-09')\nAND unit_price_orig > contract_unit_price\nGROUP BY period, vendor_id, sku\nORDER BY period, vendor_id, sku",
+ "result": {
+  "headers": [
+   "period",
+   "vendor_id",
+   "sku",
+   "excess_cad"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "VEND-SNC",
+    "NUT-ALM",
+    "2288.622815999999"
+   ],
+   [
+    "2026-09",
+    "VEND-SNC",
+    "NUT-CAS",
+    "3665.5151280000014"
+   ],
+   [
+    "2026-09",
+    "VEND-SNC",
+    "NUT-PEC",
+    "3189.1918860000037"
+   ]
+  ],
+  "total": 3,
+  "timeUsedMs": 1324,
+  "queryId": "367f6a64-dca2-4326-840f-430a6890a2b2"
+ }
+}

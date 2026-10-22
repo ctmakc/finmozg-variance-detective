@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Wholesale channel share increased from 11.0% to 16.7% while wholesale prices are lower than retail, contributing to a gross margin decline of approximately CAD 10,034 from August to September 2026.\",\n  \"amount_cad\": -10033.94,\n  \"evidence\": [\n    \"E5-1\",\n    \"E5-4\"\n  ],\n  \"entities\": [\n    \"wholesale\",\n    \"retail\"\n  ],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_a8ptdi4s",
+  "latencyMs": 20313,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3449,
+   "completionTokens": 1045
+  }
+ }
+}

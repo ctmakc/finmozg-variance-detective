@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "\n",
+  "toolCalls": [
+   {
+    "id": "call_jl41nxa1",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT period, SUM(qty * contract_unit_price) AS std_cost, SUM(qty) AS total_qty FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period\",\"purpose\":\"Get standard cost based on contract_unit_price\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_zny7ue93",
+  "latencyMs": 20646,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2750,
+   "completionTokens": 1442
+  }
+ }
+}

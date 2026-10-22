@@ -1,0 +1,24 @@
+{
+ "sql": "SELECT account_code, account_name,\n       SUM(CASE WHEN period = '2026-08' THEN amount_cad ELSE 0 END) AS aug_amount,\n       SUM(CASE WHEN period = '2026-09' THEN amount_cad ELSE 0 END) AS sep_amount,\n       SUM(CASE WHEN period = '2026-09' THEN amount_cad ELSE 0 END) -\n       SUM(CASE WHEN period = '2026-08' THEN amount_cad ELSE 0 END) AS change_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex' AND period IN ('2026-08','2026-09')\nGROUP BY account_code, account_name\nORDER BY change_cad DESC",
+ "result": {
+  "headers": [
+   "account_code",
+   "account_name",
+   "aug_amount",
+   "sep_amount",
+   "change_cad"
+  ],
+  "rows": [
+   [
+    "6100",
+    "Marketing expense",
+    "8004.08",
+    "42000.0",
+    "33995.92"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 419,
+  "queryId": "9ace2552-7c7f-44f8-b5d6-f799660bf36f"
+ }
+}

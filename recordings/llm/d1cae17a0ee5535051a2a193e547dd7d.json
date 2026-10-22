@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Units sold increased from 14,561 in August to 16,727 in September (+2,166 units); using August’s margin per unit (~CAD 7.88) this volume change would raise gross margin by about CAD 17,070, but actual gross margin fell by CAD 10,034 due to higher costs and lower prices.\",\n  \"amount_cad\": 17070,\n  \"evidence\": [\"E4-4\", \"E4-5\", \"E4-6\", \"E4-7\"],\n  \"entities\": [],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_jfnacvla",
+  "latencyMs": 23379,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2881,
+   "completionTokens": 2280
+  }
+ }
+}

@@ -59,6 +59,32 @@ export function unknownAmounts(memo: string, facts: string): string[] {
   return [...new Set(out)];
 }
 
+const SECTIONS = ["Answer", "Drivers", "Rejected explanations", "Unexplained residual", "Open questions"];
+
+/** Models sometimes write "**Answer**" or "Answer:" instead of "## Answer": normalise known section lines to ## headings. */
+export function normaliseHeadings(memo: string): string {
+  return memo
+    .split("\n")
+    .map((line) => {
+      const m = line.trim().match(/^(?:#{1,6}\s*)?\**\s*([A-Za-z ]+?)\s*\**\s*:?\s*\**$/);
+      const hit = m && SECTIONS.find((s) => s.toLowerCase() === m[1].trim().toLowerCase());
+      return hit ? `## ${hit}` : line;
+    })
+    .join("\n");
+}
+
+/** Deterministic touch-ups: ASCII citation brackets, and the residual line from Quant if the model left it out. */
+export function completeMemo(memo: string, quant: QuantResult | null): string {
+  let m = memo.replace(/【\s*([^】]+?)\s*】/g, "[$1]");
+  if (quant && !/##\s*Unexplained residual/i.test(m)) {
+    const r = quant.components.find((c) => c.key === "residual")?.amountCad ?? 0;
+    const pp = quant.rate.items.find((i) => i.key === "residual")?.pp ?? 0;
+    const block = `## Unexplained residual\n${fmt(r)} (${pp} pp) after all bridge lines [Q-sales] [Q-costs] [Q-gl].`;
+    m = /##\s*Open questions/i.test(m) ? m.replace(/##\s*Open questions/i, `${block}\n\n## Open questions`) : `${m}\n\n${block}`;
+  }
+  return m;
+}
+
 export function reviewMemo(memo: string, facts: string, evidenceIds: Set<string>): string[] {
   const issues: string[] = [];
   const unknown = unknownAmounts(memo, facts);
@@ -105,7 +131,7 @@ Structure (markdown): "## Answer" (2-3 sentences), "## Drivers" (bullets for eve
       const again = await args.llm.chat({ role: "deep", agent: "Writer", maxTokens: 16000, messages });
       text = again.content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
     }
-    memo = text;
+    memo = completeMemo(normaliseHeadings(text), args.quant);
     issues = reviewMemo(memo, facts, ids);
     args.emit("Writer", attempt === 0 ? "memo_draft" : "memo_rewrite", { chars: memo.length, issues });
     if (!issues.length) break;

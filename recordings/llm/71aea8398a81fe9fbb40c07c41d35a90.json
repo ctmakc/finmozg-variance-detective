@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Total units sold increased by 2,166 units from August to September 2026, driven largely by SKU PRS-JAM which increased by 571 units and the wholesale channel which increased by 1,189 units.\",\n  \"amount_cad\": null,\n  \"evidence\": [\"E4-1\", \"E4-2\", \"E4-3\"],\n  \"entities\": [\"PRS-JAM\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_f7mhre1h",
+  "latencyMs": 24692,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2973,
+   "completionTokens": 729
+  }
+ }
+}
