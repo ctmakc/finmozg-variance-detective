@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h6",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_fe2rmp6q",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT purchase_line_id, ap_doc_id, vendor_invoice_no, vendor_id, period, sku, qty, currency, unit_price_orig, contract_unit_price, fx_rate, unit_cost_cad, amount_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE vendor_invoice_no = 'MRP-88213'\",\"purpose\":\"Get purchase lines for invoice MRP-88213\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_fwwhfcld",
+  "latencyMs": 10622,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 3602,
+   "completionTokens": 1241
+  }
+ }
+}

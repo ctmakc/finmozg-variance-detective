@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_p6vwk6gv",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT period, AVG(fx_rate) AS avg_fx_rate\\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\\nWHERE currency = 'USD' AND period IN ('2026-08','2026-09')\\nGROUP BY period\\nORDER BY period\",\"purpose\":\"Average FX rate for USD purchase lines per period\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_b3mv98ig",
+  "latencyMs": 12366,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2064,
+   "completionTokens": 274
+  }
+ }
+}

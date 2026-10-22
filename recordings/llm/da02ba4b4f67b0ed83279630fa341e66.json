@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"In September 2026 the purchased mix shifted toward higher‑cost SKUs such as NUT‑PEC, NUT‑CAS and NUT‑ALM, raising the average purchase cost per unit by 1.16 CAD and reducing gross margin by roughly 10,000 CAD versus August.\",\n  \"amount_cad\": -10034,\n  \"evidence\": [\"E4-2\", \"E4-4\", \"E4-5\"],\n  \"entities\": [\"NUT-PEC\", \"NUT-CAS\", \"NUT-ALM\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_k6aeosdl",
+  "latencyMs": 16654,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 6803,
+   "completionTokens": 1465
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT DISTINCT account_type FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE period IN ('2026-08','2026-09')",
+ "result": {
+  "headers": [
+   "account_type"
+  ],
+  "rows": [
+   [
+    "revenue"
+   ],
+   [
+    "opex"
+   ],
+   [
+    "cogs"
+   ]
+  ],
+  "total": 3,
+  "timeUsedMs": 542,
+  "queryId": "c6874c2e-a991-4246-a161-2787ad072895"
+ }
+}

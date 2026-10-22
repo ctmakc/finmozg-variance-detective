@@ -1,5 +1,5 @@
 {
- "sql": "SELECT pl.vendor_id, pl.sku, pl.period, pl.unit_price_orig, pl.contract_unit_price, pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.vendor_id, pl.sku, pl.period",
+ "sql": "SELECT pl.vendor_id, pl.sku, pl.period,\n       pl.unit_price_orig, pl.contract_unit_price,\n       pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.vendor_id, pl.sku, pl.period",
  "result": {
   "headers": [
    "vendor_id",
@@ -44,7 +44,7 @@
    ]
   ],
   "total": 3,
-  "timeUsedMs": 1347,
-  "queryId": "645f6699-20d7-4d9f-985a-8a91e304a69b"
+  "timeUsedMs": 1038,
+  "queryId": "e886871f-6ac1-44a4-a098-7bbfc0d65b81"
  }
 }

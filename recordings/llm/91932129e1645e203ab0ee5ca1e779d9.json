@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_48uz7m2r",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT vendor_invoice_no, vendor_id, ap_doc_id, invoice_date, period, currency, amount_orig, fx_rate, amount_cad\\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill\\nWHERE vendor_invoice_no = 'MRP-88213'\",\"purpose\":\"Check duplicate invoice MRP-88213\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_m4wa36gl",
+  "latencyMs": 24070,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2396,
+   "completionTokens": 150
+  }
+ }
+}

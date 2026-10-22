@@ -1,0 +1,32 @@
+{
+ "sql": "WITH agg AS (\n SELECT period, SUM(qty) AS total_qty, SUM(amount_cad) AS total_cost\n FROM lightning.metastore.finmozg.finance_usl.purchase_line\n WHERE period IN ('2026-08','2026-09')\n GROUP BY period\n)\nSELECT\n a1.period AS aug_period, a1.total_qty AS aug_qty, a1.total_cost AS aug_cost,\n a2.period AS sep_period, a2.total_qty AS sep_qty, a2.total_cost AS sep_cost,\n (a2.total_qty - a1.total_qty) AS qty_change,\n (a2.total_qty - a1.total_qty) * (a1.total_cost / a1.total_qty) AS volume_effect,\n a2.total_qty * ((a2.total_cost / a2.total_qty) - (a1.total_cost / a1.total_qty)) AS price_effect\nFROM agg a1, agg a2\nWHERE a1.period = '2026-08' AND a2.period = '2026-09'",
+ "result": {
+  "headers": [
+   "aug_period",
+   "aug_qty",
+   "aug_cost",
+   "sep_period",
+   "sep_qty",
+   "sep_cost",
+   "qty_change",
+   "volume_effect",
+   "price_effect"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "14562.0",
+    "204733.81999999998",
+    "2026-09",
+    "16729.0",
+    "254657.02000000002",
+    "2167.0",
+    "30466.84438538662",
+    "19456.35561461343"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 2231,
+  "queryId": "668e9a7d-9455-4794-83a0-507e3631d9b3"
+ }
+}

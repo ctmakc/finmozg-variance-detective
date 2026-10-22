@@ -1,0 +1,16 @@
+{
+ "sql": "WITH aug_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-08'\n),\nsep_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-09'\n)\nSELECT\n  SUM(pl.qty * pl.unit_price_orig * (sep_avg.fx_rate - aug_avg.fx_rate)) AS fx_effect_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nCROSS JOIN aug_avg\nCROSS JOIN sep_avg\nWHERE pl.currency = 'USD' AND pl.period = '2026-09'",
+ "result": {
+  "headers": [
+   "fx_effect_cad"
+  ],
+  "rows": [
+   [
+    "425.3945639999982"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 7050,
+  "queryId": "548d9e51-586c-47b8-a291-82772523f073"
+ }
+}

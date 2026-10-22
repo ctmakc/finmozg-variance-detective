@@ -1,0 +1,16 @@
+{
+ "sql": "SELECT SUM(pl.amount_cad - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_other_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period = '2026-09'\n  AND pl.vendor_id <> 'VEND-SNC'",
+ "result": {
+  "headers": [
+   "excess_other_cad"
+  ],
+  "rows": [
+   [
+    "0.001820000004954636"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1945,
+  "queryId": "67f17edb-4aa6-4ad1-a3ca-d690f42bfac2"
+ }
+}

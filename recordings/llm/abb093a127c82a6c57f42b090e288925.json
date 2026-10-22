@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h3",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Total quantity purchased rose by 2,167 units from August to September, increasing COGS by 30,467 CAD (volume effect) and reducing gross margin by the same amount.\",\n  \"amount_cad\": -30466.84438538662,\n  \"evidence\": [\"E3-6\", \"E3-7\", \"E3-8\"],\n  \"entities\": [\"VEND-SNC\", \"NUT-ALM\", \"NUT-CAS\", \"NUT-PEC\"],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_rjsrh8mq",
+  "latencyMs": 9692,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2960,
+   "completionTokens": 1274
+  }
+ }
+}

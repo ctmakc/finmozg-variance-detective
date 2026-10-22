@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT s.period,\nSUM(s.revenue_cad) AS revenue,\nSUM(s.qty * p.wholesale_price_cad) AS cost\nFROM lightning.metastore.finmozg.finance_usl.sales_line s\nJOIN lightning.metastore.finmozg.finance_usl.product p ON s.sku = p.sku\nWHERE s.period IN ('2026-08','2026-09')\nGROUP BY s.period\nORDER BY s.period",
+ "result": {
+  "headers": [
+   "period",
+   "revenue",
+   "cost"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "319554.56000000006",
+    "254941.4400000002"
+   ],
+   [
+    "2026-09",
+    "359443.84",
+    "291422.03999999986"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 607,
+  "queryId": "5129411f-964c-40cf-8a4e-ac43b9652669"
+ }
+}

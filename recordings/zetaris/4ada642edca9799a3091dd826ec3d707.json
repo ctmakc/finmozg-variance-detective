@@ -1,5 +1,5 @@
 {
- "sql": "SELECT vb.vendor_id, v.vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb JOIN lightning.metastore.finmozg.finance_usl.vendor v ON vb.vendor_id = v.vendor_id WHERE vb.vendor_invoice_no = 'MRP-88213' LIMIT 1",
+ "sql": "SELECT vb.vendor_id, v.vendor_name\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill vb\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON vb.vendor_id = v.vendor_id\nWHERE vb.vendor_invoice_no = 'MRP-88213'\nLIMIT 1",
  "result": {
   "headers": [
    "vendor_id",
@@ -12,7 +12,7 @@
    ]
   ],
   "total": 1,
-  "timeUsedMs": 1048,
-  "queryId": "9e359ef8-43fe-4965-9911-4204b1e940f4"
+  "timeUsedMs": 907,
+  "queryId": "18542fa8-2c10-4035-8f2d-164157d4a78a"
  }
 }

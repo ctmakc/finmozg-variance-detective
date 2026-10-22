@@ -126,8 +126,8 @@ Real live runs, recorded (Zetaris results + Nemotron replies + the run trace) an
 | `input_examples/01-gm-drop-sep.json` Why did gross margin fall in September vs August? (cold start) | `recordings/runs/01-gm-drop-sep.memo.md` | `recordings/runs/01-gm-drop-sep.json` |
 | `02-vendors-recoverable.json` Which vendors drove the COGS increase, is any of it recoverable? (warm: after the controller confirmed two findings) | `recordings/runs/02-vendors-recoverable.memo.md` | `.json` |
 | `03-fx-material.json` Was the September USD/CAD move material? | `recordings/runs/03-fx-material.memo.md` | `.json` |
-| `04-opex-rise.json` Why did operating expenses rise? | live only for now (recording hit the model provider's free-tier limit) | |
-| `05-headcount.json` Why did headcount cost rise? (no payroll source: the expected answer is "no data") | live only for now | |
+| `04-opex-rise.json` Why did operating expenses rise? (the Skeptic strikes the duplicate packaging invoice: it is COGS, not opex) | `recordings/runs/04-opex-rise.memo.md` | `.json` |
+| `05-headcount.json` Why did headcount cost rise? (no payroll source: answers "no data" honestly) | `recordings/runs/05-headcount.memo.md` | `.json` |
 
 ## Repository map
 ```

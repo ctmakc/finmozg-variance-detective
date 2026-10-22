@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Marketing expense (account 6100) increased by 33,995.92 CAD from August to September 2026, partly due to a duplicate booking of vendor VEND-MRP invoice MRP-88213 for 12,450 CAD each (total 24,900 CAD booked, but only one payment of 12,450 CAD, causing an overstatement of 12,450 CAD).\",\n  \"amount_cad\": null,\n  \"evidence\": [\"E2-1\", \"E2-5\"],\n  \"entities\": [\"VEND-MRP\", \"MRP-88213\", \"6100\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_mkt604zf",
+  "latencyMs": 16572,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2432,
+   "completionTokens": 1692
+  }
+ }
+}

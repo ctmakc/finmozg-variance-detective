@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT DISTINCT account_type FROM lightning.metastore.finmozg.finance_usl.gl_balance LIMIT 20",
+ "result": {
+  "headers": [
+   "account_type"
+  ],
+  "rows": [
+   [
+    "revenue"
+   ],
+   [
+    "opex"
+   ],
+   [
+    "cogs"
+   ]
+  ],
+  "total": 3,
+  "timeUsedMs": 624,
+  "queryId": "eaafcb06-9b5c-46e2-ba3a-5cc95707630d"
+ }
+}

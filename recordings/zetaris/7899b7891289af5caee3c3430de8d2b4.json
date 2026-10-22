@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT period, SUM(qty) AS total_qty, SUM(amount_cad) AS total_cost_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period",
+ "result": {
+  "headers": [
+   "period",
+   "total_qty",
+   "total_cost_cad"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "16729.0",
+    "254657.02000000002"
+   ],
+   [
+    "2026-08",
+    "14562.0",
+    "204733.81999999998"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1047,
+  "queryId": "ace4fbb9-ae6a-4729-a306-f4e7a7ea9987"
+ }
+}

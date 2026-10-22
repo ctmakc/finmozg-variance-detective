@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h1",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Vendor VEND-MRP invoice MRP-88213 was booked twice in AP (AP-00030 and AP-00031) for 12,450 CAD each in September 2026 but paid only once (payment BNK-00030), causing an overstatement of expenses by 12,450 CAD in September vs August.\",\n  \"amount_cad\": -12450,\n  \"evidence\": [\"E1-1\", \"E1-2\", \"E1-3\", \"E1-4\"],\n  \"entities\": [\"VEND-MRP\", \"MRP-88213\", \"AP-00030\", \"AP-00031\", \"BNK-00030\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_bgttxwu1",
+  "latencyMs": 10915,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2750,
+   "completionTokens": 526
+  }
+ }
+}

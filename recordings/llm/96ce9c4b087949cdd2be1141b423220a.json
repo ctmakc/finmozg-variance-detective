@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"The USD/CAD exchange rate increased from 1.3875 in August to 1.3917 in September, raising the CAD cost of USD-denominated purchase lines by approximately 425.39 CAD, driven mainly by vendor VEND-SNC (Sierra Nut Co.) invoice SNC-202609-01.\",\n  \"amount_cad\": -425.39,\n  \"evidence\": [\"E4-1\", \"E4-2\", \"E4-3\"],\n  \"entities\": [\"VEND-SNC\", \"VEND-LOI\", \"SNC-202609-01\", \"LOI-202609-01\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_4g9hjvuz",
+  "latencyMs": 9220,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2748,
+   "completionTokens": 760
+  }
+ }
+}

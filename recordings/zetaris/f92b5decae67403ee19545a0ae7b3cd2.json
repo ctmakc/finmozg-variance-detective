@@ -1,0 +1,60 @@
+{
+ "sql": "WITH chan AS (\n  SELECT s.period,\n         c.channel,\n         SUM(s.qty) AS total_qty,\n         SUM(s.revenue_cad) AS total_revenue,\n         SUM(s.qty * p.wholesale_price_cad) AS total_cost_wholesale\n  FROM lightning.metastore.finmozg.finance_usl.sales_line s\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON s.customer_id = c.customer_id\n  JOIN lightning.metastore.finmozg.finance_usl.product p ON s.sku = p.sku\n  WHERE s.period IN ('2026-08','2026-09')\n  GROUP BY s.period, c.channel\n),\ntotals AS (\n  SELECT period,\n         SUM(total_qty) AS period_total_qty,\n         SUM(total_revenue) AS period_total_revenue\n  FROM chan\n  GROUP BY period\n)\nSELECT chan.period,\n       chan.channel,\n       chan.total_qty,\n       chan.total_revenue,\n       chan.total_cost_wholesale,\n       (chan.total_revenue - chan.total_cost_wholesale) AS gross_margin_cad,\n       chan.total_qty * 100.0 / totals.period_total_qty AS qty_share_pct,\n       chan.total_revenue * 100.0 / totals.period_total_revenue AS revenue_share_pct\nFROM chan\nJOIN totals ON chan.period = totals.period\nORDER BY chan.period, chan.channel",
+ "result": {
+  "headers": [
+   "period",
+   "channel",
+   "total_qty",
+   "total_revenue",
+   "total_cost_wholesale",
+   "gross_margin_cad",
+   "qty_share_pct",
+   "revenue_share_pct"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "retail",
+    "12961.0",
+    "293696.0",
+    "229082.88000000032",
+    "64613.119999999675",
+    "89.01174369892178",
+    "91.9079358466986"
+   ],
+   [
+    "2026-08",
+    "wholesale",
+    "1600.0",
+    "25858.559999999998",
+    "25858.559999999998",
+    "0.0",
+    "10.988256301078223",
+    "8.092064153301395"
+   ],
+   [
+    "2026-09",
+    "retail",
+    "13938.0",
+    "309190.0",
+    "241168.20000000016",
+    "68021.79999999984",
+    "83.3263585819334",
+    "86.01900090985006"
+   ],
+   [
+    "2026-09",
+    "wholesale",
+    "2789.0",
+    "50253.83999999999",
+    "50253.83999999999",
+    "0.0",
+    "16.673641418066598",
+    "13.980999090149936"
+   ]
+  ],
+  "total": 4,
+  "timeUsedMs": 1819,
+  "queryId": "588affcd-5181-4669-8040-00b3c8921dc1"
+ }
+}

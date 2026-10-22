@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": false,\n  \"claim\": \"Only VEND-SNC showed significant excess unit price in September 2026 (9,143 CAD), while other vendors had negligible excess (0.0018 CAD total).\",\n  \"amount_cad\": -0.001820000004954636,\n  \"evidence\": [\n    \"E2-1\",\n    \"E2-2\",\n    \"E2-3\",\n    \"E2-4\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\",\n    \"VEND-LOI\",\n    \"VEND-PRV\",\n    \"VEND-RCK\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_q2gd01jq",
+  "latencyMs": 18924,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3228,
+   "completionTokens": 928
+  }
+ }
+}

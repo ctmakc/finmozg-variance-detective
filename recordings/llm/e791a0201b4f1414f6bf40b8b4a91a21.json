@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h1",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_q8gbm532",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT vendor_invoice_no, ap_doc_id, period, amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_bill WHERE vendor_invoice_no = 'MRP-88213' AND period IN ('2026-08','2026-09')\",\"purpose\":\"See bill details for MRP-88213\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_22k5h0ln",
+  "latencyMs": 8598,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2205,
+   "completionTokens": 431
+  }
+ }
+}

@@ -1,0 +1,160 @@
+{
+ "sql": "SELECT pl.sku, p.product_name, pl.period, SUM(pl.qty) AS qty\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.sku, p.product_name, pl.period\nORDER BY pl.sku, pl.period",
+ "result": {
+  "headers": [
+   "sku",
+   "product_name",
+   "period",
+   "qty"
+  ],
+  "rows": [
+   [
+    "COF-COL",
+    "Colombia Beans 1kg",
+    "2026-08",
+    "1107.0"
+   ],
+   [
+    "COF-COL",
+    "Colombia Beans 1kg",
+    "2026-09",
+    "1305.0"
+   ],
+   [
+    "COF-ETH",
+    "Ethiopia Beans 1kg",
+    "2026-08",
+    "1166.0"
+   ],
+   [
+    "COF-ETH",
+    "Ethiopia Beans 1kg",
+    "2026-09",
+    "1555.0"
+   ],
+   [
+    "COF-SUM",
+    "Sumatra Beans 1kg",
+    "2026-08",
+    "1240.0"
+   ],
+   [
+    "COF-SUM",
+    "Sumatra Beans 1kg",
+    "2026-09",
+    "1190.0"
+   ],
+   [
+    "NUT-ALM",
+    "Almonds 1kg",
+    "2026-08",
+    "1045.0"
+   ],
+   [
+    "NUT-ALM",
+    "Almonds 1kg",
+    "2026-09",
+    "1142.0"
+   ],
+   [
+    "NUT-CAS",
+    "Cashews 1kg",
+    "2026-08",
+    "1408.0"
+   ],
+   [
+    "NUT-CAS",
+    "Cashews 1kg",
+    "2026-09",
+    "1606.0"
+   ],
+   [
+    "NUT-PEC",
+    "Pecans 1kg",
+    "2026-08",
+    "1270.0"
+   ],
+   [
+    "NUT-PEC",
+    "Pecans 1kg",
+    "2026-09",
+    "1317.0"
+   ],
+   [
+    "OIL-EVO",
+    "EVOO 750ml",
+    "2026-08",
+    "1159.0"
+   ],
+   [
+    "OIL-EVO",
+    "EVOO 750ml",
+    "2026-09",
+    "1477.0"
+   ],
+   [
+    "OIL-FLT",
+    "Flavoured Oil 500ml",
+    "2026-08",
+    "1235.0"
+   ],
+   [
+    "OIL-FLT",
+    "Flavoured Oil 500ml",
+    "2026-09",
+    "1023.0"
+   ],
+   [
+    "OIL-ORG",
+    "Organic EVOO 750ml",
+    "2026-08",
+    "1263.0"
+   ],
+   [
+    "OIL-ORG",
+    "Organic EVOO 750ml",
+    "2026-09",
+    "1645.0"
+   ],
+   [
+    "PRS-HNY",
+    "Wildflower Honey 500g",
+    "2026-08",
+    "1187.0"
+   ],
+   [
+    "PRS-HNY",
+    "Wildflower Honey 500g",
+    "2026-09",
+    "1323.0"
+   ],
+   [
+    "PRS-JAM",
+    "Berry Jam 250g",
+    "2026-08",
+    "1039.0"
+   ],
+   [
+    "PRS-JAM",
+    "Berry Jam 250g",
+    "2026-09",
+    "1610.0"
+   ],
+   [
+    "PRS-OLV",
+    "Olive Tapenade 200g",
+    "2026-08",
+    "1442.0"
+   ],
+   [
+    "PRS-OLV",
+    "Olive Tapenade 200g",
+    "2026-09",
+    "1534.0"
+   ]
+  ],
+  "total": 24,
+  "timeUsedMs": 1674,
+  "queryId": "3c633c55-6fd5-48ae-ab4b-df05115e876b"
+ }
+}

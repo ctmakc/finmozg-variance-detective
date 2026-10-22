@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h6",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_r8ttjelt",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT vendor_invoice_no, ap_doc_id, invoice_date, period, currency, amount_orig, fx_rate, amount_cad\\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill\\nWHERE vendor_invoice_no = 'MRP-88213' AND period = '2026-09'\\nORDER BY ap_doc_id\",\"purpose\":\"Show duplicate invoice details for MRP-88213 in Sep 2026\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_lyhxg341",
+  "latencyMs": 7908,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2074,
+   "completionTokens": 181
+  }
+ }
+}

@@ -1,5 +1,5 @@
 {
- "runId": "r-20261022-015322-7fd8",
+ "runId": "r-20261022-031420-d32d",
  "question": "Which vendors drove the cost-of-goods increase in September, and is any of it recoverable?",
  "company": "Northbound Pantry Co. (fictional company, synthetic data)",
  "syntheticData": true,
@@ -8,48 +8,49 @@
   "periodA": "2026-08",
   "periodB": "2026-09",
   "answerable": true,
+  "missingData": null,
   "hypotheses": [
    {
     "id": "h1",
     "driverType": "supplier_price",
-    "text": "Vendor invoiced above contracted unit price for specific SKUs in September, creating excess COGS.",
-    "checks": "SELECT pl.vendor_id, pl.period, SUM((pl.amount_cad) - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl JOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id WHERE pl.period IN ('2026-08','2026-09') GROUP BY pl.vendor_id, pl.period HAVING excess_cad > 0"
+    "text": "Vendor VEND-SNC invoiced above contracted unit price for specific SKUs in September, creating excess COGS.",
+    "checks": "SELECT pl.vendor_id, v.vendor_name, SUM(pl.amount_cad - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl JOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id WHERE pl.period = '2026-09' AND pl.vendor_id = 'VEND-SNC' GROUP BY pl.vendor_id, v.vendor_name HAVING excess_cad > 0"
    },
    {
     "id": "h2",
-    "driverType": "volume",
-    "text": "Total quantity purchased changed between August and September.",
-    "checks": "SELECT period, SUM(qty) AS total_qty FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period"
+    "driverType": "supplier_price",
+    "text": "Other vendors also invoiced above contracted unit price in September, contributing to the COGS increase.",
+    "checks": "SELECT pl.vendor_id, v.vendor_name, SUM(pl.amount_cad - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl JOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id WHERE pl.period = '2026-09' GROUP BY pl.vendor_id, v.vendor_name HAVING excess_cad > 0 ORDER BY excess_cad DESC"
    },
    {
     "id": "h3",
+    "driverType": "volume",
+    "text": "Total quantity purchased changed between August and September, affecting COGS.",
+    "checks": "SELECT period, SUM(qty) AS total_qty FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period"
+   },
+   {
+    "id": "h4",
     "driverType": "mix",
     "text": "The mix of purchased SKUs shifted toward higher‑cost items in September.",
     "checks": "SELECT pl.period, SUM(pl.qty * p.wholesale_price_cad) / SUM(pl.qty) AS weighted_avg_wholesale_price_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl JOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku WHERE pl.period IN ('2026-08','2026-09') GROUP BY pl.period"
    },
    {
-    "id": "h4",
-    "driverType": "fx",
-    "text": "Changes in USD/CAD exchange rate increased the CAD cost of USD‑denominated vendor invoices in September.",
-    "checks": "SELECT pl.period, AVG(pl.fx_rate) AS avg_fx_rate FROM lightning.metastore.finmozg.finance_usl.purchase_line pl WHERE pl.currency = 'USD' AND pl.period IN ('2026-08','2026-09') GROUP BY pl.period"
-   },
-   {
     "id": "h5",
-    "driverType": "booking_error",
-    "text": "Duplicate AP invoices were booked for the same vendor invoice number, inflating COGS.",
-    "checks": "SELECT vb.vendor_invoice_no, COUNT(*) AS invoice_cnt FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb WHERE vb.period IN ('2026-08','2026-09') GROUP BY vb.vendor_invoice_no HAVING COUNT(*) > 1"
+    "driverType": "fx",
+    "text": "The USD/CAD rate changed the CAD cost of USD‑denominated vendor invoices between August and September.",
+    "checks": "SELECT period, AVG(fx_rate) AS avg_fx_rate FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE currency = 'USD' AND period IN ('2026-08','2026-09') GROUP BY period"
    },
    {
     "id": "h6",
-    "driverType": "opex",
-    "text": "Marketing expense (6100) increased significantly in September, contributing to overall P&L pressure.",
-    "checks": "SELECT period, amount_cad FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE account_code = '6100' AND period IN ('2026-08','2026-09')"
+    "driverType": "booking_error",
+    "text": "Duplicate AP invoices were booked for the same vendor invoice number in September, inflating costs.",
+    "checks": "SELECT vendor_invoice_no, COUNT(*) AS invoice_cnt FROM lightning.metastore.finmozg.finance_usl.vendor_bill WHERE period = '2026-09' GROUP BY vendor_invoice_no HAVING COUNT(*) > 1"
    },
    {
     "id": "h7",
-    "driverType": "supplier_price",
-    "text": "Vendor VEND‑SNC paid above contract prices for SKUs NUT‑ALM, NUT‑CAS, NUT‑PEC in September 2026 (confirmed from prior close).",
-    "checks": "SELECT pl.vendor_id, pl.period, SUM((pl.amount_cad) - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl JOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id WHERE v.vendor_name = 'VEND-SNC' AND pl.period IN ('2026-08','2026-09') GROUP BY pl.vendor_id, pl.period"
+    "driverType": "opex",
+    "text": "Marketing expense (account 6100) increased significantly between August and September, a possible alternative explanation for overall expense rise.",
+    "checks": "SELECT period, amount_cad FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE account_code = '6100' AND period IN ('2026-08','2026-09')"
    }
   ]
  },
@@ -135,7 +136,7 @@
    "id": "F-h1-r1",
    "hypothesisId": "h1",
    "driverType": "supplier_price",
-   "claim": "Vendor VEND-SNC invoiced above contracted unit price for SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, generating excess COGS of approximately 9,143 CAD.",
+   "claim": "Vendor VEND-SNC invoiced above contracted unit price for SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, generating excess COGS of 9,143.33 CAD.",
    "amountCad": -9143.33,
    "evidenceIds": [
     "E1-1"
@@ -155,57 +156,79 @@
     "verdict": "supported",
     "reasons": [
      "All three September SKU rows have invoiced unit price higher than contracted unit price, confirming invoiced price exceeds contract on the claimed lines.",
-     "The summed excess CAD (≈9,143) matches the claimed excess COGS."
+     "The summed excess CAD (≈9,143.33) matches the claimed excess COGS."
     ],
     "chunks": 1,
-    "savedPercent": -46.4
+    "savedPercent": -46.9
    },
    "verdict": {
     "verdict": "accepted",
-    "reason": "Evidence rows support the claim.",
+    "reason": "Evidence rows support it and the amount reconciles with the bridge (CAD -9116).",
     "by": "Skeptic"
    }
   },
   {
-   "id": "F-h2-r1",
+   "id": "F-h2-r2",
    "hypothesisId": "h2",
-   "driverType": "volume",
-   "claim": "Total quantity purchased increased by 2,167 units from August to September, driven mainly by VEND-PRV (Prairie Preserve Co.) raising purchases of PRS-HNY, PRS-JAM, and PRS-OLV.",
-   "amountCad": null,
+   "driverType": "supplier_price",
+   "claim": "Only VEND-SNC (Sierra Nut Co.) had excess pricing in September 2026 for SKUs NUT-ALM, NUT-CAS, NUT-PEC, totaling 9,143 CAD excess cost; other vendors had negligible excess (<0.01 CAD).",
+   "amountCad": -9143.33,
    "evidenceIds": [
-    "E2-1",
-    "E2-4",
-    "E2-5"
+    "E2-6",
+    "E2-8"
    ],
    "entities": [
-    "VEND-PRV",
-    "VEND-RCK",
-    "VEND-LOI",
-    "VEND-SNC",
-    "VEND-MRP"
+    "VEND-SNC"
    ],
    "agent": "Investigator-h2",
-   "round": 1,
-   "supported": true,
-   "sqlCalls": 5,
+   "round": 2,
+   "supported": false,
+   "sqlCalls": 4,
    "repairs": 0,
    "verdict": {
-    "verdict": "accepted",
-    "reason": "Evidence rows support the claim.",
+    "verdict": "needs_more",
+    "reason": "Measured by the bridge (CAD -9116) but not traced to named rows after 2 rounds: reported as an open question, not as a confirmed cause.",
     "by": "Skeptic"
    }
   },
   {
    "id": "F-h3-r2",
    "hypothesisId": "h3",
-   "driverType": "mix",
-   "claim": "The mix shifted toward higher‑cost items in September, driven by increased wholesale sales to Capital Wholesale Grocers (CUST-W01) and higher purchase costs for VEND‑SNC’s nut SKUs (NUT‑ALM, NUT‑CAS, NUT‑PEC), raising average purchase cost per unit from 14.06 to 15.22 CAD and adding roughly 9,100 CAD of excess cost.",
-   "amountCad": -9143,
+   "driverType": "volume",
+   "claim": "Total quantity purchased rose by 2,167 units from August to September, increasing COGS by 30,467 CAD (volume effect) and reducing gross margin by the same amount.",
+   "amountCad": -30466.84438538662,
    "evidenceIds": [
     "E3-6",
     "E3-7",
-    "E3-9",
-    "E3-10"
+    "E3-8"
+   ],
+   "entities": [
+    "VEND-SNC",
+    "NUT-ALM",
+    "NUT-CAS",
+    "NUT-PEC"
+   ],
+   "agent": "Investigator-h3",
+   "round": 2,
+   "supported": true,
+   "sqlCalls": 5,
+   "repairs": 0,
+   "verdict": {
+    "verdict": "accepted",
+    "reason": "Direction confirmed by evidence; the amount is taken from the deterministic bridge (CAD 18873) because the Investigator's figure (-30467) did not reconcile.",
+    "by": "Skeptic"
+   }
+  },
+  {
+   "id": "F-h4-r2",
+   "hypothesisId": "h4",
+   "driverType": "mix",
+   "claim": "Vendor VEND-SNC sold SKUs NUT-ALM, NUT-CAS, NUT-PEC at above‑contract prices to wholesale customer Capital Wholesale Grocers, increasing purchase cost by ~9,100 CAD and shifting September mix toward higher‑cost items.",
+   "amountCad": -9143,
+   "evidenceIds": [
+    "E4-6",
+    "E4-8",
+    "E4-9"
    ],
    "entities": [
     "VEND-SNC",
@@ -215,121 +238,98 @@
     "CUST-W01",
     "wholesale"
    ],
-   "agent": "Investigator-h3",
+   "agent": "Investigator-h4",
    "round": 2,
    "supported": true,
    "sqlCalls": 5,
    "repairs": 0,
    "verdict": {
     "verdict": "accepted",
-    "reason": "Evidence rows support the claim.",
-    "by": "Skeptic"
-   }
-  },
-  {
-   "id": "F-h4-r1",
-   "hypothesisId": "h4",
-   "driverType": "fx",
-   "claim": "Changes in USD/CAD exchange rate increased the CAD cost of USD-denominated vendor invoices in September by approximately 425 CAD, which is insufficient to explain the ~9,143 CAD excess cost noted by the controller for vendor VEND-SNC on SKUs NUT-ALM, NUT-CAS, NUT-PEC.",
-   "amountCad": -425.39,
-   "evidenceIds": [
-    "E4-1",
-    "E4-2"
-   ],
-   "entities": [],
-   "agent": "Investigator-h4",
-   "round": 1,
-   "supported": false,
-   "sqlCalls": 2,
-   "repairs": 0,
-   "verdict": {
-    "verdict": "rejected",
-    "reason": "No effect: the deterministic bridge measures CAD 0 for fx, and the Investigator found no change either.",
+    "reason": "Direction confirmed by evidence; the amount is taken from the deterministic bridge (CAD -6517) because the Investigator's figure (-9143) did not reconcile.",
     "by": "Skeptic"
    }
   },
   {
    "id": "F-h5-r1",
    "hypothesisId": "h5",
-   "driverType": "booking_error",
-   "claim": "Duplicate booking of vendor invoice MRP-88213 for vendor VEND-MRP (Maple Ridge Packaging) SKU PKG inflated COGS by 12,450 CAD in September 2026.",
-   "amountCad": -12450,
+   "driverType": "fx",
+   "claim": "The USD/CAD rate increased from 1.3875 in August to 1.3917 in September, raising the CAD cost of September USD-denominated purchase lines by approximately 425.39 CAD, with Sierra Nut Co. (VEND-SNC) contributing the largest share at 257.41 CAD.",
+   "amountCad": -425.3945639999982,
    "evidenceIds": [
+    "E5-1",
     "E5-2",
-    "E5-4",
-    "E5-3"
+    "E5-3",
+    "E5-4"
    ],
    "entities": [
-    "VEND-MRP",
-    "PKG",
-    "MRP-88213"
+    "VEND-SNC"
    ],
    "agent": "Investigator-h5",
    "round": 1,
    "supported": true,
-   "sqlCalls": 5,
+   "sqlCalls": 4,
    "repairs": 0,
-   "review": {
-    "verdict": "supported",
-    "reasons": [
-     "AP shows two bookings of 12,450 CAD each while bank shows only one payment of 12,450 CAD, indicating an unmatched duplicate booking that adds the claimed extra cost."
-    ],
-    "chunks": 1,
-    "savedPercent": -41.3
-   },
    "verdict": {
     "verdict": "accepted",
-    "reason": "Evidence rows support the claim.",
+    "reason": "Real but immaterial: the bridge measures CAD -425 for this driver.",
     "by": "Skeptic"
    }
   },
   {
    "id": "F-h6-r1",
    "hypothesisId": "h6",
-   "driverType": "opex",
-   "claim": "Marketing expense (account 6100) increased from 8,004.08 CAD in August 2026 to 42,000.00 CAD in September 2026, an increase of 33,995.92 CAD.",
-   "amountCad": null,
+   "driverType": "booking_error",
+   "claim": "Duplicate booking of vendor invoice MRP-88213 for vendor VEND-MRP (Maple Ridge Packaging) in September 2026 added an extra cost of 12,450 CAD, inflating expenses.",
+   "amountCad": -12450,
    "evidenceIds": [
-    "E6-1"
+    "E6-1",
+    "E6-2",
+    "E6-3",
+    "E6-4"
    ],
    "entities": [
-    "6100"
+    "VEND-MRP",
+    "MRP-88213"
    ],
    "agent": "Investigator-h6",
    "round": 1,
    "supported": true,
-   "sqlCalls": 3,
+   "sqlCalls": 4,
    "repairs": 0,
+   "review": {
+    "verdict": "inconclusive",
+    "reasons": [
+     "AP shows two bookings of 12,450 CAD each but no bank payment rows are present in the evidence to verify payment count; cannot confirm whether the extra bookings correspond to missing payments or are legitimate duplicates."
+    ],
+    "chunks": 1,
+    "savedPercent": -48.4
+   },
    "verdict": {
     "verdict": "accepted",
-    "reason": "Evidence rows support the claim.",
+    "reason": "Evidence rows support it and the amount reconciles with the bridge (CAD -12450).",
     "by": "Skeptic"
    }
   },
   {
    "id": "F-h7-r1",
    "hypothesisId": "h7",
-   "driverType": "supplier_price",
-   "claim": "No purchase lines were found for vendor VEND-SNC (Sierra Nut Co.) for SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, so the hypothesis of above-contract pricing cannot be verified.",
+   "driverType": "opex",
+   "claim": "Marketing expense (account 6100) increased from 8,004.08 CAD in August 2026 to 42,000.00 CAD in September 2026, an increase of 33,995.92 CAD.",
    "amountCad": null,
    "evidenceIds": [
-    "E7-1",
-    "E7-2",
-    "E7-3",
-    "E7-4",
-    "E7-5"
+    "E7-1"
    ],
    "entities": [
-    "VEND-SNC"
+    "6100"
    ],
    "agent": "Investigator-h7",
    "round": 1,
-   "supported": false,
-   "sqlCalls": 5,
+   "supported": true,
+   "sqlCalls": 3,
    "repairs": 0,
    "verdict": {
     "verdict": "rejected",
-    "reason": "No effect: the deterministic bridge measures CAD 0 for supplierPrice, and the Investigator found no change either.",
+    "reason": "Operating expenses sit below gross margin (account type opex), so they cannot explain a gross-margin change.",
     "by": "Skeptic"
    }
   }
@@ -688,7 +688,7 @@
     ]
    ],
    "rowCount": 48,
-   "queryId": "122ba5e1-2764-458c-a4db-07ba5a63fcd7",
+   "queryId": "ddaffc3e-7134-435b-8876-8a278c5e504c",
    "agent": "Quant"
   },
   {
@@ -975,7 +975,7 @@
     ]
    ],
    "rowCount": 24,
-   "queryId": "05b7ced3-29a0-4682-a33b-d93e9f1a5d8d",
+   "queryId": "d2cdcb1b-01ab-4256-80bc-dc6721cbd888",
    "agent": "Quant"
   },
   {
@@ -1050,7 +1050,7 @@
     ]
    ],
    "rowCount": 8,
-   "queryId": "ba860b6d-a84a-47b2-b7b2-e3b0b03fac52",
+   "queryId": "091733cf-96e9-427e-86b5-17cbb0e7291c",
    "agent": "Quant"
   },
   {
@@ -1077,7 +1077,7 @@
     ]
    ],
    "rowCount": 1,
-   "queryId": "a3a37b5a-6b65-4b0f-915e-b396d92c2123",
+   "queryId": "1f9773e2-4f55-453a-ad24-58e4d7af07ee",
    "agent": "Quant"
   },
   {
@@ -1102,7 +1102,7 @@
     ]
    ],
    "rowCount": 1,
-   "queryId": "e9195dc9-34aa-4a30-8d00-9fae7dd7ce8b",
+   "queryId": "b9690256-dddb-491f-8e5f-979e8680ca00",
    "agent": "Quant"
   },
   {
@@ -1157,7 +1157,7 @@
     ]
    ],
    "rowCount": 5,
-   "queryId": "fb3dee18-888d-4c68-a840-d3c752628dda",
+   "queryId": "5cf17040-c1fc-4a2e-ae04-d017af62a664",
    "agent": "Quant"
   },
   {
@@ -1197,12 +1197,12 @@
     ]
    ],
    "rowCount": 6,
-   "queryId": "3620d74a-ce4c-44c1-a98a-feef4903d8d3",
+   "queryId": "a2204fa0-c376-4867-9f7f-c918e2d46a55",
    "agent": "Quant"
   },
   {
    "id": "E1-1",
-   "sql": "SELECT pl.vendor_id, pl.sku, pl.period, pl.unit_price_orig, pl.contract_unit_price, pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.vendor_id, pl.sku, pl.period",
+   "sql": "SELECT pl.vendor_id,\n       pl.sku,\n       pl.period,\n       pl.unit_price_orig,\n       pl.contract_unit_price,\n       pl.qty,\n       pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.vendor_id = 'VEND-SNC'\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.period, pl.sku",
    "sources": [
     "finance_usl.purchase_line"
    ],
@@ -1249,12 +1249,12 @@
     ]
    ],
    "rowCount": 3,
-   "queryId": "645f6699-20d7-4d9f-985a-8a91e304a69b",
+   "queryId": "ce94193d-046c-4df8-921c-2f272b92b007",
    "agent": "Investigator-h1"
   },
   {
    "id": "E1-2",
-   "sql": "SELECT pl.vendor_id, pl.sku, pl.period, pl.unit_price_orig, pl.contract_unit_price, pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period = '2026-08'\n  AND pl.unit_price_orig > pl.contract_unit_price\n  AND pl.vendor_id = 'VEND-SNC'\n  AND pl.sku IN ('NUT-ALM','NUT-CAS','NUT-PEC')\nORDER BY pl.vendor_id, pl.sku, pl.period",
+   "sql": "SELECT pl.vendor_id,\n       pl.sku,\n       pl.period,\n       pl.unit_price_orig,\n       pl.contract_unit_price,\n       pl.qty,\n       pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.vendor_id = 'VEND-SNC'\n  AND pl.period = '2026-08'\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.sku",
    "sources": [
     "finance_usl.purchase_line"
    ],
@@ -1270,11 +1270,155 @@
    ],
    "rows": [],
    "rowCount": 0,
-   "queryId": "6dd55129-97ac-4dca-b6dc-03a2646c054e",
+   "queryId": "3e776b86-abaf-4345-8b01-ffd3c36002d9",
    "agent": "Investigator-h1"
   },
   {
    "id": "E2-1",
+   "sql": "SELECT pl.vendor_id, v.vendor_name, pl.sku, p.product_name,\n       pl.period,\n       pl.qty,\n       pl.unit_price_orig,\n       pl.contract_unit_price,\n       pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nLEFT JOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period IN ('2026-08', '2026-09')\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.vendor_id, pl.sku, pl.period",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.vendor",
+    "finance_usl.product"
+   ],
+   "headers": [
+    "vendor_id",
+    "vendor_name",
+    "sku",
+    "product_name",
+    "period",
+    "qty",
+    "unit_price_orig",
+    "contract_unit_price",
+    "fx_rate",
+    "excess_cad"
+   ],
+   "rows": [
+    [
+     "VEND-SNC",
+     "Sierra Nut Co.",
+     "NUT-ALM",
+     "Almonds 1kg",
+     "2026-09",
+     "1142.0",
+     "13.4",
+     "11.96",
+     "1.3917",
+     "2288.622815999999"
+    ],
+    [
+     "VEND-SNC",
+     "Sierra Nut Co.",
+     "NUT-CAS",
+     "Cashews 1kg",
+     "2026-09",
+     "1606.0",
+     "15.3",
+     "13.66",
+     "1.3917",
+     "3665.5151280000014"
+    ],
+    [
+     "VEND-SNC",
+     "Sierra Nut Co.",
+     "NUT-PEC",
+     "Pecans 1kg",
+     "2026-09",
+     "1317.0",
+     "16.26",
+     "14.52",
+     "1.3917",
+     "3189.1918860000037"
+    ]
+   ],
+   "rowCount": 3,
+   "queryId": "37588bcd-c28e-4540-97db-6556307bf6f4",
+   "agent": "Investigator-h2"
+  },
+  {
+   "id": "E2-2",
+   "sql": "SELECT pl.vendor_id, v.vendor_name, SUM(pl.amount_cad - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period = '2026-09'\nGROUP BY pl.vendor_id, v.vendor_name\nHAVING excess_cad > 0\nORDER BY excess_cad DESC",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.vendor"
+   ],
+   "headers": [
+    "vendor_id",
+    "vendor_name",
+    "excess_cad"
+   ],
+   "rows": [
+    [
+     "VEND-SNC",
+     "Sierra Nut Co.",
+     "9143.330696"
+    ],
+    [
+     "VEND-LOI",
+     "Lakeshore Olive Imports",
+     "0.0018199999976786785"
+    ],
+    [
+     "VEND-PRV",
+     "Prairie Preserve Co.",
+     "3.637978807091713E-12"
+    ],
+    [
+     "VEND-RCK",
+     "Rockies Coffee Roasters",
+     "3.637978807091713E-12"
+    ]
+   ],
+   "rowCount": 4,
+   "queryId": "6c79763d-8c6a-4629-b1a4-775a592246c1",
+   "agent": "Investigator-h2"
+  },
+  {
+   "id": "E2-3",
+   "sql": "SELECT SUM(pl.amount_cad - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_other_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period = '2026-09'\n  AND pl.vendor_id <> 'VEND-SNC'",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.vendor"
+   ],
+   "headers": [
+    "excess_other_cad"
+   ],
+   "rows": [
+    [
+     "0.001820000004954636"
+    ]
+   ],
+   "rowCount": 1,
+   "queryId": "67f17edb-4aa6-4ad1-a3ca-d690f42bfac2",
+   "agent": "Investigator-h2"
+  },
+  {
+   "id": "E2-4",
+   "sql": "SELECT pl.vendor_id, v.vendor_name, pl.sku, p.product_name,\n       pl.period,\n       pl.qty,\n       pl.unit_price_orig,\n       pl.contract_unit_price,\n       pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nLEFT JOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period = '2026-08'\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.vendor_id, pl.sku",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.vendor",
+    "finance_usl.product"
+   ],
+   "headers": [
+    "vendor_id",
+    "vendor_name",
+    "sku",
+    "product_name",
+    "period",
+    "qty",
+    "unit_price_orig",
+    "contract_unit_price",
+    "fx_rate",
+    "excess_cad"
+   ],
+   "rows": [],
+   "rowCount": 0,
+   "queryId": "e5bfee07-2ffb-421d-99ea-a234c291dff5",
+   "agent": "Investigator-h2"
+  },
+  {
+   "id": "E3-1",
    "sql": "SELECT period, SUM(qty) AS total_qty FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period",
    "sources": [
     "finance_usl.purchase_line"
@@ -1294,11 +1438,35 @@
     ]
    ],
    "rowCount": 2,
-   "queryId": "c921a24c-331d-492a-977c-107bdbe27435",
-   "agent": "Investigator-h2"
+   "queryId": "07b4e231-4126-40bb-a662-bf14282764d4",
+   "agent": "Investigator-h3"
   },
   {
-   "id": "E2-2",
+   "id": "E3-2",
+   "sql": "SELECT period, SUM(amount_cad) AS total_amount_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "period",
+    "total_amount_cad"
+   ],
+   "rows": [
+    [
+     "2026-09",
+     "254657.02000000002"
+    ],
+    [
+     "2026-08",
+     "204733.81999999998"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "0ff4d96a-01bb-4b7e-bb74-ae1ab96c54dd",
+   "agent": "Investigator-h3"
+  },
+  {
+   "id": "E3-3",
    "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor WHERE vendor_name = 'VEND-SNC'",
    "sources": [
     "finance_usl.vendor"
@@ -1309,13 +1477,639 @@
    ],
    "rows": [],
    "rowCount": 0,
-   "queryId": "51819d5a-d3af-47f7-97d6-2f8aced8d21e",
-   "agent": "Investigator-h2"
+   "queryId": "c483caca-0256-49a1-b177-9d9f533ae49a",
+   "agent": "Investigator-h3"
   },
   {
-   "id": "E2-3",
-   "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor LIMIT 20",
+   "id": "E3-4",
+   "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor WHERE vendor_name LIKE '%SNC%'",
    "sources": [
+    "finance_usl.vendor"
+   ],
+   "headers": [
+    "vendor_id",
+    "vendor_name"
+   ],
+   "rows": [],
+   "rowCount": 0,
+   "queryId": "901109c5-ab66-4aff-87e2-2f355a3be5a9",
+   "agent": "Investigator-h3"
+  },
+  {
+   "id": "E3-5",
+   "sql": "SELECT DISTINCT vendor_id FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE sku IN ('NUT-ALM','NUT-CAS','NUT-PEC') AND period = '2026-09'",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "vendor_id"
+   ],
+   "rows": [
+    [
+     "VEND-SNC"
+    ]
+   ],
+   "rowCount": 1,
+   "queryId": "cf48b9c8-24f5-45b4-b3fc-c322de9090c0",
+   "agent": "Investigator-h3"
+  },
+  {
+   "id": "E4-1",
+   "sql": "SELECT pl.period, SUM(pl.qty * p.wholesale_price_cad) / SUM(pl.qty) AS weighted_avg_wholesale_price_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.product"
+   ],
+   "headers": [
+    "period",
+    "weighted_avg_wholesale_price_cad"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "17.508511778037224"
+    ],
+    [
+     "2026-09",
+     "17.422253841095237"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "b6c48f54-380d-438a-9ed0-635053d1000d",
+   "agent": "Investigator-h4"
+  },
+  {
+   "id": "E4-2",
+   "sql": "SELECT pl.period,\n       SUM(pl.amount_cad) AS total_amount_cad,\n       SUM(pl.qty) AS total_qty,\n       SUM(pl.amount_cad) / SUM(pl.qty) AS avg_actual_cost_per_unit_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "period",
+    "total_amount_cad",
+    "total_qty",
+    "avg_actual_cost_per_unit_cad"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "204733.81999999998",
+     "14562.0",
+     "14.059457492102732"
+    ],
+    [
+     "2026-09",
+     "254657.02000000002",
+     "16729.0",
+     "15.222489090800408"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "57a517ed-3736-476e-980b-6ce571421d1f",
+   "agent": "Investigator-h4"
+  },
+  {
+   "id": "E4-3",
+   "sql": "WITH chan AS (\n  SELECT s.period,\n         c.channel,\n         SUM(s.qty) AS total_qty,\n         SUM(s.revenue_cad) AS total_revenue,\n         SUM(s.qty * p.wholesale_price_cad) AS total_cost_wholesale\n  FROM lightning.metastore.finmozg.finance_usl.sales_line s\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON s.customer_id = c.customer_id\n  JOIN lightning.metastore.finmozg.finance_usl.product p ON s.sku = p.sku\n  WHERE s.period IN ('2026-08','2026-09')\n  GROUP BY s.period, c.channel\n),\ntotals AS (\n  SELECT period,\n         SUM(total_qty) AS period_total_qty,\n         SUM(total_revenue) AS period_total_revenue\n  FROM chan\n  GROUP BY period\n)\nSELECT chan.period,\n       chan.channel,\n       chan.total_qty,\n       chan.total_revenue,\n       chan.total_cost_wholesale,\n       (chan.total_revenue - chan.total_cost_wholesale) AS gross_margin_cad,\n       chan.total_qty * 100.0 / totals.period_total_qty AS qty_share_pct,\n       chan.total_revenue * 100.0 / totals.period_total_revenue AS revenue_share_pct\nFROM chan\nJOIN totals ON chan.period = totals.period\nORDER BY chan.period, chan.channel",
+   "sources": [
+    "finance_usl.sales_line",
+    "finance_usl.customer",
+    "finance_usl.product"
+   ],
+   "headers": [
+    "period",
+    "channel",
+    "total_qty",
+    "total_revenue",
+    "total_cost_wholesale",
+    "gross_margin_cad",
+    "qty_share_pct",
+    "revenue_share_pct"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "retail",
+     "12961.0",
+     "293696.0",
+     "229082.88000000032",
+     "64613.119999999675",
+     "89.01174369892178",
+     "91.9079358466986"
+    ],
+    [
+     "2026-08",
+     "wholesale",
+     "1600.0",
+     "25858.559999999998",
+     "25858.559999999998",
+     "0.0",
+     "10.988256301078223",
+     "8.092064153301395"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "13938.0",
+     "309190.0",
+     "241168.20000000016",
+     "68021.79999999984",
+     "83.3263585819334",
+     "86.01900090985006"
+    ],
+    [
+     "2026-09",
+     "wholesale",
+     "2789.0",
+     "50253.83999999999",
+     "50253.83999999999",
+     "0.0",
+     "16.673641418066598",
+     "13.980999090149936"
+    ]
+   ],
+   "rowCount": 4,
+   "queryId": "588affcd-5181-4669-8040-00b3c8921dc1",
+   "agent": "Investigator-h4"
+  },
+  {
+   "id": "E4-4",
+   "sql": "SELECT pl.sku,\n       SUM(CASE WHEN pl.period='2026-08' THEN pl.qty END) AS qty_aug,\n       SUM(CASE WHEN pl.period='2026-08' THEN pl.amount_cad END) AS amt_aug,\n       SUM(CASE WHEN pl.period='2026-09' THEN pl.qty END) AS qty_sep,\n       SUM(CASE WHEN pl.period='2026-09' THEN pl.amount_cad END) AS amt_sep,\n       (SUM(CASE WHEN pl.period='2026-09' THEN pl.amount_cad END) / NULLIF(SUM(CASE WHEN pl.period='2026-09' THEN pl.qty END),0)) AS avg_cost_sep,\n       (SUM(CASE WHEN pl.period='2026-08' THEN pl.amount_cad END) / NULLIF(SUM(CASE WHEN pl.period='2026-08' THEN pl.qty END),0)) AS avg_cost_aug,\n       (SUM(CASE WHEN pl.period='2026-09' THEN pl.amount_cad END) / NULLIF(SUM(CASE WHEN pl.period='2026-09' THEN pl.qty END),0)) -\n       (SUM(CASE WHEN pl.period='2026-08' THEN pl.amount_cad END) / NULLIF(SUM(CASE WHEN pl.period='2026-08' THEN pl.qty END),0)) AS avg_cost_diff\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.sku\nHAVING SUM(CASE WHEN pl.period='2026-08' THEN pl.qty END) > 0 AND SUM(CASE WHEN pl.period='2026-09' THEN pl.qty END) > 0\nORDER BY avg_cost_diff DESC\nLIMIT 10",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "sku",
+    "qty_aug",
+    "amt_aug",
+    "qty_sep",
+    "amt_sep",
+    "avg_cost_sep",
+    "avg_cost_aug",
+    "avg_cost_diff"
+   ],
+   "rows": [
+    [
+     "PKG",
+     "1.0",
+     "12051.26",
+     "2.0",
+     "24900.0",
+     "12450.0",
+     "12051.26",
+     "398.7399999999998"
+    ],
+    [
+     "NUT-PEC",
+     "1270.0",
+     "25586.06",
+     "1317.0",
+     "29802.45",
+     "22.629043280182234",
+     "20.146503937007875",
+     "2.482539343174359"
+    ],
+    [
+     "NUT-CAS",
+     "1408.0",
+     "26686.18",
+     "1606.0",
+     "34196.57",
+     "21.293007471980076",
+     "18.95325284090909",
+     "2.339754631070985"
+    ],
+    [
+     "NUT-ALM",
+     "1045.0",
+     "17341.25",
+     "1142.0",
+     "21296.91",
+     "18.648782837127847",
+     "16.5944976076555",
+     "2.0542852294723453"
+    ],
+    [
+     "OIL-ORG",
+     "1263.0",
+     "19451.78",
+     "1645.0",
+     "25411.75",
+     "15.447872340425532",
+     "15.401250989707046",
+     "0.04662135071848539"
+    ],
+    [
+     "OIL-EVO",
+     "1159.0",
+     "15100.18",
+     "1477.0",
+     "19301.53",
+     "13.068063642518618",
+     "13.02862812769629",
+     "0.03943551482232799"
+    ],
+    [
+     "OIL-FLT",
+     "1235.0",
+     "13177.3",
+     "1023.0",
+     "10948.32",
+     "10.702170087976539",
+     "10.669878542510121",
+     "0.03229154546641766"
+    ],
+    [
+     "COF-ETH",
+     "1166.0",
+     "16370.64",
+     "1555.0",
+     "21832.2",
+     "14.040000000000001",
+     "14.04",
+     "1.7763568394002505E-15"
+    ],
+    [
+     "PRS-HNY",
+     "1187.0",
+     "11110.32",
+     "1323.0",
+     "12383.28",
+     "9.360000000000001",
+     "9.36",
+     "1.7763568394002505E-15"
+    ],
+    [
+     "PRS-JAM",
+     "1039.0",
+     "7293.78",
+     "1610.0",
+     "11302.2",
+     "7.0200000000000005",
+     "7.02",
+     "8.881784197001252E-16"
+    ]
+   ],
+   "rowCount": 10,
+   "queryId": "3e65209f-b609-4177-916c-a4f696b8ae4f",
+   "agent": "Investigator-h4"
+  },
+  {
+   "id": "E4-5",
+   "sql": "WITH sku_stats AS (\n  SELECT\n    pl.sku,\n    SUM(CASE WHEN pl.period='2026-08' THEN pl.qty END) AS qty_aug,\n    SUM(CASE WHEN pl.period='2026-08' THEN pl.amount_cad END) AS amt_aug,\n    SUM(CASE WHEN pl.period='2026-09' THEN pl.qty END) AS qty_sep,\n    SUM(CASE WHEN pl.period='2026-09' THEN pl.amount_cad END) AS amt_sep\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line pl\n  WHERE pl.period IN ('2026-08','2026-09')\n  GROUP BY pl.sku\n),\ntotals AS (\n  SELECT\n    SUM(CASE WHEN period='2026-08' THEN qty END) AS total_qty_aug,\n    SUM(CASE WHEN period='2026-09' THEN qty END) AS total_qty_sep\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE period IN ('2026-08','2026-09')\n),\nsku_share AS (\n  SELECT\n    s.sku,\n    s.qty_aug,\n    s.qty_sep,\n    s.qty_aug * 1.0 / t.total_qty_aug AS share_aug,\n    s.qty_sep * 1.0 / t.total_qty_sep AS share_sep,\n    (s.amt_aug / NULLIF(s.qty_aug,0)) AS avg_cost_aug,\n    (s.amt_sep / NULLIF(s.qty_sep,0)) AS avg_cost_sep\n  FROM sku_stats s\n  CROSS JOIN totals t\n  WHERE s.qty_aug > 0 AND s.qty_sep > 0\n)\nSELECT\n  sku,\n  qty_aug,\n  qty_sep,\n  share_aug,\n  share_sep,\n  share_sep - share_aug AS share_change,\n  avg_cost_aug,\n  avg_cost_sep,\n  avg_cost_sep - avg_cost_aug AS cost_change\nFROM sku_share\nORDER BY cost_change DESC\nLIMIT 20",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "sku",
+    "qty_aug",
+    "qty_sep",
+    "share_aug",
+    "share_sep",
+    "share_change",
+    "avg_cost_aug",
+    "avg_cost_sep",
+    "cost_change"
+   ],
+   "rows": [
+    [
+     "PKG",
+     "1.0",
+     "2.0",
+     "6.867188572998215E-5",
+     "1.19552872257756E-4",
+     "5.088098652777385E-5",
+     "12051.26",
+     "12450.0",
+     "398.7399999999998"
+    ],
+    [
+     "NUT-PEC",
+     "1270.0",
+     "1317.0",
+     "0.08721329487707732",
+     "0.07872556638173232",
+     "-0.008487728495345001",
+     "20.146503937007875",
+     "22.629043280182234",
+     "2.482539343174359"
+    ],
+    [
+     "NUT-CAS",
+     "1408.0",
+     "1606.0",
+     "0.09669001510781486",
+     "0.09600095642297807",
+     "-6.890586848367908E-4",
+     "18.95325284090909",
+     "21.293007471980076",
+     "2.339754631070985"
+    ],
+    [
+     "NUT-ALM",
+     "1045.0",
+     "1142.0",
+     "0.07176212058783134",
+     "0.06826469005917866",
+     "-0.003497430528652673",
+     "16.5944976076555",
+     "18.648782837127847",
+     "2.0542852294723453"
+    ],
+    [
+     "OIL-ORG",
+     "1263.0",
+     "1645.0",
+     "0.08673259167696745",
+     "0.09833223743200431",
+     "0.011599645755036858",
+     "15.401250989707046",
+     "15.447872340425532",
+     "0.04662135071848539"
+    ],
+    [
+     "OIL-EVO",
+     "1159.0",
+     "1477.0",
+     "0.07959071556104931",
+     "0.0882897961623528",
+     "0.008699080601303491",
+     "13.02862812769629",
+     "13.068063642518618",
+     "0.03943551482232799"
+    ],
+    [
+     "OIL-FLT",
+     "1235.0",
+     "1023.0",
+     "0.08480977887652795",
+     "0.06115129415984219",
+     "-0.02365848471668576",
+     "10.669878542510121",
+     "10.702170087976539",
+     "0.03229154546641766"
+    ],
+    [
+     "COF-ETH",
+     "1166.0",
+     "1555.0",
+     "0.08007141876115918",
+     "0.09295235818040529",
+     "0.012880939419246104",
+     "14.04",
+     "14.040000000000001",
+     "1.7763568394002505E-15"
+    ],
+    [
+     "PRS-HNY",
+     "1187.0",
+     "1323.0",
+     "0.08151352836148881",
+     "0.07908422499850559",
+     "-0.0024293033629832206",
+     "9.36",
+     "9.360000000000001",
+     "1.7763568394002505E-15"
+    ],
+    [
+     "PRS-JAM",
+     "1039.0",
+     "1610.0",
+     "0.07135008927345145",
+     "0.09624006216749358",
+     "0.02488997289404213",
+     "7.02",
+     "7.0200000000000005",
+     "8.881784197001252E-16"
+    ],
+    [
+     "COF-SUM",
+     "1240.0",
+     "1190.0",
+     "0.08515313830517786",
+     "0.07113395899336482",
+     "-0.01401917931181304",
+     "11.7",
+     "11.7",
+     "0.0"
+    ],
+    [
+     "PRS-OLV",
+     "1442.0",
+     "1534.0",
+     "0.09902485922263425",
+     "0.09169705302169885",
+     "-0.0073278062009353995",
+     "8.19",
+     "8.19",
+     "0.0"
+    ],
+    [
+     "COF-COL",
+     "1107.0",
+     "1305.0",
+     "0.07601977750309023",
+     "0.07800824914818578",
+     "0.001988471645095552",
+     "12.870000000000001",
+     "12.87",
+     "-1.7763568394002505E-15"
+    ]
+   ],
+   "rowCount": 13,
+   "queryId": "03fdc1c3-180f-4a42-8a6f-fc2c4ce47284",
+   "agent": "Investigator-h4"
+  },
+  {
+   "id": "E5-1",
+   "sql": "WITH aug_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-08'\n),\nsep_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-09'\n)\nSELECT\n  SUM(pl.qty * pl.unit_price_orig * (sep_avg.fx_rate - aug_avg.fx_rate)) AS fx_effect_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nCROSS JOIN aug_avg\nCROSS JOIN sep_avg\nWHERE pl.currency = 'USD' AND pl.period = '2026-09'",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "fx_effect_cad"
+   ],
+   "rows": [
+    [
+     "425.3945639999982"
+    ]
+   ],
+   "rowCount": 1,
+   "queryId": "548d9e51-586c-47b8-a291-82772523f073",
+   "agent": "Investigator-h5"
+  },
+  {
+   "id": "E5-2",
+   "sql": "SELECT period, AVG(fx_rate) AS avg_fx_rate\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE currency = 'USD' AND period IN ('2026-08','2026-09')\nGROUP BY period\nORDER BY period",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "period",
+    "avg_fx_rate"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "1.3875"
+    ],
+    [
+     "2026-09",
+     "1.3917"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "8ea12ba9-e096-4133-9a4a-14962ac407ab",
+   "agent": "Investigator-h5"
+  },
+  {
+   "id": "E5-3",
+   "sql": "SELECT\n  period,\n  SUM(qty * unit_price_orig) AS total_usd,\n  SUM(amount_cad) AS total_cad,\n  AVG(fx_rate) AS avg_fx_rate,\n  SUM(qty) AS total_qty\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE currency = 'USD' AND period IN ('2026-08','2026-09')\nGROUP BY period\nORDER BY period",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "period",
+    "total_usd",
+    "total_cad",
+    "avg_fx_rate",
+    "total_qty"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "84571.34",
+     "117342.74999999999",
+     "1.3875",
+     "7380.0"
+    ],
+    [
+     "2026-09",
+     "101284.42",
+     "140957.53",
+     "1.3917",
+     "8210.0"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "5bd63666-73b5-47e4-a4f7-67c98cf86c2e",
+   "agent": "Investigator-h5"
+  },
+  {
+   "id": "E5-4",
+   "sql": "WITH aug_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-08'\n),\nsep_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-09'\n)\nSELECT\n  pl.vendor_id,\n  v.vendor_name,\n  SUM(pl.qty * pl.unit_price_orig * (sep_avg.fx_rate - aug_avg.fx_rate)) AS fx_effect_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nCROSS JOIN aug_avg\nCROSS JOIN sep_avg\nWHERE pl.currency = 'USD' AND pl.period = '2026-09'\nGROUP BY pl.vendor_id, v.vendor_name\nORDER BY fx_effect_cad DESC\nLIMIT 5",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.vendor"
+   ],
+   "headers": [
+    "vendor_id",
+    "vendor_name",
+    "fx_effect_cad"
+   ],
+   "rows": [
+    [
+     "VEND-SNC",
+     "Sierra Nut Co.",
+     "257.4138839999989"
+    ],
+    [
+     "VEND-LOI",
+     "Lakeshore Olive Imports",
+     "167.98067999999927"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "ab9310e8-d461-4924-8789-54a6c069f0a4",
+   "agent": "Investigator-h5"
+  },
+  {
+   "id": "E6-1",
+   "sql": "SELECT vendor_invoice_no, COUNT(DISTINCT ap_doc_id) AS doc_count\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill\nWHERE period = '2026-09'\nGROUP BY vendor_invoice_no\nHAVING COUNT(DISTINCT ap_doc_id) > 1",
+   "sources": [
+    "finance_usl.vendor_bill"
+   ],
+   "headers": [
+    "vendor_invoice_no",
+    "doc_count"
+   ],
+   "rows": [
+    [
+     "MRP-88213",
+     "2"
+    ]
+   ],
+   "rowCount": 1,
+   "queryId": "01cbcf6f-e773-4747-a810-67ba54f4034b",
+   "agent": "Investigator-h6"
+  },
+  {
+   "id": "E6-2",
+   "sql": "SELECT vendor_invoice_no, COUNT(*) AS payment_cnt\nFROM lightning.metastore.finmozg.finance_usl.vendor_payment\nWHERE vendor_invoice_no = 'MRP-88213'\nGROUP BY vendor_invoice_no",
+   "sources": [
+    "finance_usl.vendor_payment"
+   ],
+   "headers": [
+    "vendor_invoice_no",
+    "payment_cnt"
+   ],
+   "rows": [
+    [
+     "MRP-88213",
+     "1"
+    ]
+   ],
+   "rowCount": 1,
+   "queryId": "9dc688b8-eff6-4cdc-847a-befef64c45c3",
+   "agent": "Investigator-h6"
+  },
+  {
+   "id": "E6-3",
+   "sql": "SELECT vendor_invoice_no, ap_doc_id, invoice_date, period, currency, amount_orig, fx_rate, amount_cad\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill\nWHERE vendor_invoice_no = 'MRP-88213' AND period = '2026-09'\nORDER BY ap_doc_id",
+   "sources": [
+    "finance_usl.vendor_bill"
+   ],
+   "headers": [
+    "vendor_invoice_no",
+    "ap_doc_id",
+    "invoice_date",
+    "period",
+    "currency",
+    "amount_orig",
+    "fx_rate",
+    "amount_cad"
+   ],
+   "rows": [
+    [
+     "MRP-88213",
+     "AP-00030",
+     "2026-09-15",
+     "2026-09",
+     "CAD",
+     "12450.0",
+     "1.0",
+     "12450.0"
+    ],
+    [
+     "MRP-88213",
+     "AP-00031",
+     "2026-09-15",
+     "2026-09",
+     "CAD",
+     "12450.0",
+     "1.0",
+     "12450.0"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "e0d66960-9adc-4830-a114-2494498fec5f",
+   "agent": "Investigator-h6"
+  },
+  {
+   "id": "E6-4",
+   "sql": "SELECT vb.vendor_id, v.vendor_name\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill vb\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON vb.vendor_id = v.vendor_id\nWHERE vb.vendor_invoice_no = 'MRP-88213'\nLIMIT 1",
+   "sources": [
+    "finance_usl.vendor_bill",
     "finance_usl.vendor"
    ],
    "headers": [
@@ -1324,37 +2118,101 @@
    ],
    "rows": [
     [
-     "VEND-SNC",
-     "Sierra Nut Co."
-    ],
-    [
-     "VEND-LOI",
-     "Lakeshore Olive Imports"
-    ],
-    [
      "VEND-MRP",
      "Maple Ridge Packaging"
-    ],
-    [
-     "VEND-PRV",
-     "Prairie Preserve Co."
-    ],
-    [
-     "VEND-RCK",
-     "Rockies Coffee Roasters"
-    ],
-    [
-     "VEND-OTW",
-     "Ottawa Dry Goods"
     ]
    ],
-   "rowCount": 6,
-   "queryId": "3c35cc63-7f75-4ee2-9aba-0502dfff654b",
-   "agent": "Investigator-h2"
+   "rowCount": 1,
+   "queryId": "18542fa8-2c10-4035-8f2d-164157d4a78a",
+   "agent": "Investigator-h6"
   },
   {
-   "id": "E2-4",
-   "sql": "SELECT vendor_id, sku, period, SUM(qty) as qty FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY vendor_id, sku, period ORDER BY vendor_id, sku, period",
+   "id": "E7-1",
+   "sql": "SELECT account_code, account_name, period, amount_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex'\nAND period IN ('2026-08','2026-09')\nORDER BY account_code, period",
+   "sources": [
+    "finance_usl.gl_balance"
+   ],
+   "headers": [
+    "account_code",
+    "account_name",
+    "period",
+    "amount_cad"
+   ],
+   "rows": [
+    [
+     "6100",
+     "Marketing expense",
+     "2026-08",
+     "8004.08"
+    ],
+    [
+     "6100",
+     "Marketing expense",
+     "2026-09",
+     "42000.0"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "ca967e5c-37bf-44dc-a0ee-2539999b316a",
+   "agent": "Investigator-h7"
+  },
+  {
+   "id": "E7-2",
+   "sql": "SELECT period, SUM(amount_cad) AS total_opex_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex'\nAND period IN ('2026-08','2026-09')\nGROUP BY period\nORDER BY period",
+   "sources": [
+    "finance_usl.gl_balance"
+   ],
+   "headers": [
+    "period",
+    "total_opex_cad"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "8004.08"
+    ],
+    [
+     "2026-09",
+     "42000.0"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "8599f896-04b5-4cee-81f7-8e0a494fa8d1",
+   "agent": "Investigator-h7"
+  },
+  {
+   "id": "E7-3",
+   "sql": "SELECT account_code, account_name, period, amount_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex'\nAND period IN ('2026-08','2026-09')\nORDER BY account_code, period",
+   "sources": [
+    "finance_usl.gl_balance"
+   ],
+   "headers": [
+    "account_code",
+    "account_name",
+    "period",
+    "amount_cad"
+   ],
+   "rows": [
+    [
+     "6100",
+     "Marketing expense",
+     "2026-08",
+     "8004.08"
+    ],
+    [
+     "6100",
+     "Marketing expense",
+     "2026-09",
+     "42000.0"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "d16ac94b-34d3-486d-9281-5b13e86d2c73",
+   "agent": "Investigator-h7"
+  },
+  {
+   "id": "E2-5",
+   "sql": "SELECT pl.vendor_id, pl.sku, pl.period,\n       pl.unit_price_orig, pl.contract_unit_price,\n       pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\n  AND pl.unit_price_orig > pl.contract_unit_price\nORDER BY pl.vendor_id, pl.sku, pl.period",
    "sources": [
     "finance_usl.purchase_line"
    ],
@@ -1362,209 +2220,274 @@
     "vendor_id",
     "sku",
     "period",
-    "qty"
+    "unit_price_orig",
+    "contract_unit_price",
+    "qty",
+    "fx_rate",
+    "excess_cad"
    ],
    "rows": [
     [
-     "VEND-LOI",
-     "OIL-EVO",
-     "2026-08",
-     "1159.0"
-    ],
-    [
-     "VEND-LOI",
-     "OIL-EVO",
-     "2026-09",
-     "1477.0"
-    ],
-    [
-     "VEND-LOI",
-     "OIL-FLT",
-     "2026-08",
-     "1235.0"
-    ],
-    [
-     "VEND-LOI",
-     "OIL-FLT",
-     "2026-09",
-     "1023.0"
-    ],
-    [
-     "VEND-LOI",
-     "OIL-ORG",
-     "2026-08",
-     "1263.0"
-    ],
-    [
-     "VEND-LOI",
-     "OIL-ORG",
-     "2026-09",
-     "1645.0"
-    ],
-    [
-     "VEND-MRP",
-     "PKG",
-     "2026-08",
-     "1.0"
-    ],
-    [
-     "VEND-MRP",
-     "PKG",
-     "2026-09",
-     "2.0"
-    ],
-    [
-     "VEND-PRV",
-     "PRS-HNY",
-     "2026-08",
-     "1187.0"
-    ],
-    [
-     "VEND-PRV",
-     "PRS-HNY",
-     "2026-09",
-     "1323.0"
-    ],
-    [
-     "VEND-PRV",
-     "PRS-JAM",
-     "2026-08",
-     "1039.0"
-    ],
-    [
-     "VEND-PRV",
-     "PRS-JAM",
-     "2026-09",
-     "1610.0"
-    ],
-    [
-     "VEND-PRV",
-     "PRS-OLV",
-     "2026-08",
-     "1442.0"
-    ],
-    [
-     "VEND-PRV",
-     "PRS-OLV",
-     "2026-09",
-     "1534.0"
-    ],
-    [
-     "VEND-RCK",
-     "COF-COL",
-     "2026-08",
-     "1107.0"
-    ],
-    [
-     "VEND-RCK",
-     "COF-COL",
-     "2026-09",
-     "1305.0"
-    ],
-    [
-     "VEND-RCK",
-     "COF-ETH",
-     "2026-08",
-     "1166.0"
-    ],
-    [
-     "VEND-RCK",
-     "COF-ETH",
-     "2026-09",
-     "1555.0"
-    ],
-    [
-     "VEND-RCK",
-     "COF-SUM",
-     "2026-08",
-     "1240.0"
-    ],
-    [
-     "VEND-RCK",
-     "COF-SUM",
-     "2026-09",
-     "1190.0"
-    ],
-    [
-     "VEND-SNC",
-     "NUT-ALM",
-     "2026-08",
-     "1045.0"
-    ],
-    [
      "VEND-SNC",
      "NUT-ALM",
      "2026-09",
-     "1142.0"
-    ],
-    [
-     "VEND-SNC",
-     "NUT-CAS",
-     "2026-08",
-     "1408.0"
+     "13.4",
+     "11.96",
+     "1142.0",
+     "1.3917",
+     "2288.622815999999"
     ],
     [
      "VEND-SNC",
      "NUT-CAS",
      "2026-09",
-     "1606.0"
-    ],
-    [
-     "VEND-SNC",
-     "NUT-PEC",
-     "2026-08",
-     "1270.0"
+     "15.3",
+     "13.66",
+     "1606.0",
+     "1.3917",
+     "3665.5151280000014"
     ],
     [
      "VEND-SNC",
      "NUT-PEC",
      "2026-09",
-     "1317.0"
+     "16.26",
+     "14.52",
+     "1317.0",
+     "1.3917",
+     "3189.1918860000037"
     ]
    ],
-   "rowCount": 26,
-   "queryId": "402673e4-b40e-488d-8159-f30bf82b4b57",
+   "rowCount": 3,
+   "queryId": "e886871f-6ac1-44a4-a098-7bbfc0d65b81",
    "agent": "Investigator-h2"
   },
   {
-   "id": "E2-5",
-   "sql": "SELECT vendor_id,\n       SUM(CASE WHEN period='2026-09' THEN qty ELSE 0 END) -\n       SUM(CASE WHEN period='2026-08' THEN qty ELSE 0 END) AS delta_qty\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE period IN ('2026-08','2026-09')\nGROUP BY vendor_id\nORDER BY delta_qty DESC",
+   "id": "E2-6",
+   "sql": "SELECT pl.vendor_id, v.vendor_name, SUM(pl.amount_cad - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period = '2026-09'\nGROUP BY pl.vendor_id, v.vendor_name\nHAVING excess_cad > 0\nORDER BY excess_cad DESC",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.vendor"
+   ],
+   "headers": [
+    "vendor_id",
+    "vendor_name",
+    "excess_cad"
+   ],
+   "rows": [
+    [
+     "VEND-SNC",
+     "Sierra Nut Co.",
+     "9143.330696"
+    ],
+    [
+     "VEND-LOI",
+     "Lakeshore Olive Imports",
+     "0.0018199999976786785"
+    ],
+    [
+     "VEND-PRV",
+     "Prairie Preserve Co.",
+     "3.637978807091713E-12"
+    ],
+    [
+     "VEND-RCK",
+     "Rockies Coffee Roasters",
+     "3.637978807091713E-12"
+    ]
+   ],
+   "rowCount": 4,
+   "queryId": "a5cd45f9-1d47-411a-840a-149e29507a22",
+   "agent": "Investigator-h2"
+  },
+  {
+   "id": "E2-7",
+   "sql": "SELECT pl.period,\n       pl.vendor_id,\n       v.vendor_name,\n       SUM(pl.amount_cad - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period, pl.vendor_id, v.vendor_name\nHAVING excess_cad > 0.01\nORDER BY pl.period, excess_cad DESC",
+   "sources": [
+    "finance_usl.purchase_line",
+    "finance_usl.vendor"
+   ],
+   "headers": [
+    "period",
+    "vendor_id",
+    "vendor_name",
+    "excess_cad"
+   ],
+   "rows": [
+    [
+     "2026-09",
+     "VEND-SNC",
+     "Sierra Nut Co.",
+     "9143.330696"
+    ]
+   ],
+   "rowCount": 1,
+   "queryId": "410823c5-e662-42e1-b90e-def484876408",
+   "agent": "Investigator-h2"
+  },
+  {
+   "id": "E2-8",
+   "sql": "SELECT pl.vendor_id, pl.sku,\n       pl.unit_price_orig, pl.contract_unit_price,\n       pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.vendor_id = 'VEND-SNC'\n  AND pl.period = '2026-09'\nORDER BY pl.sku",
    "sources": [
     "finance_usl.purchase_line"
    ],
    "headers": [
     "vendor_id",
-    "delta_qty"
+    "sku",
+    "unit_price_orig",
+    "contract_unit_price",
+    "qty",
+    "fx_rate",
+    "excess_cad"
    ],
    "rows": [
     [
-     "VEND-PRV",
-     "799.0"
-    ],
-    [
-     "VEND-RCK",
-     "537.0"
-    ],
-    [
-     "VEND-LOI",
-     "488.0"
+     "VEND-SNC",
+     "NUT-ALM",
+     "13.4",
+     "11.96",
+     "1142.0",
+     "1.3917",
+     "2288.622815999999"
     ],
     [
      "VEND-SNC",
-     "342.0"
+     "NUT-CAS",
+     "15.3",
+     "13.66",
+     "1606.0",
+     "1.3917",
+     "3665.5151280000014"
     ],
     [
-     "VEND-MRP",
-     "1.0"
+     "VEND-SNC",
+     "NUT-PEC",
+     "16.26",
+     "14.52",
+     "1317.0",
+     "1.3917",
+     "3189.1918860000037"
     ]
    ],
-   "rowCount": 5,
-   "queryId": "5010a7e8-f2c3-4538-bd68-69810a0cf1f5",
+   "rowCount": 3,
+   "queryId": "fa059fe3-b6f0-4797-8cd0-2470d767b68d",
    "agent": "Investigator-h2"
   },
   {
-   "id": "E3-1",
-   "sql": "SELECT sl.period, c.channel, SUM(sl.qty) AS qty, SUM(sl.revenue_cad) AS revenue\nFROM lightning.metastore.finmozg.finance_usl.sales_line sl\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\nWHERE sl.period IN ('2026-08','2026-09')\nGROUP BY sl.period, c.channel\nORDER BY sl.period, c.channel",
+   "id": "E3-6",
+   "sql": "SELECT period, SUM(qty) AS total_qty FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "period",
+    "total_qty"
+   ],
+   "rows": [
+    [
+     "2026-09",
+     "16729.0"
+    ],
+    [
+     "2026-08",
+     "14562.0"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "6826db28-bdc3-4387-9acb-a11082399a65",
+   "agent": "Investigator-h3"
+  },
+  {
+   "id": "E3-7",
+   "sql": "SELECT period, SUM(qty) AS total_qty, SUM(amount_cad) AS total_cost_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09') GROUP BY period",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "period",
+    "total_qty",
+    "total_cost_cad"
+   ],
+   "rows": [
+    [
+     "2026-09",
+     "16729.0",
+     "254657.02000000002"
+    ],
+    [
+     "2026-08",
+     "14562.0",
+     "204733.81999999998"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "ace4fbb9-ae6a-4729-a306-f4e7a7ea9987",
+   "agent": "Investigator-h3"
+  },
+  {
+   "id": "E3-8",
+   "sql": "WITH agg AS (\n SELECT period, SUM(qty) AS total_qty, SUM(amount_cad) AS total_cost\n FROM lightning.metastore.finmozg.finance_usl.purchase_line\n WHERE period IN ('2026-08','2026-09')\n GROUP BY period\n)\nSELECT\n a1.period AS aug_period, a1.total_qty AS aug_qty, a1.total_cost AS aug_cost,\n a2.period AS sep_period, a2.total_qty AS sep_qty, a2.total_cost AS sep_cost,\n (a2.total_qty - a1.total_qty) AS qty_change,\n (a2.total_qty - a1.total_qty) * (a1.total_cost / a1.total_qty) AS volume_effect,\n a2.total_qty * ((a2.total_cost / a2.total_qty) - (a1.total_cost / a1.total_qty)) AS price_effect\nFROM agg a1, agg a2\nWHERE a1.period = '2026-08' AND a2.period = '2026-09'",
+   "sources": [
+    "finance_usl.purchase_line"
+   ],
+   "headers": [
+    "aug_period",
+    "aug_qty",
+    "aug_cost",
+    "sep_period",
+    "sep_qty",
+    "sep_cost",
+    "qty_change",
+    "volume_effect",
+    "price_effect"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "14562.0",
+     "204733.81999999998",
+     "2026-09",
+     "16729.0",
+     "254657.02000000002",
+     "2167.0",
+     "30466.84438538662",
+     "19456.35561461343"
+    ]
+   ],
+   "rowCount": 1,
+   "queryId": "668e9a7d-9455-4794-83a0-507e3631d9b3",
+   "agent": "Investigator-h3"
+  },
+  {
+   "id": "E3-9",
+   "sql": "SELECT period, SUM(qty) AS total_qty_sold, SUM(revenue_cad) AS total_revenue FROM lightning.metastore.finmozg.finance_usl.sales_line WHERE period IN ('2026-08','2026-09') GROUP BY period",
+   "sources": [
+    "finance_usl.sales_line"
+   ],
+   "headers": [
+    "period",
+    "total_qty_sold",
+    "total_revenue"
+   ],
+   "rows": [
+    [
+     "2026-09",
+     "16727.0",
+     "359443.84000000014"
+    ],
+    [
+     "2026-08",
+     "14561.0",
+     "319554.56000000006"
+    ]
+   ],
+   "rowCount": 2,
+   "queryId": "cfdfff0d-fc91-44b5-bed9-db844f4a3b58",
+   "agent": "Investigator-h3"
+  },
+  {
+   "id": "E3-10",
+   "sql": "SELECT s.period, c.channel, SUM(s.qty) AS total_qty, SUM(s.revenue_cad) AS total_revenue\nFROM lightning.metastore.finmozg.finance_usl.sales_line s\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON s.customer_id = c.customer_id\nWHERE s.period IN ('2026-08','2026-09')\nGROUP BY s.period, c.channel\nORDER BY s.period, c.channel",
    "sources": [
     "finance_usl.sales_line",
     "finance_usl.customer"
@@ -1572,8 +2495,8 @@
    "headers": [
     "period",
     "channel",
-    "qty",
-    "revenue"
+    "total_qty",
+    "total_revenue"
    ],
    "rows": [
     [
@@ -1602,882 +2525,11 @@
     ]
    ],
    "rowCount": 4,
-   "queryId": "fb46b9fc-9f68-48dc-b1dd-f8bc9be3e100",
+   "queryId": "bb2938ef-407e-4de6-b806-cb8d7ac68161",
    "agent": "Investigator-h3"
   },
   {
-   "id": "E3-2",
-   "sql": "SELECT sl.period, c.customer_id, c.customer_name, c.channel,\n       SUM(sl.qty) AS qty,\n       SUM(sl.revenue_cad) AS revenue,\n       SUM(sl.qty * p.wholesale_price_cad) AS wholesale_cost\nFROM lightning.metastore.finmozg.finance_usl.sales_line sl\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\nJOIN lightning.metastore.finmozg.finance_usl.product p ON sl.sku = p.sku\nWHERE sl.period IN ('2026-08','2026-09')\nGROUP BY sl.period, c.customer_id, c.customer_name, c.channel\nORDER BY sl.period, qty DESC",
-   "sources": [
-    "finance_usl.sales_line",
-    "finance_usl.customer",
-    "finance_usl.product"
-   ],
-   "headers": [
-    "period",
-    "customer_id",
-    "customer_name",
-    "channel",
-    "qty",
-    "revenue",
-    "wholesale_cost"
-   ],
-   "rows": [
-    [
-     "2026-08",
-     "CUST-W01",
-     "Capital Wholesale Grocers",
-     "wholesale",
-     "1102.0",
-     "17526.6",
-     "17526.6"
-    ],
-    [
-     "2026-08",
-     "CUST-R07",
-     "Nepean Nibbles",
-     "retail",
-     "871.0",
-     "19170.0",
-     "14952.599999999999"
-    ],
-    [
-     "2026-08",
-     "CUST-R03",
-     "Westboro Cellar",
-     "retail",
-     "803.0",
-     "18600.0",
-     "14508.000000000002"
-    ],
-    [
-     "2026-08",
-     "CUST-R16",
-     "Almonte Aisle",
-     "retail",
-     "788.0",
-     "17578.0",
-     "13710.84"
-    ],
-    [
-     "2026-08",
-     "CUST-R12",
-     "Riverview Relish",
-     "retail",
-     "785.0",
-     "18780.0",
-     "14648.399999999998"
-    ],
-    [
-     "2026-08",
-     "CUST-R09",
-     "Centretown Cravings",
-     "retail",
-     "780.0",
-     "17734.0",
-     "13832.519999999997"
-    ],
-    [
-     "2026-08",
-     "CUST-R05",
-     "Barrhaven Bites",
-     "retail",
-     "749.0",
-     "16270.0",
-     "12690.6"
-    ],
-    [
-     "2026-08",
-     "CUST-R01",
-     "Byward Market Pantry",
-     "retail",
-     "732.0",
-     "16618.0",
-     "12962.039999999999"
-    ],
-    [
-     "2026-08",
-     "CUST-R06",
-     "Orleans Olive Bar",
-     "retail",
-     "724.0",
-     "15976.0",
-     "12461.279999999997"
-    ],
-    [
-     "2026-08",
-     "CUST-R13",
-     "Stittsville Staples",
-     "retail",
-     "719.0",
-     "15838.0",
-     "12353.640000000001"
-    ],
-    [
-     "2026-08",
-     "CUST-R08",
-     "Hintonburg Hearth",
-     "retail",
-     "719.0",
-     "15302.0",
-     "11935.560000000001"
-    ],
-    [
-     "2026-08",
-     "CUST-R17",
-     "Perth Pantry",
-     "retail",
-     "709.0",
-     "16918.0",
-     "13196.039999999997"
-    ],
-    [
-     "2026-08",
-     "CUST-R04",
-     "Kanata Kitchen Co.",
-     "retail",
-     "708.0",
-     "16726.0",
-     "13046.280000000002"
-    ],
-    [
-     "2026-08",
-     "CUST-R15",
-     "Carleton Place Cupboard",
-     "retail",
-     "693.0",
-     "15524.0",
-     "12108.72"
-    ],
-    [
-     "2026-08",
-     "CUST-R14",
-     "Manotick Mercantile",
-     "retail",
-     "680.0",
-     "16606.0",
-     "12952.680000000004"
-    ],
-    [
-     "2026-08",
-     "CUST-R02",
-     "Glebe Specialty Foods",
-     "retail",
-     "669.0",
-     "14992.0",
-     "11693.760000000004"
-    ],
-    [
-     "2026-08",
-     "CUST-R18",
-     "Smiths Falls Select",
-     "retail",
-     "646.0",
-     "15030.0",
-     "11723.400000000003"
-    ],
-    [
-     "2026-08",
-     "CUST-R11",
-     "Vanier Village Grocer",
-     "retail",
-     "615.0",
-     "13164.0",
-     "10267.919999999998"
-    ],
-    [
-     "2026-08",
-     "CUST-R10",
-     "Sandy Hill Spices",
-     "retail",
-     "571.0",
-     "12870.0",
-     "10038.6"
-    ],
-    [
-     "2026-08",
-     "CUST-W02",
-     "Laurentian Foodservice Dist.",
-     "wholesale",
-     "292.0",
-     "4570.8",
-     "4570.799999999999"
-    ],
-    [
-     "2026-08",
-     "CUST-W03",
-     "Ottawa Valley Distributors",
-     "wholesale",
-     "206.0",
-     "3761.16",
-     "3761.16"
-    ],
-    [
-     "2026-09",
-     "CUST-W01",
-     "Capital Wholesale Grocers",
-     "wholesale",
-     "2353.0",
-     "42505.31999999999",
-     "42505.32"
-    ],
-    [
-     "2026-09",
-     "CUST-R11",
-     "Vanier Village Grocer",
-     "retail",
-     "934.0",
-     "22508.0",
-     "17556.239999999998"
-    ],
-    [
-     "2026-09",
-     "CUST-R07",
-     "Nepean Nibbles",
-     "retail",
-     "916.0",
-     "19910.0",
-     "15529.8"
-    ],
-    [
-     "2026-09",
-     "CUST-R17",
-     "Perth Pantry",
-     "retail",
-     "866.0",
-     "18644.0",
-     "14542.32"
-    ],
-    [
-     "2026-09",
-     "CUST-R04",
-     "Kanata Kitchen Co.",
-     "retail",
-     "841.0",
-     "18952.0",
-     "14782.56"
-    ],
-    [
-     "2026-09",
-     "CUST-R08",
-     "Hintonburg Hearth",
-     "retail",
-     "841.0",
-     "17992.0",
-     "14033.759999999998"
-    ],
-    [
-     "2026-09",
-     "CUST-R12",
-     "Riverview Relish",
-     "retail",
-     "826.0",
-     "18618.0",
-     "14522.04"
-    ],
-    [
-     "2026-09",
-     "CUST-R14",
-     "Manotick Mercantile",
-     "retail",
-     "799.0",
-     "17908.0",
-     "13968.239999999996"
-    ],
-    [
-     "2026-09",
-     "CUST-R15",
-     "Carleton Place Cupboard",
-     "retail",
-     "795.0",
-     "17870.0",
-     "13938.600000000002"
-    ],
-    [
-     "2026-09",
-     "CUST-R10",
-     "Sandy Hill Spices",
-     "retail",
-     "794.0",
-     "16878.0",
-     "13164.840000000004"
-    ],
-    [
-     "2026-09",
-     "CUST-R01",
-     "Byward Market Pantry",
-     "retail",
-     "761.0",
-     "16176.0",
-     "12617.279999999995"
-    ],
-    [
-     "2026-09",
-     "CUST-R05",
-     "Barrhaven Bites",
-     "retail",
-     "759.0",
-     "17012.0",
-     "13269.359999999999"
-    ],
-    [
-     "2026-09",
-     "CUST-R13",
-     "Stittsville Staples",
-     "retail",
-     "758.0",
-     "18416.0",
-     "14364.48"
-    ],
-    [
-     "2026-09",
-     "CUST-R03",
-     "Westboro Cellar",
-     "retail",
-     "738.0",
-     "15828.0",
-     "12345.840000000004"
-    ],
-    [
-     "2026-09",
-     "CUST-R09",
-     "Centretown Cravings",
-     "retail",
-     "723.0",
-     "15660.0",
-     "12214.8"
-    ],
-    [
-     "2026-09",
-     "CUST-R02",
-     "Glebe Specialty Foods",
-     "retail",
-     "700.0",
-     "14506.0",
-     "11314.680000000002"
-    ],
-    [
-     "2026-09",
-     "CUST-R06",
-     "Orleans Olive Bar",
-     "retail",
-     "638.0",
-     "14382.0",
-     "11217.959999999997"
-    ],
-    [
-     "2026-09",
-     "CUST-R18",
-     "Smiths Falls Select",
-     "retail",
-     "634.0",
-     "14078.0",
-     "10980.839999999998"
-    ],
-    [
-     "2026-09",
-     "CUST-R16",
-     "Almonte Aisle",
-     "retail",
-     "615.0",
-     "13852.0",
-     "10804.560000000001"
-    ],
-    [
-     "2026-09",
-     "CUST-W02",
-     "Laurentian Foodservice Dist.",
-     "wholesale",
-     "227.0",
-     "4358.639999999999",
-     "4358.639999999999"
-    ],
-    [
-     "2026-09",
-     "CUST-W03",
-     "Ottawa Valley Distributors",
-     "wholesale",
-     "209.0",
-     "3389.88",
-     "3389.88"
-    ]
-   ],
-   "rowCount": 42,
-   "queryId": "f51e4a0c-84e4-4025-8475-2b00048643c9",
-   "agent": "Investigator-h3"
-  },
-  {
-   "id": "E3-3",
-   "sql": "SELECT pl.period, SUM(pl.qty * p.wholesale_price_cad) / SUM(pl.qty) AS weighted_avg_wholesale_price_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period",
-   "sources": [
-    "finance_usl.purchase_line",
-    "finance_usl.product"
-   ],
-   "headers": [
-    "period",
-    "weighted_avg_wholesale_price_cad"
-   ],
-   "rows": [
-    [
-     "2026-09",
-     "17.422253841095237"
-    ],
-    [
-     "2026-08",
-     "17.508511778037224"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "c886466f-341c-48e8-9223-ff7dfcd64e00",
-   "agent": "Investigator-h3"
-  },
-  {
-   "id": "E3-4",
-   "sql": "SELECT pl.period, SUM(pl.amount_cad) AS total_cost_cad, SUM(pl.qty) AS total_qty, SUM(pl.amount_cad)/SUM(pl.qty) AS avg_unit_cost_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
-   "sources": [
-    "finance_usl.purchase_line"
-   ],
-   "headers": [
-    "period",
-    "total_cost_cad",
-    "total_qty",
-    "avg_unit_cost_cad"
-   ],
-   "rows": [
-    [
-     "2026-08",
-     "204733.81999999998",
-     "14562.0",
-     "14.059457492102732"
-    ],
-    [
-     "2026-09",
-     "254657.02000000002",
-     "16729.0",
-     "15.222489090800408"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "135340f7-1ead-4fea-a789-97a8d379f746",
-   "agent": "Investigator-h3"
-  },
-  {
-   "id": "E3-5",
-   "sql": "SELECT pl.period, \n       SUM(pl.qty * pl.contract_unit_price) / SUM(pl.qty) AS weighted_avg_contract_price_cad,\n       SUM(pl.amount_cad) / SUM(pl.qty) AS avg_actual_cost_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
-   "sources": [
-    "finance_usl.purchase_line"
-   ],
-   "headers": [
-    "period",
-    "weighted_avg_contract_price_cad",
-    "avg_actual_cost_cad"
-   ],
-   "rows": [
-    [
-     "2026-08",
-     "10.981400219750034",
-     "14.059457492102732"
-    ],
-    [
-     "2026-09",
-     "10.969813497519278",
-     "15.222489090800408"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "3f0b1bf7-c1bf-4afc-a080-86ef8a4ecd1b",
-   "agent": "Investigator-h3"
-  },
-  {
-   "id": "E4-1",
-   "sql": "SELECT pl.period, AVG(pl.fx_rate) AS avg_fx_rate FROM lightning.metastore.finmozg.finance_usl.purchase_line pl WHERE pl.currency = 'USD' AND pl.period IN ('2026-08','2026-09') GROUP BY pl.period",
-   "sources": [
-    "finance_usl.purchase_line"
-   ],
-   "headers": [
-    "period",
-    "avg_fx_rate"
-   ],
-   "rows": [
-    [
-     "2026-09",
-     "1.3917"
-    ],
-    [
-     "2026-08",
-     "1.3875"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "27f8916f-ba7b-4ad8-b2b1-3cdef3ca249d",
-   "agent": "Investigator-h4"
-  },
-  {
-   "id": "E4-2",
-   "sql": "WITH aug_avg AS (\n    SELECT AVG(fx_rate) AS avg_fx_rate_aug\n    FROM lightning.metastore.finmozg.finance_usl.purchase_line\n    WHERE currency = 'USD' AND period = '2026-08'\n)\nSELECT\n    SUM(pl.qty * pl.unit_price_orig * (pl.fx_rate - aug_avg.avg_fx_rate_aug)) AS fx_impact_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl, aug_avg\nWHERE pl.currency = 'USD' AND pl.period = '2026-09'",
-   "sources": [
-    "finance_usl.purchase_line"
-   ],
-   "headers": [
-    "fx_impact_cad"
-   ],
-   "rows": [
-    [
-     "425.3945639999982"
-    ]
-   ],
-   "rowCount": 1,
-   "queryId": "ca545142-ef5d-41af-a670-a54045609478",
-   "agent": "Investigator-h4"
-  },
-  {
-   "id": "E5-1",
-   "sql": "SELECT vb.vendor_invoice_no, COUNT(*) AS invoice_cnt FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb WHERE vb.period IN ('2026-08','2026-09') GROUP BY vb.vendor_invoice_no HAVING COUNT(*) > 1",
-   "sources": [
-    "finance_usl.vendor_bill"
-   ],
-   "headers": [
-    "vendor_invoice_no",
-    "invoice_cnt"
-   ],
-   "rows": [
-    [
-     "MRP-88213",
-     "2"
-    ]
-   ],
-   "rowCount": 1,
-   "queryId": "82b66249-91f9-4e2a-8fde-a93b6c928536",
-   "agent": "Investigator-h5"
-  },
-  {
-   "id": "E5-2",
-   "sql": "SELECT vendor_invoice_no, ap_doc_id, period, currency, amount_orig, fx_rate, amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_bill WHERE vendor_invoice_no = 'MRP-88213' AND period IN ('2026-08','2026-09')",
-   "sources": [
-    "finance_usl.vendor_bill"
-   ],
-   "headers": [
-    "vendor_invoice_no",
-    "ap_doc_id",
-    "period",
-    "currency",
-    "amount_orig",
-    "fx_rate",
-    "amount_cad"
-   ],
-   "rows": [
-    [
-     "MRP-88213",
-     "AP-00031",
-     "2026-09",
-     "CAD",
-     "12450.0",
-     "1.0",
-     "12450.0"
-    ],
-    [
-     "MRP-88213",
-     "AP-00030",
-     "2026-09",
-     "CAD",
-     "12450.0",
-     "1.0",
-     "12450.0"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "4fb9bd08-3816-4517-a1bf-132827196221",
-   "agent": "Investigator-h5"
-  },
-  {
-   "id": "E5-3",
-   "sql": "SELECT txn_id, vendor_invoice_no, booking_date, period, counterparty, currency_orig, amount_orig, amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_payment WHERE vendor_invoice_no = 'MRP-88213' AND period IN ('2026-08','2026-09')",
-   "sources": [
-    "finance_usl.vendor_payment"
-   ],
-   "headers": [
-    "txn_id",
-    "vendor_invoice_no",
-    "booking_date",
-    "period",
-    "counterparty",
-    "currency_orig",
-    "amount_orig",
-    "amount_cad"
-   ],
-   "rows": [
-    [
-     "BNK-00030",
-     "MRP-88213",
-     "2026-09-25",
-     "2026-09",
-     "Maple Ridge Packaging",
-     "CAD",
-     "12450.0",
-     "12450.0"
-    ]
-   ],
-   "rowCount": 1,
-   "queryId": "b62c4d4f-7ed5-40ce-99a3-737cc2d5ea7c",
-   "agent": "Investigator-h5"
-  },
-  {
-   "id": "E5-4",
-   "sql": "SELECT pl.purchase_line_id, pl.vendor_invoice_no, pl.sku, pl.qty, pl.unit_price_orig, pl.contract_unit_price, pl.fx_rate, pl.unit_cost_cad, pl.amount_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl WHERE pl.vendor_invoice_no = 'MRP-88213' AND pl.period IN ('2026-08','2026-09')",
-   "sources": [
-    "finance_usl.purchase_line"
-   ],
-   "headers": [
-    "purchase_line_id",
-    "vendor_invoice_no",
-    "sku",
-    "qty",
-    "unit_price_orig",
-    "contract_unit_price",
-    "fx_rate",
-    "unit_cost_cad",
-    "amount_cad"
-   ],
-   "rows": [
-    [
-     "AP-00030-1",
-     "MRP-88213",
-     "PKG",
-     "1.0",
-     "12450.0",
-     "",
-     "1.0",
-     "12450.0",
-     "12450.0"
-    ],
-    [
-     "AP-00031-1",
-     "MRP-88213",
-     "PKG",
-     "1.0",
-     "12450.0",
-     "",
-     "1.0",
-     "12450.0",
-     "12450.0"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "947a80ce-ced5-4abd-a489-f18dd25f25ea",
-   "agent": "Investigator-h5"
-  },
-  {
-   "id": "E5-5",
-   "sql": "SELECT vb.vendor_id, v.vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb JOIN lightning.metastore.finmozg.finance_usl.vendor v ON vb.vendor_id = v.vendor_id WHERE vb.vendor_invoice_no = 'MRP-88213' LIMIT 1",
-   "sources": [
-    "finance_usl.vendor_bill",
-    "finance_usl.vendor"
-   ],
-   "headers": [
-    "vendor_id",
-    "vendor_name"
-   ],
-   "rows": [
-    [
-     "VEND-MRP",
-     "Maple Ridge Packaging"
-    ]
-   ],
-   "rowCount": 1,
-   "queryId": "9e359ef8-43fe-4965-9911-4204b1e940f4",
-   "agent": "Investigator-h5"
-  },
-  {
-   "id": "E6-1",
-   "sql": "SELECT account_code, account_name, period, amount_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex'\nAND period IN ('2026-08','2026-09')\nORDER BY account_code, period",
-   "sources": [
-    "finance_usl.gl_balance"
-   ],
-   "headers": [
-    "account_code",
-    "account_name",
-    "period",
-    "amount_cad"
-   ],
-   "rows": [
-    [
-     "6100",
-     "Marketing expense",
-     "2026-08",
-     "8004.08"
-    ],
-    [
-     "6100",
-     "Marketing expense",
-     "2026-09",
-     "42000.0"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "304bb788-b35b-4f0b-9632-854a0d9d43e0",
-   "agent": "Investigator-h6"
-  },
-  {
-   "id": "E6-2",
-   "sql": "SELECT account_code, account_name, period, amount_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex'\nAND period IN ('2026-08','2026-09')\nORDER BY account_code, period",
-   "sources": [
-    "finance_usl.gl_balance"
-   ],
-   "headers": [
-    "account_code",
-    "account_name",
-    "period",
-    "amount_cad"
-   ],
-   "rows": [
-    [
-     "6100",
-     "Marketing expense",
-     "2026-08",
-     "8004.08"
-    ],
-    [
-     "6100",
-     "Marketing expense",
-     "2026-09",
-     "42000.0"
-    ]
-   ],
-   "rowCount": 2,
-   "queryId": "86520b87-9041-439c-baba-eae75a390f4e",
-   "agent": "Investigator-h6"
-  },
-  {
-   "id": "E6-3",
-   "sql": "SELECT DISTINCT account_code, account_name\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_type = 'opex'",
-   "sources": [
-    "finance_usl.gl_balance"
-   ],
-   "headers": [
-    "account_code",
-    "account_name"
-   ],
-   "rows": [
-    [
-     "6100",
-     "Marketing expense"
-    ]
-   ],
-   "rowCount": 1,
-   "queryId": "9c298bcb-fb54-4ed7-844f-dd2906784d6e",
-   "agent": "Investigator-h6"
-  },
-  {
-   "id": "E7-1",
-   "sql": "SELECT pl.vendor_id, pl.period, SUM((pl.amount_cad) - (pl.qty * pl.contract_unit_price * pl.fx_rate)) AS excess_cad FROM lightning.metastore.finmozg.finance_usl.purchase_line pl JOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id WHERE v.vendor_name = 'VEND-SNC' AND pl.period IN ('2026-08','2026-09') GROUP BY pl.vendor_id, pl.period",
-   "sources": [
-    "finance_usl.purchase_line",
-    "finance_usl.vendor"
-   ],
-   "headers": [
-    "vendor_id",
-    "period",
-    "excess_cad"
-   ],
-   "rows": [],
-   "rowCount": 0,
-   "queryId": "7f3779e0-733d-4724-9428-c76ba46b6d7f",
-   "agent": "Investigator-h7"
-  },
-  {
-   "id": "E7-2",
-   "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor WHERE vendor_name LIKE '%VEND-SNC%'",
-   "sources": [
-    "finance_usl.vendor"
-   ],
-   "headers": [
-    "vendor_id",
-    "vendor_name"
-   ],
-   "rows": [],
-   "rowCount": 0,
-   "queryId": "ae9ac29d-56be-4a61-86c6-3e2b4200e311",
-   "agent": "Investigator-h7"
-  },
-  {
-   "id": "E7-3",
-   "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor WHERE vendor_name LIKE '%SNC%'",
-   "sources": [
-    "finance_usl.vendor"
-   ],
-   "headers": [
-    "vendor_id",
-    "vendor_name"
-   ],
-   "rows": [],
-   "rowCount": 0,
-   "queryId": "f34a0158-fa98-416b-877a-56d8e2d3cbfe",
-   "agent": "Investigator-h7"
-  },
-  {
-   "id": "E7-4",
-   "sql": "SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor LIMIT 20",
-   "sources": [
-    "finance_usl.vendor"
-   ],
-   "headers": [
-    "vendor_id",
-    "vendor_name"
-   ],
-   "rows": [
-    [
-     "VEND-SNC",
-     "Sierra Nut Co."
-    ],
-    [
-     "VEND-LOI",
-     "Lakeshore Olive Imports"
-    ],
-    [
-     "VEND-MRP",
-     "Maple Ridge Packaging"
-    ],
-    [
-     "VEND-PRV",
-     "Prairie Preserve Co."
-    ],
-    [
-     "VEND-RCK",
-     "Rockies Coffee Roasters"
-    ],
-    [
-     "VEND-OTW",
-     "Ottawa Dry Goods"
-    ]
-   ],
-   "rowCount": 6,
-   "queryId": "dfa6d6ec-40f5-428a-afb4-cde7d803f247",
-   "agent": "Investigator-h7"
-  },
-  {
-   "id": "E7-5",
-   "sql": "SELECT pl.vendor_id, pl.sku, pl.period, pl.unit_price_orig, pl.contract_unit_price, pl.qty, pl.fx_rate,\n       (pl.unit_price_orig - pl.contract_unit_price) * pl.qty * pl.fx_rate AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE v.vendor_name = 'VEND-SNC'\n  AND pl.sku IN ('NUT-ALM', 'NUT-CAS', 'NUT-PEC')\n  AND pl.period IN ('2026-08', '2026-09')\nORDER BY pl.period, pl.sku",
-   "sources": [
-    "finance_usl.purchase_line",
-    "finance_usl.vendor"
-   ],
-   "headers": [
-    "vendor_id",
-    "sku",
-    "period",
-    "unit_price_orig",
-    "contract_unit_price",
-    "qty",
-    "fx_rate",
-    "excess_cad"
-   ],
-   "rows": [],
-   "rowCount": 0,
-   "queryId": "8e8bb6d2-6d91-4944-81a8-79c930959197",
-   "agent": "Investigator-h7"
-  },
-  {
-   "id": "E3-6",
+   "id": "E4-6",
    "sql": "SELECT pl.period, SUM(pl.qty * p.wholesale_price_cad) / SUM(pl.qty) AS weighted_avg_wholesale_price_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
    "sources": [
     "finance_usl.purchase_line",
@@ -2498,12 +2550,12 @@
     ]
    ],
    "rowCount": 2,
-   "queryId": "06d3fef7-6aff-4a39-abd3-2bcc7df43726",
-   "agent": "Investigator-h3"
+   "queryId": "52e6844d-1183-4ea0-bcb2-8c82a3eac0e6",
+   "agent": "Investigator-h4"
   },
   {
-   "id": "E3-7",
-   "sql": "WITH slc AS (\n  SELECT\n    sl.period,\n    c.channel,\n    SUM(sl.qty) AS qty,\n    SUM(sl.revenue_cad) AS revenue\n  FROM lightning.metastore.finmozg.finance_usl.sales_line sl\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\n  WHERE sl.period IN ('2026-08','2026-09')\n  GROUP BY sl.period, c.channel\n),\ntotals AS (\n  SELECT\n    period,\n    SUM(qty) AS total_qty,\n    SUM(revenue) AS total_revenue\n  FROM slc\n  GROUP BY period\n)\nSELECT\n  s.period,\n  s.channel,\n  s.qty,\n  s.revenue,\n  t.total_qty,\n  t.total_revenue,\n  s.qty / t.total_qty AS qty_share,\n  s.revenue / t.total_revenue AS rev_share\nFROM slc s\nJOIN totals t ON s.period = t.period\nORDER BY s.period, s.channel",
+   "id": "E4-7",
+   "sql": "WITH slc AS (\n  SELECT\n    s.period,\n    c.channel,\n    c.customer_id,\n    c.customer_name,\n    SUM(s.qty) AS qty,\n    SUM(s.revenue_cad) AS revenue\n  FROM lightning.metastore.finmozg.finance_usl.sales_line s\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON s.customer_id = c.customer_id\n  WHERE s.period IN ('2026-08','2026-09')\n  GROUP BY s.period, c.channel, c.customer_id, c.customer_name\n),\ntotals AS (\n  SELECT\n    period,\n    SUM(qty) AS total_qty,\n    SUM(revenue) AS total_revenue\n  FROM slc\n  GROUP BY period\n)\nSELECT\n  slc.period,\n  slc.channel,\n  slc.customer_id,\n  slc.customer_name,\n  slc.qty,\n  slc.revenue,\n  slc.qty / t.total_qty AS qty_share,\n  slc.revenue / t.total_revenue AS revenue_share\nFROM slc\nJOIN totals t ON slc.period = t.period\nORDER BY slc.period, slc.channel, slc.customer_id",
    "sources": [
     "finance_usl.sales_line",
     "finance_usl.customer"
@@ -2511,62 +2563,485 @@
    "headers": [
     "period",
     "channel",
+    "customer_id",
+    "customer_name",
     "qty",
     "revenue",
-    "total_qty",
-    "total_revenue",
     "qty_share",
-    "rev_share"
+    "revenue_share"
+   ],
+   "rows": [
+    [
+     "2026-08",
+     "retail",
+     "CUST-R01",
+     "Byward Market Pantry",
+     "732.0",
+     "16618.0",
+     "0.05027127257743287",
+     "0.052003639065579296"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R02",
+     "Glebe Specialty Foods",
+     "669.0",
+     "14992.0",
+     "0.04594464665888332",
+     "0.0469153061060997"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R03",
+     "Westboro Cellar",
+     "803.0",
+     "18600.0",
+     "0.05514731131103633",
+     "0.05820602278371494"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R04",
+     "Kanata Kitchen Co.",
+     "708.0",
+     "16726.0",
+     "0.048623034132271134",
+     "0.05234160952045248"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R05",
+     "Barrhaven Bites",
+     "749.0",
+     "16270.0",
+     "0.05143877480942243",
+     "0.050914623155432374"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R06",
+     "Orleans Olive Bar",
+     "724.0",
+     "15976.0",
+     "0.04972185976237896",
+     "0.04999459247272204"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R07",
+     "Nepean Nibbles",
+     "871.0",
+     "19170.0",
+     "0.059817320238994574",
+     "0.059989755739990075"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R08",
+     "Hintonburg Hearth",
+     "719.0",
+     "15302.0",
+     "0.04937847675297026",
+     "0.04788540648582828"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R09",
+     "Centretown Cravings",
+     "780.0",
+     "17734.0",
+     "0.05356774946775634",
+     "0.055496000432602194"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R10",
+     "Sandy Hill Spices",
+     "571.0",
+     "12870.0",
+     "0.03921433967447291",
+     "0.04027481253905437"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R11",
+     "Vanier Village Grocer",
+     "615.0",
+     "13164.0",
+     "0.04223611015726942",
+     "0.041194843221764706"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R12",
+     "Riverview Relish",
+     "785.0",
+     "18780.0",
+     "0.05391113247716503",
+     "0.05876930687517025"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R13",
+     "Stittsville Staples",
+     "719.0",
+     "15838.0",
+     "0.04937847675297026",
+     "0.04956274133593964"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R14",
+     "Manotick Mercantile",
+     "680.0",
+     "16606.0",
+     "0.04670008927958245",
+     "0.051966086792815606"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R15",
+     "Carleton Place Cupboard",
+     "693.0",
+     "15524.0",
+     "0.04759288510404505",
+     "0.048580123531956496"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R16",
+     "Almonte Aisle",
+     "788.0",
+     "17578.0",
+     "0.054117162282810244",
+     "0.05500782088667426"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R17",
+     "Perth Pantry",
+     "709.0",
+     "16918.0",
+     "0.04869171073415288",
+     "0.05294244588467147"
+    ],
+    [
+     "2026-08",
+     "retail",
+     "CUST-R18",
+     "Smiths Falls Select",
+     "646.0",
+     "15030.0",
+     "0.04436508481560333",
+     "0.04703422163651804"
+    ],
+    [
+     "2026-08",
+     "wholesale",
+     "CUST-W01",
+     "Capital Wholesale Grocers",
+     "1102.0",
+     "17526.6",
+     "0.07568161527367626",
+     "0.05484697198500313"
+    ],
+    [
+     "2026-08",
+     "wholesale",
+     "CUST-W02",
+     "Laurentian Foodservice Dist.",
+     "292.0",
+     "4570.799999999999",
+     "0.020053567749467757",
+     "0.014303660695688399"
+    ],
+    [
+     "2026-08",
+     "wholesale",
+     "CUST-W03",
+     "Ottawa Valley Distributors",
+     "206.0",
+     "3761.1600000000003",
+     "0.014147379987638212",
+     "0.011770008852322437"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R01",
+     "Byward Market Pantry",
+     "761.0",
+     "16176.0",
+     "0.045495306988700905",
+     "0.04500285774823683"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R02",
+     "Glebe Specialty Foods",
+     "700.0",
+     "14506.0",
+     "0.04184850839959347",
+     "0.0403567912027648"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R03",
+     "Westboro Cellar",
+     "738.0",
+     "15828.0",
+     "0.044120284569857116",
+     "0.044034695378282175"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R04",
+     "Kanata Kitchen Co.",
+     "841.0",
+     "18952.0",
+     "0.050277993662940154",
+     "0.05272590010166817"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R05",
+     "Barrhaven Bites",
+     "759.0",
+     "17012.0",
+     "0.045375739821844924",
+     "0.047328673096748576"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R06",
+     "Orleans Olive Bar",
+     "638.0",
+     "14382.0",
+     "0.03814192622705805",
+     "0.040011813806574065"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R07",
+     "Nepean Nibbles",
+     "916.0",
+     "19910.0",
+     "0.05476176242003946",
+     "0.05539112869481919"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R08",
+     "Hintonburg Hearth",
+     "841.0",
+     "17992.0",
+     "0.050277993662940154",
+     "0.05005510735696569"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R09",
+     "Centretown Cravings",
+     "723.0",
+     "15660.0",
+     "0.04322353081843726",
+     "0.04356730664795924"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R10",
+     "Sandy Hill Spices",
+     "794.0",
+     "16878.0",
+     "0.047468165241824595",
+     "0.04695587494280052"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R11",
+     "Vanier Village Grocer",
+     "934.0",
+     "22508.0",
+     "0.05583786692174329",
+     "0.06261896156017029"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R12",
+     "Riverview Relish",
+     "826.0",
+     "18618.0",
+     "0.0493812399115203",
+     "0.051796686792573765"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R13",
+     "Stittsville Staples",
+     "758.0",
+     "18416.0",
+     "0.04531595623841693",
+     "0.051234707485875955"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R14",
+     "Manotick Mercantile",
+     "799.0",
+     "17908.0",
+     "0.04776708315896455",
+     "0.049821412991804225"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R15",
+     "Carleton Place Cupboard",
+     "795.0",
+     "17870.0",
+     "0.04752794882525259",
+     "0.04971569411232642"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R16",
+     "Almonte Aisle",
+     "615.0",
+     "13852.0",
+     "0.03676690380821426",
+     "0.038537313645436236"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R17",
+     "Perth Pantry",
+     "866.0",
+     "18644.0",
+     "0.051772583248639925",
+     "0.051869020762742794"
+    ],
+    [
+     "2026-09",
+     "retail",
+     "CUST-R18",
+     "Smiths Falls Select",
+     "634.0",
+     "14078.0",
+     "0.03790279189334609",
+     "0.03916606277075161"
+    ],
+    [
+     "2026-09",
+     "wholesale",
+     "CUST-W01",
+     "Capital Wholesale Grocers",
+     "2353.0",
+     "42505.32",
+     "0.14067077180606205",
+     "0.11825302111172638"
+    ],
+    [
+     "2026-09",
+     "wholesale",
+     "CUST-W02",
+     "Laurentian Foodservice Dist.",
+     "227.0",
+     "4358.64",
+     "0.013570873438153884",
+     "0.012126066759135447"
+    ],
+    [
+     "2026-09",
+     "wholesale",
+     "CUST-W03",
+     "Ottawa Valley Distributors",
+     "209.0",
+     "3389.8799999999997",
+     "0.012494768936450051",
+     "0.009430903030637552"
+    ]
+   ],
+   "rowCount": 42,
+   "queryId": "4994573a-465a-4b3d-af71-c085d3030559",
+   "agent": "Investigator-h4"
+  },
+  {
+   "id": "E4-8",
+   "sql": "SELECT\n  s.period,\n  c.channel,\n  SUM(s.qty) AS total_qty,\n  SUM(s.revenue_cad) AS total_revenue\nFROM lightning.metastore.finmozg.finance_usl.sales_line s\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON s.customer_id = c.customer_id\nWHERE s.period IN ('2026-08','2026-09')\nGROUP BY s.period, c.channel\nORDER BY s.period, c.channel",
+   "sources": [
+    "finance_usl.sales_line",
+    "finance_usl.customer"
+   ],
+   "headers": [
+    "period",
+    "channel",
+    "total_qty",
+    "total_revenue"
    ],
    "rows": [
     [
      "2026-08",
      "retail",
      "12961.0",
-     "293696.0",
-     "14561.0",
-     "319554.56",
-     "0.8901174369892177",
-     "0.9190793584669861"
+     "293696.0"
     ],
     [
      "2026-08",
      "wholesale",
      "1600.0",
-     "25858.56",
-     "14561.0",
-     "319554.56",
-     "0.10988256301078222",
-     "0.08092064153301395"
+     "25858.56"
     ],
     [
      "2026-09",
      "retail",
      "13938.0",
-     "309190.0",
-     "16727.0",
-     "359443.83999999997",
-     "0.833263585819334",
-     "0.8601900090985007"
+     "309190.0"
     ],
     [
      "2026-09",
      "wholesale",
      "2789.0",
-     "50253.83999999999",
-     "16727.0",
-     "359443.83999999997",
-     "0.16673641418066598",
-     "0.13980999090149937"
+     "50253.83999999999"
     ]
    ],
    "rowCount": 4,
-   "queryId": "f1242ded-1176-493a-8293-1ae0ec0eadfe",
-   "agent": "Investigator-h3"
+   "queryId": "dee190c5-071d-43ad-9eba-8f87a19892c3",
+   "agent": "Investigator-h4"
   },
   {
-   "id": "E3-8",
-   "sql": "WITH slc AS (\n  SELECT\n    sl.period,\n    c.customer_id,\n    c.customer_name,\n    c.channel,\n    SUM(sl.qty) AS qty,\n    SUM(sl.revenue_cad) AS revenue\n  FROM lightning.metastore.finmozg.finance_usl.sales_line sl\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\n  WHERE sl.period IN ('2026-08','2026-09')\n  GROUP BY sl.period, c.customer_id, c.customer_name, c.channel\n),\ntotals AS (\n  SELECT\n    period,\n    SUM(qty) AS total_qty,\n    SUM(revenue) AS total_revenue\n  FROM slc\n  GROUP BY period\n)\nSELECT\n  s.period,\n  s.customer_id,\n  s.customer_name,\n  s.channel,\n  s.qty,\n  s.revenue,\n  t.total_qty,\n  t.total_revenue,\n  s.qty / t.total_qty AS qty_share,\n  s.revenue / t.total_revenue AS rev_share\nFROM slc s\nJOIN totals t ON s.period = t.period\nORDER BY s.period, s.customer_id",
+   "id": "E4-9",
+   "sql": "SELECT\n  s.period,\n  c.customer_id,\n  c.customer_name,\n  SUM(s.qty) AS qty\nFROM lightning.metastore.finmozg.finance_usl.sales_line s\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON s.customer_id = c.customer_id\nWHERE c.channel = 'wholesale'\n  AND s.period IN ('2026-08','2026-09')\nGROUP BY s.period, c.customer_id, c.customer_name\nORDER BY s.period, qty DESC",
    "sources": [
     "finance_usl.sales_line",
     "finance_usl.customer"
@@ -2575,662 +3050,87 @@
     "period",
     "customer_id",
     "customer_name",
-    "channel",
-    "qty",
-    "revenue",
-    "total_qty",
-    "total_revenue",
-    "qty_share",
-    "rev_share"
-   ],
-   "rows": [
-    [
-     "2026-08",
-     "CUST-R01",
-     "Byward Market Pantry",
-     "retail",
-     "732.0",
-     "16618.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.05027127257743287",
-     "0.052003639065579296"
-    ],
-    [
-     "2026-08",
-     "CUST-R02",
-     "Glebe Specialty Foods",
-     "retail",
-     "669.0",
-     "14992.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04594464665888332",
-     "0.0469153061060997"
-    ],
-    [
-     "2026-08",
-     "CUST-R03",
-     "Westboro Cellar",
-     "retail",
-     "803.0",
-     "18600.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.05514731131103633",
-     "0.05820602278371494"
-    ],
-    [
-     "2026-08",
-     "CUST-R04",
-     "Kanata Kitchen Co.",
-     "retail",
-     "708.0",
-     "16726.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.048623034132271134",
-     "0.05234160952045248"
-    ],
-    [
-     "2026-08",
-     "CUST-R05",
-     "Barrhaven Bites",
-     "retail",
-     "749.0",
-     "16270.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.05143877480942243",
-     "0.050914623155432374"
-    ],
-    [
-     "2026-08",
-     "CUST-R06",
-     "Orleans Olive Bar",
-     "retail",
-     "724.0",
-     "15976.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04972185976237896",
-     "0.04999459247272204"
-    ],
-    [
-     "2026-08",
-     "CUST-R07",
-     "Nepean Nibbles",
-     "retail",
-     "871.0",
-     "19170.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.059817320238994574",
-     "0.059989755739990075"
-    ],
-    [
-     "2026-08",
-     "CUST-R08",
-     "Hintonburg Hearth",
-     "retail",
-     "719.0",
-     "15302.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04937847675297026",
-     "0.04788540648582828"
-    ],
-    [
-     "2026-08",
-     "CUST-R09",
-     "Centretown Cravings",
-     "retail",
-     "780.0",
-     "17734.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.05356774946775634",
-     "0.055496000432602194"
-    ],
-    [
-     "2026-08",
-     "CUST-R10",
-     "Sandy Hill Spices",
-     "retail",
-     "571.0",
-     "12870.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.03921433967447291",
-     "0.04027481253905437"
-    ],
-    [
-     "2026-08",
-     "CUST-R11",
-     "Vanier Village Grocer",
-     "retail",
-     "615.0",
-     "13164.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04223611015726942",
-     "0.041194843221764706"
-    ],
-    [
-     "2026-08",
-     "CUST-R12",
-     "Riverview Relish",
-     "retail",
-     "785.0",
-     "18780.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.05391113247716503",
-     "0.05876930687517025"
-    ],
-    [
-     "2026-08",
-     "CUST-R13",
-     "Stittsville Staples",
-     "retail",
-     "719.0",
-     "15838.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04937847675297026",
-     "0.04956274133593964"
-    ],
-    [
-     "2026-08",
-     "CUST-R14",
-     "Manotick Mercantile",
-     "retail",
-     "680.0",
-     "16606.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04670008927958245",
-     "0.051966086792815606"
-    ],
-    [
-     "2026-08",
-     "CUST-R15",
-     "Carleton Place Cupboard",
-     "retail",
-     "693.0",
-     "15524.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04759288510404505",
-     "0.048580123531956496"
-    ],
-    [
-     "2026-08",
-     "CUST-R16",
-     "Almonte Aisle",
-     "retail",
-     "788.0",
-     "17578.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.054117162282810244",
-     "0.05500782088667426"
-    ],
-    [
-     "2026-08",
-     "CUST-R17",
-     "Perth Pantry",
-     "retail",
-     "709.0",
-     "16918.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04869171073415288",
-     "0.05294244588467147"
-    ],
-    [
-     "2026-08",
-     "CUST-R18",
-     "Smiths Falls Select",
-     "retail",
-     "646.0",
-     "15030.0",
-     "14561.0",
-     "319554.55999999994",
-     "0.04436508481560333",
-     "0.04703422163651804"
-    ],
-    [
-     "2026-08",
-     "CUST-W01",
-     "Capital Wholesale Grocers",
-     "wholesale",
-     "1102.0",
-     "17526.6",
-     "14561.0",
-     "319554.55999999994",
-     "0.07568161527367626",
-     "0.05484697198500313"
-    ],
-    [
-     "2026-08",
-     "CUST-W02",
-     "Laurentian Foodservice Dist.",
-     "wholesale",
-     "292.0",
-     "4570.799999999999",
-     "14561.0",
-     "319554.55999999994",
-     "0.020053567749467757",
-     "0.014303660695688399"
-    ],
-    [
-     "2026-08",
-     "CUST-W03",
-     "Ottawa Valley Distributors",
-     "wholesale",
-     "206.0",
-     "3761.1600000000003",
-     "14561.0",
-     "319554.55999999994",
-     "0.014147379987638212",
-     "0.011770008852322437"
-    ],
-    [
-     "2026-09",
-     "CUST-R01",
-     "Byward Market Pantry",
-     "retail",
-     "761.0",
-     "16176.0",
-     "16727.0",
-     "359443.84",
-     "0.045495306988700905",
-     "0.04500285774823683"
-    ],
-    [
-     "2026-09",
-     "CUST-R02",
-     "Glebe Specialty Foods",
-     "retail",
-     "700.0",
-     "14506.0",
-     "16727.0",
-     "359443.84",
-     "0.04184850839959347",
-     "0.0403567912027648"
-    ],
-    [
-     "2026-09",
-     "CUST-R03",
-     "Westboro Cellar",
-     "retail",
-     "738.0",
-     "15828.0",
-     "16727.0",
-     "359443.84",
-     "0.044120284569857116",
-     "0.044034695378282175"
-    ],
-    [
-     "2026-09",
-     "CUST-R04",
-     "Kanata Kitchen Co.",
-     "retail",
-     "841.0",
-     "18952.0",
-     "16727.0",
-     "359443.84",
-     "0.050277993662940154",
-     "0.05272590010166817"
-    ],
-    [
-     "2026-09",
-     "CUST-R05",
-     "Barrhaven Bites",
-     "retail",
-     "759.0",
-     "17012.0",
-     "16727.0",
-     "359443.84",
-     "0.045375739821844924",
-     "0.047328673096748576"
-    ],
-    [
-     "2026-09",
-     "CUST-R06",
-     "Orleans Olive Bar",
-     "retail",
-     "638.0",
-     "14382.0",
-     "16727.0",
-     "359443.84",
-     "0.03814192622705805",
-     "0.040011813806574065"
-    ],
-    [
-     "2026-09",
-     "CUST-R07",
-     "Nepean Nibbles",
-     "retail",
-     "916.0",
-     "19910.0",
-     "16727.0",
-     "359443.84",
-     "0.05476176242003946",
-     "0.05539112869481919"
-    ],
-    [
-     "2026-09",
-     "CUST-R08",
-     "Hintonburg Hearth",
-     "retail",
-     "841.0",
-     "17992.0",
-     "16727.0",
-     "359443.84",
-     "0.050277993662940154",
-     "0.05005510735696569"
-    ],
-    [
-     "2026-09",
-     "CUST-R09",
-     "Centretown Cravings",
-     "retail",
-     "723.0",
-     "15660.0",
-     "16727.0",
-     "359443.84",
-     "0.04322353081843726",
-     "0.04356730664795924"
-    ],
-    [
-     "2026-09",
-     "CUST-R10",
-     "Sandy Hill Spices",
-     "retail",
-     "794.0",
-     "16878.0",
-     "16727.0",
-     "359443.84",
-     "0.047468165241824595",
-     "0.04695587494280052"
-    ],
-    [
-     "2026-09",
-     "CUST-R11",
-     "Vanier Village Grocer",
-     "retail",
-     "934.0",
-     "22508.0",
-     "16727.0",
-     "359443.84",
-     "0.05583786692174329",
-     "0.06261896156017029"
-    ],
-    [
-     "2026-09",
-     "CUST-R12",
-     "Riverview Relish",
-     "retail",
-     "826.0",
-     "18618.0",
-     "16727.0",
-     "359443.84",
-     "0.0493812399115203",
-     "0.051796686792573765"
-    ],
-    [
-     "2026-09",
-     "CUST-R13",
-     "Stittsville Staples",
-     "retail",
-     "758.0",
-     "18416.0",
-     "16727.0",
-     "359443.84",
-     "0.04531595623841693",
-     "0.051234707485875955"
-    ],
-    [
-     "2026-09",
-     "CUST-R14",
-     "Manotick Mercantile",
-     "retail",
-     "799.0",
-     "17908.0",
-     "16727.0",
-     "359443.84",
-     "0.04776708315896455",
-     "0.049821412991804225"
-    ],
-    [
-     "2026-09",
-     "CUST-R15",
-     "Carleton Place Cupboard",
-     "retail",
-     "795.0",
-     "17870.0",
-     "16727.0",
-     "359443.84",
-     "0.04752794882525259",
-     "0.04971569411232642"
-    ],
-    [
-     "2026-09",
-     "CUST-R16",
-     "Almonte Aisle",
-     "retail",
-     "615.0",
-     "13852.0",
-     "16727.0",
-     "359443.84",
-     "0.03676690380821426",
-     "0.038537313645436236"
-    ],
-    [
-     "2026-09",
-     "CUST-R17",
-     "Perth Pantry",
-     "retail",
-     "866.0",
-     "18644.0",
-     "16727.0",
-     "359443.84",
-     "0.051772583248639925",
-     "0.051869020762742794"
-    ],
-    [
-     "2026-09",
-     "CUST-R18",
-     "Smiths Falls Select",
-     "retail",
-     "634.0",
-     "14078.0",
-     "16727.0",
-     "359443.84",
-     "0.03790279189334609",
-     "0.03916606277075161"
-    ],
-    [
-     "2026-09",
-     "CUST-W01",
-     "Capital Wholesale Grocers",
-     "wholesale",
-     "2353.0",
-     "42505.32",
-     "16727.0",
-     "359443.84",
-     "0.14067077180606205",
-     "0.11825302111172638"
-    ],
-    [
-     "2026-09",
-     "CUST-W02",
-     "Laurentian Foodservice Dist.",
-     "wholesale",
-     "227.0",
-     "4358.64",
-     "16727.0",
-     "359443.84",
-     "0.013570873438153884",
-     "0.012126066759135447"
-    ],
-    [
-     "2026-09",
-     "CUST-W03",
-     "Ottawa Valley Distributors",
-     "wholesale",
-     "209.0",
-     "3389.8799999999997",
-     "16727.0",
-     "359443.84",
-     "0.012494768936450051",
-     "0.009430903030637552"
-    ]
-   ],
-   "rowCount": 42,
-   "queryId": "c8adf897-5bfd-4528-b891-c6492a037029",
-   "agent": "Investigator-h3"
-  },
-  {
-   "id": "E3-9",
-   "sql": "WITH slc AS (\n  SELECT\n    sl.period,\n    c.customer_id,\n    c.customer_name,\n    c.channel,\n    SUM(sl.qty) AS qty,\n    SUM(sl.revenue_cad) AS revenue\n  FROM lightning.metastore.finmozg.finance_usl.sales_line sl\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\n  WHERE sl.period IN ('2026-08','2026-09')\n    AND c.channel = 'wholesale'\n  GROUP BY sl.period, c.customer_id, c.customer_name, c.channel\n),\ntotals AS (\n  SELECT\n    period,\n    SUM(qty) AS total_qty,\n    SUM(revenue) AS total_revenue\n  FROM slc\n  GROUP BY period\n)\nSELECT\n  s.period,\n  s.customer_id,\n  s.customer_name,\n  s.channel,\n  s.qty,\n  s.revenue,\n  t.total_qty,\n  t.total_revenue,\n  s.qty / t.total_qty AS qty_share,\n  s.revenue / t.total_revenue AS rev_share\nFROM slc s\nJOIN totals t ON s.period = t.period\nORDER BY s.period, s.customer_id",
-   "sources": [
-    "finance_usl.sales_line",
-    "finance_usl.customer"
-   ],
-   "headers": [
-    "period",
-    "customer_id",
-    "customer_name",
-    "channel",
-    "qty",
-    "revenue",
-    "total_qty",
-    "total_revenue",
-    "qty_share",
-    "rev_share"
+    "qty"
    ],
    "rows": [
     [
      "2026-08",
      "CUST-W01",
      "Capital Wholesale Grocers",
-     "wholesale",
-     "1102.0",
-     "17526.6",
-     "1600.0",
-     "25858.559999999998",
-     "0.68875",
-     "0.6777871621621622"
+     "1102.0"
     ],
     [
      "2026-08",
      "CUST-W02",
      "Laurentian Foodservice Dist.",
-     "wholesale",
-     "292.0",
-     "4570.799999999999",
-     "1600.0",
-     "25858.559999999998",
-     "0.1825",
-     "0.176761583011583"
+     "292.0"
     ],
     [
      "2026-08",
      "CUST-W03",
      "Ottawa Valley Distributors",
-     "wholesale",
-     "206.0",
-     "3761.1600000000003",
-     "1600.0",
-     "25858.559999999998",
-     "0.12875",
-     "0.14545125482625484"
+     "206.0"
     ],
     [
      "2026-09",
      "CUST-W01",
      "Capital Wholesale Grocers",
-     "wholesale",
-     "2353.0",
-     "42505.32",
-     "2789.0",
-     "50253.84",
-     "0.8436715668698458",
-     "0.8458123797106849"
+     "2353.0"
     ],
     [
      "2026-09",
      "CUST-W02",
      "Laurentian Foodservice Dist.",
-     "wholesale",
-     "227.0",
-     "4358.64",
-     "2789.0",
-     "50253.84",
-     "0.08139117963427751",
-     "0.08673247656298505"
+     "227.0"
     ],
     [
      "2026-09",
      "CUST-W03",
      "Ottawa Valley Distributors",
-     "wholesale",
-     "209.0",
-     "3389.8799999999997",
-     "2789.0",
-     "50253.84",
-     "0.07493725349587665",
-     "0.06745514372633017"
+     "209.0"
     ]
    ],
    "rowCount": 6,
-   "queryId": "2a38fd98-033b-4e8e-a577-1c8169da6d38",
-   "agent": "Investigator-h3"
+   "queryId": "3a3f4cf7-3b07-4118-b515-f2e024b40725",
+   "agent": "Investigator-h4"
   },
   {
-   "id": "E3-10",
-   "sql": "SELECT pl.period,\n       SUM(pl.amount_cad)/SUM(pl.qty) AS avg_purchase_cost_per_unit_cad,\n       SUM(CASE WHEN v.vendor_name = 'VEND-SNC' AND pl.sku IN ('NUT-ALM','NUT-CAS','NUT-PEC') THEN pl.amount_cad END) /\n       NULLIF(SUM(CASE WHEN v.vendor_name = 'VEND-SNC' AND pl.sku IN ('NUT-ALM','NUT-CAS','NUT-PEC') THEN pl.qty END),0) AS vendor_sku_avg_cost\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period\nORDER BY pl.period",
+   "id": "E4-10",
+   "sql": "SELECT s.period,\nSUM(s.revenue_cad) AS revenue,\nSUM(s.qty * p.wholesale_price_cad) AS cost\nFROM lightning.metastore.finmozg.finance_usl.sales_line s\nJOIN lightning.metastore.finmozg.finance_usl.product p ON s.sku = p.sku\nWHERE s.period IN ('2026-08','2026-09')\nGROUP BY s.period\nORDER BY s.period",
    "sources": [
-    "finance_usl.purchase_line",
-    "finance_usl.vendor"
+    "finance_usl.sales_line",
+    "finance_usl.product"
    ],
    "headers": [
     "period",
-    "avg_purchase_cost_per_unit_cad",
-    "vendor_sku_avg_cost"
+    "revenue",
+    "cost"
    ],
    "rows": [
     [
      "2026-08",
-     "14.059457492102734",
-     ""
+     "319554.56000000006",
+     "254941.4400000002"
     ],
     [
      "2026-09",
-     "15.222489090800408",
-     ""
+     "359443.84",
+     "291422.03999999986"
     ]
    ],
    "rowCount": 2,
-   "queryId": "cade4baa-8305-43cc-9d44-a35baeb9691e",
-   "agent": "Investigator-h3"
+   "queryId": "5129411f-964c-40cf-8a4e-ac43b9652669",
+   "agent": "Investigator-h4"
   }
  ],
  "rejected": [
   {
-   "hypothesis": "h4: Changes in USD/CAD exchange rate increased the CAD cost of USD‑denominated vendor invoices in September.",
-   "reason": "No effect: the deterministic bridge measures CAD 0 for fx, and the Investigator found no change either."
-  },
-  {
-   "hypothesis": "h7: Vendor VEND‑SNC paid above contract prices for SKUs NUT‑ALM, NUT‑CAS, NUT‑PEC in September 2026 (confirmed from prior close).",
-   "reason": "No effect: the deterministic bridge measures CAD 0 for supplierPrice, and the Investigator found no change either."
+   "hypothesis": "h7: Marketing expense (account 6100) increased significantly between August and September, a possible alternative explanation for overall expense rise.",
+   "reason": "Operating expenses sit below gross margin (account type opex), so they cannot explain a gross-margin change."
   }
  ],
  "openQuestions": [],
- "memo": "**Answer**  \nGross margin fell from CAD 114,821 (35.93 %) in August 2026 to CAD 104,787 (29.15 %) in September 2026, a decline of CAD 10,034 (−6.78 pp).\n\n**Drivers**  \n- **Volume:** +CAD 18,873 (+1.26 pp) – Higher unit sales driven by larger orders from Capital Wholesale Grocers (CUST‑W01) 1,102→2,353, Vanier Village Grocer (CUST‑R11) 615→934, and Sandy Hill Spices (CUST‑R10) 571→794. *Action:* monitor sustainability of this growth while guarding against margin erosion.  \n- **Booking error (duplicate invoice):** −CAD 12,450 (−3.46 pp) – Invoice MRP‑88213 for Maple Ridge Packaging (VEND‑MRP) SKU PKG was booked twice but paid once, creating excess COGS. *Action:* reverse the duplicate AP/GL entry and pursue a credit or refund from Maple Ridge Packaging.  \n- **Supplier unit price:** −CAD 9,116 (−2.54 pp) – Sierra Nut Co. (VEND‑SNC) invoiced above‑contracted prices for nut SKUs NUT‑ALM, NUT‑CAS, NUT‑PEC, adding roughly CAD 9,143 of excess COGS. *Action:* negotiate price protection or seek a refund/adjustment with Sierra Nut Co.  \n- **Customer / product mix:** −CAD 6,517 (−1.81 pp) – Increased wholesale sales to Capital Wholesale Gro\n\n> Reviewer notes (unresolved after one rewrite): The memo must state the unexplained residual.\n\n_Decision support on synthetic data. A controller must review the evidence and sign off before any entry, vendor claim or report._",
+ "memo": "## Answer\nThe deterministic margin bridge shows that the gross‑margin decline of ‑CAD 10,034 (‑6.78 pp) was driven mainly by a duplicate‑invoice booking error (‑CAD 12,450, ‑3.46 pp) from Maple Ridge Packaging, above‑contract pricing from Sierra Nut Co. (‑CAD 9,116, ‑2.54 pp), and a favorable volume effect (+CAD 18,873, +1.26 pp) led by Capital Wholesale Grocers, Vanier Village Grocer and Sandy Hill Spices. The duplicate invoice and the excess pricing represent amounts that may be recovered by reversing the erroneous entry and seeking a credit or refund from the respective vendors. [Q-sales][Q-costs][Q-gl][Q-duplicates][Q-overContract][Q-customerShift]\n\n## Drivers\n- **Booking error (duplicate invoice):** –CAD 12,450 (‑3.46 pp) – Maple Ridge Packaging (VEND‑MRP), invoice MRP‑88213. Reverse the duplicate AP/GL entry and seek a credit/refund from Maple Ridge Packaging. [E6-1][E6-2][E6-3][E6-4]  \n- **Supplier unit price:** –CAD 9,116 (‑2.54 pp) – Sierra Nut Co. (VEND‑SNC), invoiced above contract for SKUs NUT‑ALM, NUT‑CAS, NUT‑PEC. Claim a credit/refund or negotiate a price adjustment with Sierra Nut Co. [E1-1]  \n- **Volume:** +CAD 18,873 (+1.26\n\n## Unexplained residual\nCAD 0 (0 pp) after all bridge lines [Q-sales] [Q-costs] [Q-gl].\n\n_Decision support on synthetic data. A controller must review the evidence and sign off before any entry, vendor claim or report._",
  "memoryUsed": [
   {
    "id": "mem-12",
@@ -3239,14 +3139,14 @@
   }
  ],
  "stats": {
-  "sqlCalls": 41,
+  "sqlCalls": 50,
   "sqlErrors": 0,
   "sqlRepairs": 0,
-  "llmCalls": 49,
+  "llmCalls": 59,
   "skepticRounds": 2,
   "memoryRecalled": 1,
   "warmStart": true,
-  "durationMs": 546108,
+  "durationMs": 433111,
   "provider": "Meterless Runtime",
   "servedBy": [
    "local-runtime/nemotron-3-super-ollama"

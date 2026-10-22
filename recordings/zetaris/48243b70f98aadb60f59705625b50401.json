@@ -1,5 +1,5 @@
 {
- "sql": "SELECT txn_id, vendor_invoice_no, booking_date, period, counterparty, currency_orig, amount_orig, amount_cad\nFROM lightning.metastore.finmozg.finance_usl.vendor_payment\nWHERE vendor_invoice_no = 'MRP-88213'",
+ "sql": "SELECT txn_id, vendor_invoice_no, booking_date, period, counterparty, currency_orig, amount_orig, amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_payment WHERE vendor_invoice_no = 'MRP-88213'",
  "result": {
   "headers": [
    "txn_id",
@@ -24,7 +24,7 @@
    ]
   ],
   "total": 1,
-  "timeUsedMs": 252,
-  "queryId": "881bd221-8dee-4dc7-a35d-1be410da2de6"
+  "timeUsedMs": 518,
+  "queryId": "3c1160b7-2716-4ee8-8489-4c0696d3af57"
  }
 }

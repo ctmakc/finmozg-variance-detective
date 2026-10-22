@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Overall purchase quantity increased from 14,562 units in August to 16,729 units in September, a rise of 2,167 units, with notable growth at vendor Prairie Preserve Co. (VEND-PRV) from 3,668 to 4,467 units.\",\n  \"amount_cad\": null,\n  \"evidence\": [\n    \"E5-1\",\n    \"E5-4\"\n  ],\n  \"entities\": [\n    \"VEND-PRV\",\n    \"VEND-LOI\",\n    \"VEND-RCK\",\n    \"VEND-SNC\",\n    \"VEND-MRP\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_ra0pqglv",
+  "latencyMs": 15219,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3672,
+   "completionTokens": 776
+  }
+ }
+}

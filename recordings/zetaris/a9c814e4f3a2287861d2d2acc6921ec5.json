@@ -1,0 +1,43 @@
+{
+ "sql": "SELECT vendor_invoice_no, vendor_id, ap_doc_id, invoice_date, period, currency, amount_orig, fx_rate, amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_bill WHERE vendor_invoice_no = 'MRP-88213'",
+ "result": {
+  "headers": [
+   "vendor_invoice_no",
+   "vendor_id",
+   "ap_doc_id",
+   "invoice_date",
+   "period",
+   "currency",
+   "amount_orig",
+   "fx_rate",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "MRP-88213",
+    "VEND-MRP",
+    "AP-00031",
+    "2026-09-15",
+    "2026-09",
+    "CAD",
+    "12450.0",
+    "1.0",
+    "12450.0"
+   ],
+   [
+    "MRP-88213",
+    "VEND-MRP",
+    "AP-00030",
+    "2026-09-15",
+    "2026-09",
+    "CAD",
+    "12450.0",
+    "1.0",
+    "12450.0"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 701,
+  "queryId": "9a37df48-f19b-4e98-9d53-ce292a5562b9"
+ }
+}

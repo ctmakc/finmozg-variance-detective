@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h6",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Duplicate booking of vendor invoice MRP-88213 for vendor VEND-MRP (Maple Ridge Packaging) in September 2026 added an extra cost of 12,450 CAD, inflating expenses.\",\n  \"amount_cad\": -12450,\n  \"evidence\": [\n    \"E6-1\",\n    \"E6-2\",\n    \"E6-3\",\n    \"E6-4\"\n  ],\n  \"entities\": [\n    \"VEND-MRP\",\n    \"MRP-88213\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_36k8fm6p",
+  "latencyMs": 8457,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2550,
+   "completionTokens": 511
+  }
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": false,\n  \"claim\": \"Only VEND-SNC (Sierra Nut Co.) had excess pricing in September 2026 for SKUs NUT-ALM, NUT-CAS, NUT-PEC, totaling 9,143 CAD excess cost; other vendors had negligible excess (<0.01 CAD).\",\n  \"amount_cad\": -9143.33,\n  \"evidence\": [\n    \"E2-6\",\n    \"E2-8\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_44a3uzkg",
+  "latencyMs": 27148,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3365,
+   "completionTokens": 1028
+  }
+ }
+}

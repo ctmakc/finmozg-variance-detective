@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h6",
+ "result": {
+  "content": "{\n  \"supported\": false,\n  \"claim\": \"Duplicate booking of vendor VEND-MRP invoice MRP-88213 (applied twice in September 2026) overstated COGS by 12,450 CAD, accounting for part of the observed increase in account 5000.\",\n  \"amount_cad\": -12450,\n  \"evidence\": [\n    \"E6-1\",\n    \"E6-2\",\n    \"E6-3\"\n  ],\n  \"entities\": [\n    \"VEND-MRP\",\n    \"MRP-88213\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_z1mfopzh",
+  "latencyMs": 14346,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3752,
+   "completionTokens": 2129
+  }
+ }
+}

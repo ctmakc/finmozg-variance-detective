@@ -1,0 +1,18 @@
+{
+ "sql": "SELECT vendor_invoice_no, COUNT(DISTINCT ap_doc_id) AS doc_count\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill\nWHERE period = '2026-09'\nGROUP BY vendor_invoice_no\nHAVING COUNT(DISTINCT ap_doc_id) > 1",
+ "result": {
+  "headers": [
+   "vendor_invoice_no",
+   "doc_count"
+  ],
+  "rows": [
+   [
+    "MRP-88213",
+    "2"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 800,
+  "queryId": "01cbcf6f-e773-4747-a810-67ba54f4034b"
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Duplicate booking of vendor VEND-MRP invoice MRP-88213 caused an overstatement of marketing expense (account 6100) by 12,450 CAD in September 2026 vs August.\",\n  \"amount_cad\": null,\n  \"evidence\": [\"E2-1\", \"E2-4\", \"E2-5\"],\n  \"entities\": [\"VEND-MRP\", \"MRP-88213\", \"6100\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_btwqobqv",
+  "latencyMs": 12006,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2607,
+   "completionTokens": 1123
+  }
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT DISTINCT category FROM lightning.metastore.finmozg.finance_usl.product",
+ "result": {
+  "headers": [
+   "category"
+  ],
+  "rows": [
+   [
+    "preserves"
+   ],
+   [
+    "nuts"
+   ],
+   [
+    "coffee"
+   ],
+   [
+    "olive_oil"
+   ]
+  ],
+  "total": 4,
+  "timeUsedMs": 292,
+  "queryId": "f1306267-b96e-4e52-8006-5663a9692878"
+ }
+}

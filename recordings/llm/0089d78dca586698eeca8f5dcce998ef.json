@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h1",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Vendor VEND-SNC invoiced above contracted unit price for SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, generating excess COGS of 9,143.33 CAD.\",\n  \"amount_cad\": -9143.33,\n  \"evidence\": [\n    \"E1-1\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\",\n    \"NUT-ALM\",\n    \"NUT-CAS\",\n    \"NUT-PEC\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_6wh34beg",
+  "latencyMs": 13722,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2526,
+   "completionTokens": 523
+  }
+ }
+}

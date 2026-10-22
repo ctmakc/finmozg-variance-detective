@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT txn_id, booking_date, period, amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_payment WHERE vendor_invoice_no = 'MRP-88213' AND period IN ('2026-08','2026-09')",
+ "result": {
+  "headers": [
+   "txn_id",
+   "booking_date",
+   "period",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "BNK-00030",
+    "2026-09-25",
+    "2026-09",
+    "12450.0"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 297,
+  "queryId": "24014754-d4fd-4793-b5f6-cc6069581ebd"
+ }
+}

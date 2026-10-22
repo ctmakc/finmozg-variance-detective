@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"The USD/CAD rate increased from 1.3875 in August to 1.3917 in September, raising the CAD cost of September USD-denominated purchase lines by approximately 425.39 CAD, with Sierra Nut Co. (VEND-SNC) contributing the largest share at 257.41 CAD.\",\n  \"amount_cad\": -425.3945639999982,\n  \"evidence\": [\"E5-1\", \"E5-2\", \"E5-3\", \"E5-4\"],\n  \"entities\": [\"VEND-SNC\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_ru16w7p6",
+  "latencyMs": 12789,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2936,
+   "completionTokens": 564
+  }
+ }
+}

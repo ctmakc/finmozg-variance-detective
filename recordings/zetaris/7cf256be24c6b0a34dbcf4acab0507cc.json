@@ -1,0 +1,20 @@
+{
+ "sql": "SELECT vb.vendor_invoice_no, COUNT(*) AS bill_cnt, COUNT(vp.txn_id) AS payment_cnt FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb LEFT JOIN lightning.metastore.finmozg.finance_usl.vendor_payment vp ON vb.vendor_invoice_no = vp.vendor_invoice_no WHERE vb.period='2026-09' GROUP BY vb.vendor_invoice_no HAVING COUNT(*) > 1",
+ "result": {
+  "headers": [
+   "vendor_invoice_no",
+   "bill_cnt",
+   "payment_cnt"
+  ],
+  "rows": [
+   [
+    "MRP-88213",
+    "2",
+    "2"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1137,
+  "queryId": "f79dde0d-63f1-45f3-a00b-1830cd463415"
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT vb.vendor_invoice_no, vb.ap_doc_id, vb.amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb WHERE vb.period='2026-09' AND vb.vendor_invoice_no='MRP-88213'",
+ "result": {
+  "headers": [
+   "vendor_invoice_no",
+   "ap_doc_id",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "MRP-88213",
+    "AP-00031",
+    "12450.0"
+   ],
+   [
+    "MRP-88213",
+    "AP-00030",
+    "12450.0"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 898,
+  "queryId": "1fc9979f-3fe1-4abd-a5d2-ac2437387781"
+ }
+}

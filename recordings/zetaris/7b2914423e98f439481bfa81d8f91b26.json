@@ -1,0 +1,28 @@
+{
+ "sql": "SELECT\n  pl.vendor_id,\n  v.vendor_name,\n  pl.vendor_invoice_no,\n  SUM(pl.qty * pl.unit_price_orig * (pl.fx_rate - aug_avg.fx_rate)) AS fx_effect_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nCROSS JOIN (\n  SELECT AVG(fx_rate) AS fx_rate\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD'\n    AND period = '2026-08'\n) aug_avg\nWHERE pl.currency = 'USD'\n  AND pl.period = '2026-09'\nGROUP BY pl.vendor_id, v.vendor_name, pl.vendor_invoice_no\nORDER BY fx_effect_cad DESC\nLIMIT 10",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name",
+   "vendor_invoice_no",
+   "fx_effect_cad"
+  ],
+  "rows": [
+   [
+    "VEND-SNC",
+    "Sierra Nut Co.",
+    "SNC-202609-01",
+    "257.4138839999989"
+   ],
+   [
+    "VEND-LOI",
+    "Lakeshore Olive Imports",
+    "LOI-202609-01",
+    "167.98067999999927"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 2928,
+  "queryId": "84372b67-7277-40c3-b646-99f95ef84d04"
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "sql": "SELECT \n  SUM(qty * unit_price_orig * fx_rate) AS sep_cad_cost,\n  SUM(qty * unit_price_orig) * 1.3875 AS aug_fx_based_cost,\n  SUM(qty * unit_price_orig * fx_rate) - SUM(qty * unit_price_orig) * 1.3875 AS fx_effect\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE currency='USD' AND period='2026-09'",
+ "result": {
+  "headers": [
+   "sep_cad_cost",
+   "aug_fx_based_cost",
+   "fx_effect"
+  ],
+  "rows": [
+   [
+    "140957.527314",
+    "140532.13275",
+    "425.39456400001654"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1046,
+  "queryId": "a4652d5f-3f9f-4904-9b08-ba3f8f7fbd26"
+ }
+}

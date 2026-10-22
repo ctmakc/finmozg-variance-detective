@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Operating expenses changed due to a large increase in marketing expense (account 6100) from 8,004.08 CAD in August to 42,000 CAD in September, a rise of approximately 33,996 CAD.\",\n  \"amount_cad\": null,\n  \"evidence\": [\"E5-4\"],\n  \"entities\": [\"6100\"],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_a2ymqdn7",
+  "latencyMs": 4699,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3025,
+   "completionTokens": 834
+  }
+ }
+}

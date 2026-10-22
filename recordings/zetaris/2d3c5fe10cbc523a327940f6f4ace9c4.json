@@ -1,0 +1,16 @@
+{
+ "sql": "SELECT SUM(qty * unit_price_orig) AS usd_value_sep FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE currency='USD' AND period='2026-09'",
+ "result": {
+  "headers": [
+   "usd_value_sep"
+  ],
+  "rows": [
+   [
+    "101284.42"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1299,
+  "queryId": "a0ca7e8c-beb0-4fc2-9552-ed5bbcfbad94"
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "sql": "SELECT DISTINCT vendor_id FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE sku IN ('NUT-ALM','NUT-CAS','NUT-PEC') AND period = '2026-09'",
+ "result": {
+  "headers": [
+   "vendor_id"
+  ],
+  "rows": [
+   [
+    "VEND-SNC"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1074,
+  "queryId": "cf48b9c8-24f5-45b4-b3fc-c322de9090c0"
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h1",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Vendor Maple Ridge Packaging (VEND-MRP) had invoice MRP-88213 entered twice in AP in September 2026 (AP-00030 and AP-00031) each for 12,450 CAD, but only one payment of 12,450 CAD was recorded, inflating operating expenses by 12,450 CAD in September vs August.\",\n  \"amount_cad\": -12450,\n  \"evidence\": [\"E1-2\", \"E1-3\"],\n  \"entities\": [\"Maple Ridge Packaging\", \"MRP-88213\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_4o8qs7i3",
+  "latencyMs": 21185,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2933,
+   "completionTokens": 1106
+  }
+ }
+}

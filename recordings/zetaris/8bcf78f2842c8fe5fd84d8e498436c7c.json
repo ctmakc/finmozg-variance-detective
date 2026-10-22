@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT period, amount_cad FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE account_code='5000' AND period IN ('2026-08','2026-09')",
+ "result": {
+  "headers": [
+   "period",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "192682.54"
+   ],
+   [
+    "2026-09",
+    "229757.02"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 370,
+  "queryId": "b0717354-ac54-4df0-a0d0-c167e8c6de2f"
+ }
+}

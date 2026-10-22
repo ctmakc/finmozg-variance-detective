@@ -1,0 +1,17 @@
+{
+ "agent": "Planner",
+ "result": {
+  "content": "{\n  \"metric\": \"opex\",\n  \"periodA\": \"2026-08\",\n  \"periodB\": \"2026-09\",\n  \"answerable\": false,\n  \"missingData\": \"No table containing employee headcount, salary, or payroll expense data is present in the Unified Semantic Layer.\",\n  \"hypotheses\": [\n    {\n      \"id\": \"h1\",\n      \"driverType\": \"data_gap\",\n      \"text\": \"Headcount cost data unavailable in current schema.\",\n      \"checks\": \"None\"\n    }\n  ]\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_lqbngehq",
+  "latencyMs": 3909,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 4368,
+   "completionTokens": 629
+  }
+ }
+}

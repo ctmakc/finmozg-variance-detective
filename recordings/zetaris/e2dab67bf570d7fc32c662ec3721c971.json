@@ -1,0 +1,52 @@
+{
+ "sql": "SELECT DISTINCT sku FROM lightning.metastore.finmozg.finance_usl.purchase_line WHERE period IN ('2026-08','2026-09')",
+ "result": {
+  "headers": [
+   "sku"
+  ],
+  "rows": [
+   [
+    "COF-COL"
+   ],
+   [
+    "PKG"
+   ],
+   [
+    "NUT-PEC"
+   ],
+   [
+    "COF-ETH"
+   ],
+   [
+    "OIL-EVO"
+   ],
+   [
+    "COF-SUM"
+   ],
+   [
+    "OIL-ORG"
+   ],
+   [
+    "PRS-JAM"
+   ],
+   [
+    "PRS-OLV"
+   ],
+   [
+    "OIL-FLT"
+   ],
+   [
+    "PRS-HNY"
+   ],
+   [
+    "NUT-CAS"
+   ],
+   [
+    "NUT-ALM"
+   ]
+  ],
+  "total": 13,
+  "timeUsedMs": 1188,
+  "queryId": "af84ca3f-94d6-4924-9bd6-5eb67e7c7bfc"
+ }
+}

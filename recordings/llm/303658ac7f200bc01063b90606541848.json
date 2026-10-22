@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h3",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_9neyj2ds",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT DISTINCT account_type FROM lightning.metastore.finmozg.finance_usl.gl_balance LIMIT 20\",\"purpose\":\"See distinct account_type values\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_95xfgxe8",
+  "latencyMs": 5870,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2092,
+   "completionTokens": 102
+  }
+ }
+}

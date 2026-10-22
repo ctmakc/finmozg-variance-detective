@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h3",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Vendor VEND-SNC supplied SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, contributing to a rise in total purchased quantity from 14,562 to 16,729 units and an estimated volume-driven increase in purchase cost of approximately 30,466 CAD.\",\n  \"amount_cad\": -30466,\n  \"evidence\": [\n    \"E3-1\",\n    \"E3-5\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\",\n    \"NUT-ALM\",\n    \"NUT-CAS\",\n    \"NUT-PEC\"\n  ],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_05nlqlwa",
+  "latencyMs": 28889,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2317,
+   "completionTokens": 1828
+  }
+ }
+}

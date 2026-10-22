@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_zus70zhl",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT vendor_id, vendor_name FROM lightning.metastore.finmozg.finance_usl.vendor WHERE vendor_name = 'VEND-MRP'\",\"purpose\":\"Find vendor ID for VEND-MRP\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_tn7rq1ts",
+  "latencyMs": 13612,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2291,
+   "completionTokens": 573
+  }
+ }
+}

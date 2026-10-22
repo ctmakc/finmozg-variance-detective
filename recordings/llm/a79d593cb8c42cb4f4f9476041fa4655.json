@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h1",
+ "result": {
+  "content": "\n",
+  "toolCalls": [
+   {
+    "id": "call_h3s4ttne",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT vb.vendor_invoice_no, vb.ap_doc_id, vb.amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_bill vb WHERE vb.period='2026-09' AND vb.vendor_invoice_no='MRP-88213'\",\"purpose\":\"Show duplicate bill rows for MRP-88213\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_2ijoot2v",
+  "latencyMs": 10606,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2189,
+   "completionTokens": 323
+  }
+ }
+}

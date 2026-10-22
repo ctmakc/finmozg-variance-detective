@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_vl6zjltv",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT sku,\\n       SUM(CASE WHEN period='2026-08' THEN qty ELSE 0 END) AS qty_aug,\\n       SUM(CASE WHEN period='2026-09' THEN qty ELSE 0 END) AS qty_sep,\\n       SUM(CASE WHEN period='2026-09' THEN qty ELSE 0 END) - SUM(CASE WHEN period='2026-08' THEN qty ELSE 0 END) AS delta_qty\\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\\nWHERE period IN ('2026-08','2026-09')\\nGROUP BY sku\\nORDER BY ABS(delta_qty) DESC\\nLIMIT 20\",\"purpose\":\"SKU-level quantity change\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_z7ja4y3q",
+  "latencyMs": 26056,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2066,
+   "completionTokens": 538
+  }
+ }
+}

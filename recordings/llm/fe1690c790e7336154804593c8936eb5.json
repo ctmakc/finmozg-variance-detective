@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Vendor VEND-SNC sold SKUs NUT-ALM, NUT-CAS, NUT-PEC at above‑contract prices to wholesale customer Capital Wholesale Grocers, increasing purchase cost by ~9,100 CAD and shifting September mix toward higher‑cost items.\",\n  \"amount_cad\": -9143,\n  \"evidence\": [\n    \"E4-6\",\n    \"E4-8\",\n    \"E4-9\",\n    \"E4-1\",\n    \"E4-2\",\n    \"E4-3\",\n    \"E4-4\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\",\n    \"NUT-ALM\",\n    \"NUT-CAS\",\n    \"NUT-PEC\",\n    \"CUST-W01\",\n    \"wholesale\"\n  ],\n  \"confidence\": \"medium\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_1m3x3u6e",
+  "latencyMs": 13344,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 5696,
+   "completionTokens": 1057
+  }
+ }
+}

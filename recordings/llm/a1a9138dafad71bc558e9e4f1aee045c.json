@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": false,\n  \"claim\": \"The USD/CAD FX rate rose from 1.3875 to 1.3917, increasing CAD cost of USD‑denominated purchase lines by ~425 CAD in September vs August, but these lines are not confirmed to be OPEX.\",\n  \"amount_cad\": -425,\n  \"evidence\": [\"E4-1\", \"E4-4\"],\n  \"entities\": [],\n  \"confidence\": \"low\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_8qvwo5c9",
+  "latencyMs": 17418,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2902,
+   "completionTokens": 1013
+  }
+ }
+}

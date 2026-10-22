@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT account_code, period, SUM(amount_cad) AS total_cad FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE account_type='opex' AND period IN ('2026-08','2026-09') GROUP BY account_code, period",
+ "result": {
+  "headers": [
+   "account_code",
+   "period",
+   "total_cad"
+  ],
+  "rows": [
+   [
+    "6100",
+    "2026-09",
+    "42000.0"
+   ],
+   [
+    "6100",
+    "2026-08",
+    "8004.08"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 455,
+  "queryId": "01b4e5a1-eb7c-4837-b87f-ffb55d923fe4"
+ }
+}

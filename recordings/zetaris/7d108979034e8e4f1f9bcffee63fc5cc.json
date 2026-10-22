@@ -1,0 +1,76 @@
+{
+ "sql": "SELECT v.vendor_id, v.vendor_name, pl.period, SUM(pl.qty) AS total_qty\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY v.vendor_id, v.vendor_name, pl.period\nORDER BY v.vendor_name, pl.period",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name",
+   "period",
+   "total_qty"
+  ],
+  "rows": [
+   [
+    "VEND-LOI",
+    "Lakeshore Olive Imports",
+    "2026-08",
+    "3657.0"
+   ],
+   [
+    "VEND-LOI",
+    "Lakeshore Olive Imports",
+    "2026-09",
+    "4145.0"
+   ],
+   [
+    "VEND-MRP",
+    "Maple Ridge Packaging",
+    "2026-08",
+    "1.0"
+   ],
+   [
+    "VEND-MRP",
+    "Maple Ridge Packaging",
+    "2026-09",
+    "2.0"
+   ],
+   [
+    "VEND-PRV",
+    "Prairie Preserve Co.",
+    "2026-08",
+    "3668.0"
+   ],
+   [
+    "VEND-PRV",
+    "Prairie Preserve Co.",
+    "2026-09",
+    "4467.0"
+   ],
+   [
+    "VEND-RCK",
+    "Rockies Coffee Roasters",
+    "2026-08",
+    "3513.0"
+   ],
+   [
+    "VEND-RCK",
+    "Rockies Coffee Roasters",
+    "2026-09",
+    "4050.0"
+   ],
+   [
+    "VEND-SNC",
+    "Sierra Nut Co.",
+    "2026-08",
+    "3723.0"
+   ],
+   [
+    "VEND-SNC",
+    "Sierra Nut Co.",
+    "2026-09",
+    "4065.0"
+   ]
+  ],
+  "total": 10,
+  "timeUsedMs": 1444,
+  "queryId": "e34acdde-48a4-44a2-8dec-9899dd4edb92"
+ }
+}

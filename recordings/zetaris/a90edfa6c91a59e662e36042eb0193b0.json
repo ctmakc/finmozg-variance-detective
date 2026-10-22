@@ -1,0 +1,31 @@
+{
+ "sql": "SELECT period, COUNT(*) AS usd_lines, SUM(qty) AS total_qty, AVG(unit_price_orig) AS avg_unit_price_orig, AVG(fx_rate) AS avg_fx\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE currency='USD' AND period IN ('2026-08','2026-09')\nGROUP BY period",
+ "result": {
+  "headers": [
+   "period",
+   "usd_lines",
+   "total_qty",
+   "avg_unit_price_orig",
+   "avg_fx"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "6",
+    "8210.0",
+    "12.19",
+    "1.3917"
+   ],
+   [
+    "2026-08",
+    "6",
+    "7380.0",
+    "11.386666666666665",
+    "1.3875"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1241,
+  "queryId": "bc8be855-0b71-4255-bd8a-e5879a0f2048"
+ }
+}

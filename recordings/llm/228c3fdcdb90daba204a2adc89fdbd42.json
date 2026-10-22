@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_77e1hz03",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT vendor_id, vendor_name\\nFROM lightning.metastore.finmozg.finance_usl.vendor\\nWHERE vendor_id = 'VEND-SNC' OR vendor_name LIKE '%VEND-SNC%'\",\"purpose\":\"Find vendor VEND-SNC\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_5ak1x15v",
+  "latencyMs": 13162,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 5555,
+   "completionTokens": 516
+  }
+ }
+}

@@ -40,10 +40,12 @@ export function tolerance(component: number, revenueB: number) {
 /** Pure rule check, no model. Exported for tests. */
 export function ruleCheck(f: Finding, ev: EvidenceItem[], plan: Plan, quant: QuantResult | null, round: number): SkepticDecision {
   const last = round >= MAX_SKEPTIC_ROUNDS;
+  // The margin bridge is the reference for gross-margin and cost-of-goods questions.
+  const bridgeMetric = plan.metric === "gross_margin" || plan.metric === "cogs";
   const withRows = ev.filter((e) => e.rowCount > 0 && !e.error);
   if (f.driverType === "data_gap") return { findingId: f.id, verdict: "accepted", reason: "Data gap reported honestly; no number is claimed." };
   const key0 = COMPONENT_FOR[f.driverType];
-  const comp0 = plan.metric === "gross_margin" && quant && key0 ? (quant.components.find((c) => c.key === key0)?.amountCad ?? 0) : 0;
+  const comp0 = bridgeMetric && quant && key0 ? (quant.components.find((c) => c.key === key0)?.amountCad ?? 0) : 0;
   if (!f.supported) {
     // Challenge false negatives: the deterministic bridge says this driver moved.
     if (quant && key0 && Math.abs(comp0) >= tolerance(comp0, quant.bridge.revenueB) && !last) {
@@ -58,7 +60,7 @@ export function ruleCheck(f: Finding, ev: EvidenceItem[], plan: Plan, quant: Qua
     if (quant && key0 && Math.abs(comp0) >= tolerance(comp0, quant.bridge.revenueB)) {
       return { findingId: f.id, verdict: "needs_more", reason: `Measured by the bridge (CAD ${comp0.toFixed(0)}) but not traced to named rows after ${round} rounds: reported as an open question, not as a confirmed cause.`, bridgeAmountCad: comp0 };
     }
-    if (quant && key0 && Math.abs(comp0) < 100) {
+    if (bridgeMetric && quant && key0 && Math.abs(comp0) < 100) {
       return { findingId: f.id, verdict: "rejected", reason: `No effect: the deterministic bridge measures CAD ${comp0.toFixed(0)} for ${key0}, and the Investigator found no change either.`, bridgeAmountCad: comp0 };
     }
     return { findingId: f.id, verdict: "rejected", reason: `Investigator's own queries do not support it: ${f.claim}` };
@@ -68,7 +70,19 @@ export function ruleCheck(f: Finding, ev: EvidenceItem[], plan: Plan, quant: Qua
       ? { findingId: f.id, verdict: "rejected", reason: "No evidence rows behind the claim." }
       : { findingId: f.id, verdict: "needs_more", reason: "No evidence rows cited.", sendBack: "Cite at least one query (E#) whose rows show the effect." };
   }
-  if (plan.metric === "gross_margin" && f.driverType === "opex") {
+  // Chart-of-accounts check for operating-expense questions.
+  if (plan.metric === "opex" && GM_DRIVERS.includes(f.driverType)) {
+    return { findingId: f.id, verdict: "rejected", reason: `A ${f.driverType.replace("_", " ")} driver acts on cost of goods sold (accounts 5000/5100), not on operating expenses.` };
+  }
+  if (plan.metric === "opex" && quant) {
+    const dup = quant.duplicates.find((d) => `${f.claim} ${f.entities.join(" ")}`.includes(d.vendorInvoiceNo));
+    if (dup) {
+      return last
+        ? { findingId: f.id, verdict: "rejected", reason: `${dup.vendorInvoiceNo} is posted to account 5100 Packaging (COGS), so it cannot explain operating expenses.` }
+        : { findingId: f.id, verdict: "needs_more", reason: `${dup.vendorInvoiceNo} is a COGS (5100) posting, not opex.`, sendBack: `Invoice ${dup.vendorInvoiceNo} is posted to account 5100 Packaging, which is cost of goods sold, not an operating expense. Recompute the operating-expense change from gl_balance rows with account_type = 'opex' only, and do not attribute it to that invoice.` };
+    }
+  }
+  if (bridgeMetric && f.driverType === "opex") {
     return { findingId: f.id, verdict: "rejected", reason: "Operating expenses sit below gross margin (account type opex), so they cannot explain a gross-margin change." };
   }
   if (f.driverType === "booking_error" && !touches(withRows, /vendor_payment|fm_bank/)) {
@@ -104,7 +118,7 @@ export function ruleCheck(f: Finding, ev: EvidenceItem[], plan: Plan, quant: Qua
     }
   }
   const key = COMPONENT_FOR[f.driverType];
-  if (plan.metric === "gross_margin" && quant && key && GM_DRIVERS.includes(f.driverType)) {
+  if (bridgeMetric && quant && key && GM_DRIVERS.includes(f.driverType)) {
     const comp = quant.components.find((c) => c.key === key)?.amountCad ?? 0;
     const tol = tolerance(comp, quant.bridge.revenueB);
     if (Math.abs(comp) < 100) {

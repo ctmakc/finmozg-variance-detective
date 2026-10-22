@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT vendor_id, vendor_invoice_no, amount_cad FROM lightning.metastore.finmozg.finance_usl.vendor_bill WHERE vendor_invoice_no = 'MRP-88213' AND period = '2026-09'",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_invoice_no",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "VEND-MRP",
+    "MRP-88213",
+    "12450.0"
+   ],
+   [
+    "VEND-MRP",
+    "MRP-88213",
+    "12450.0"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 794,
+  "queryId": "a721357c-50b5-4ae7-a5ca-8521a81441ca"
+ }
+}

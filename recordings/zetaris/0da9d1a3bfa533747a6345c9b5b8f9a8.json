@@ -1,0 +1,55 @@
+{
+ "sql": "SELECT pl.period, p.category, SUM(pl.qty) AS total_qty\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.product p ON pl.sku = p.sku\nWHERE pl.period IN ('2026-08','2026-09')\nGROUP BY pl.period, p.category\nORDER BY pl.period, p.category",
+ "result": {
+  "headers": [
+   "period",
+   "category",
+   "total_qty"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "coffee",
+    "3513.0"
+   ],
+   [
+    "2026-08",
+    "nuts",
+    "3723.0"
+   ],
+   [
+    "2026-08",
+    "olive_oil",
+    "3657.0"
+   ],
+   [
+    "2026-08",
+    "preserves",
+    "3668.0"
+   ],
+   [
+    "2026-09",
+    "coffee",
+    "4050.0"
+   ],
+   [
+    "2026-09",
+    "nuts",
+    "4065.0"
+   ],
+   [
+    "2026-09",
+    "olive_oil",
+    "4145.0"
+   ],
+   [
+    "2026-09",
+    "preserves",
+    "4467.0"
+   ]
+  ],
+  "total": 8,
+  "timeUsedMs": 1715,
+  "queryId": "6e847ee3-6ce6-4c07-9290-469cfef04bde"
+ }
+}

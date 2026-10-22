@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT account_code, account_name, amount_cad FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE account_type='opex' AND period IN ('2026-08','2026-09') ORDER BY account_code",
+ "result": {
+  "headers": [
+   "account_code",
+   "account_name",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "6100",
+    "Marketing expense",
+    "8004.08"
+   ],
+   [
+    "6100",
+    "Marketing expense",
+    "42000.0"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 432,
+  "queryId": "05af3b05-8855-4ee2-af64-ae8f025ad041"
+ }
+}
