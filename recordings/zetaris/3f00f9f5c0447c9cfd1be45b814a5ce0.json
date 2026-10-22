@@ -1,0 +1,45 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.gl_balance",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "gl_key",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "period",
+    "varchar(7)",
+    ""
+   ],
+   [
+    "account_code",
+    "varchar(10)",
+    ""
+   ],
+   [
+    "account_name",
+    "varchar(100)",
+    ""
+   ],
+   [
+    "account_type",
+    "varchar(10)",
+    ""
+   ],
+   [
+    "amount_cad",
+    "double",
+    ""
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 33,
+  "queryId": "eb63e87f-f615-4caa-b87b-88fcc4555343"
+ }
+}

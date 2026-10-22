@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h5",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"USD/CAD exchange rate increased from 1.3875 in August to 1.3917 in September 2026, raising the CAD cost of imported goods by approximately 425.39 CAD, with Sierra Nut Co. (VEND-SNC) accounting for 257.41 CAD of this increase.\",\n  \"amount_cad\": -425.39,\n  \"evidence\": [\n    \"E5-1\",\n    \"E5-2\",\n    \"E5-3\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_z8q5pvcn",
+  "latencyMs": 7107,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2489,
+   "completionTokens": 703
+  }
+ }
+}

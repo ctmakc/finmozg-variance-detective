@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT l.vendor_id, v.vendor_name, COUNT(*) AS lines, ROUND(SUM((l.unit_price_orig - l.contract_unit_price) * l.qty * l.fx_rate), 2) AS excess_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line l JOIN lightning.metastore.finmozg.finance_usl.vendor v ON v.vendor_id = l.vendor_id\nWHERE l.period = '2026-09' AND l.contract_unit_price IS NOT NULL AND l.unit_price_orig > l.contract_unit_price + 0.0001\nGROUP BY l.vendor_id, v.vendor_name ORDER BY excess_cad DESC",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name",
+   "lines",
+   "excess_cad"
+  ],
+  "rows": [
+   [
+    "VEND-SNC",
+    "Sierra Nut Co.",
+    "3",
+    "9143.33"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1279,
+  "queryId": "32cd4dd3-b274-495a-8be6-e47ea3d772a5"
+ }
+}

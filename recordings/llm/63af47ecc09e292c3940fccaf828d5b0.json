@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_leqs0bwl",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT period, sku, SUM(qty) AS total_qty, SUM(unit_cost_cad * qty) / SUM(qty) AS avg_unit_cost_cad\\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\\nWHERE period IN ('2026-08', '2026-09')\\nGROUP BY period, sku\",\"purpose\":\"Average unit cost per SKU per period from purchase_line\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_k17xrjay",
+  "latencyMs": 15336,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 2131,
+   "completionTokens": 991
+  }
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "sql": "SHOW DATASOURCES",
+ "result": {
+  "headers": [
+   "name",
+   "description",
+   "id"
+  ],
+  "rows": [
+   [
+    "FM_ERP",
+    "General ledger, synthetic",
+    "867"
+   ],
+   [
+    "FM_PROCURE",
+    "Procurement and AP, synthetic",
+    "860"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 37,
+  "queryId": "1babdf3c-2af8-4a7b-9386-f17c85ab24af"
+ }
+}

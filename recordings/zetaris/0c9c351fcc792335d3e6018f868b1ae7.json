@@ -1,0 +1,40 @@
+{
+ "sql": "SELECT sl.period, c.channel, SUM(sl.revenue_cad) AS revenue, SUM(sl.qty) AS qty\nFROM lightning.metastore.finmozg.finance_usl.sales_line sl\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\nWHERE sl.period IN ('2026-08', '2026-09')\nGROUP BY sl.period, c.channel\nORDER BY sl.period, c.channel",
+ "result": {
+  "headers": [
+   "period",
+   "channel",
+   "revenue",
+   "qty"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "retail",
+    "293696.0",
+    "12961.0"
+   ],
+   [
+    "2026-08",
+    "wholesale",
+    "25858.56",
+    "1600.0"
+   ],
+   [
+    "2026-09",
+    "retail",
+    "309190.0",
+    "13938.0"
+   ],
+   [
+    "2026-09",
+    "wholesale",
+    "50253.83999999999",
+    "2789.0"
+   ]
+  ],
+  "total": 4,
+  "timeUsedMs": 596,
+  "queryId": "abadf042-2be2-4798-8e8b-e79c9e74d5aa"
+ }
+}

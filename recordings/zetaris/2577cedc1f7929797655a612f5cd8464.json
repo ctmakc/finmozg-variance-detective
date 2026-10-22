@@ -1,0 +1,73 @@
+{
+ "sql": "SELECT period, account_code, account_name, account_type, amount_cad FROM lightning.metastore.finmozg.finance_usl.gl_balance WHERE period IN ('2026-08', '2026-09') ORDER BY account_code, period",
+ "result": {
+  "headers": [
+   "period",
+   "account_code",
+   "account_name",
+   "account_type",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "4000",
+    "Product revenue",
+    "revenue",
+    "319554.56"
+   ],
+   [
+    "2026-09",
+    "4000",
+    "Product revenue",
+    "revenue",
+    "359443.84"
+   ],
+   [
+    "2026-08",
+    "5000",
+    "Cost of goods sold",
+    "cogs",
+    "192682.54"
+   ],
+   [
+    "2026-09",
+    "5000",
+    "Cost of goods sold",
+    "cogs",
+    "229757.02"
+   ],
+   [
+    "2026-08",
+    "5100",
+    "Packaging and supplies",
+    "cogs",
+    "12051.26"
+   ],
+   [
+    "2026-09",
+    "5100",
+    "Packaging and supplies",
+    "cogs",
+    "24900.0"
+   ],
+   [
+    "2026-08",
+    "6100",
+    "Marketing expense",
+    "opex",
+    "8004.08"
+   ],
+   [
+    "2026-09",
+    "6100",
+    "Marketing expense",
+    "opex",
+    "42000.0"
+   ]
+  ],
+  "total": 8,
+  "timeUsedMs": 370,
+  "queryId": "cc2a97ac-4461-444b-8952-0a57a46cc2af"
+ }
+}

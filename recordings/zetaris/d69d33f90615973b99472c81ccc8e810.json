@@ -1,0 +1,60 @@
+{
+ "sql": "SHOW TABLES IN lightning.metastore.finmozg.finance_usl",
+ "result": {
+  "headers": [
+   "table_identifier",
+   "catalog_name",
+   "catalog_type"
+  ],
+  "rows": [
+   [
+    "lightning.metastore.finmozg.finance_usl.vendor",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.vendor_bill",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.vendor_payment",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.product",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.customer",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.sales_line",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.purchase_line",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.gl_balance",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ],
+   [
+    "lightning.metastore.finmozg.finance_usl.fx_rate",
+    "lightning.metastore.finmozg.finance_usl",
+    "Unified Semantic Layer"
+   ]
+  ],
+  "total": 9,
+  "timeUsedMs": 50,
+  "queryId": "5fa555ab-83cf-4c7d-abcd-49868dc89aee"
+ }
+}

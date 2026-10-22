@@ -1,0 +1,24 @@
+{
+ "sql": "SELECT b.period, b.vendor_invoice_no, COUNT(DISTINCT b.ap_doc_id) AS ap_docs, COALESCE(MAX(p.n), 0) AS payments, MAX(b.amount_cad) AS amount_cad\nFROM lightning.metastore.finmozg.finance_usl.vendor_bill b\nLEFT JOIN (SELECT vendor_invoice_no, COUNT(*) AS n FROM lightning.metastore.finmozg.finance_usl.vendor_payment GROUP BY vendor_invoice_no) p ON p.vendor_invoice_no = b.vendor_invoice_no\nWHERE b.period IN ('2026-08', '2026-09')\nGROUP BY b.period, b.vendor_invoice_no HAVING COUNT(DISTINCT b.ap_doc_id) > GREATEST(COALESCE(MAX(p.n), 0), 1)",
+ "result": {
+  "headers": [
+   "period",
+   "vendor_invoice_no",
+   "ap_docs",
+   "payments",
+   "amount_cad"
+  ],
+  "rows": [
+   [
+    "2026-09",
+    "MRP-88213",
+    "2",
+    "1",
+    "12450.0"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1065,
+  "queryId": "1738871b-406f-4c17-ba40-be88945fb426"
+ }
+}

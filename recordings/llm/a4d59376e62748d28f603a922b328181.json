@@ -1,0 +1,26 @@
+{
+ "agent": "Investigator-h6",
+ "result": {
+  "content": "",
+  "toolCalls": [
+   {
+    "id": "call_c0iiaphw",
+    "type": "function",
+    "function": {
+     "name": "run_sql",
+     "arguments": "{\"sql\":\"SELECT period, SUM(amount_cad) AS total_amount_cad\\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\\nWHERE sku = 'PKG'\\nGROUP BY period\\nORDER BY period\",\"purpose\":\"Sum of amount_cad for packaging SKU PKG by period from purchase_line\"}"
+    }
+   }
+  ],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_1am3qxsz",
+  "latencyMs": 24861,
+  "finishReason": "tool_calls",
+  "usage": {
+   "promptTokens": 1564,
+   "completionTokens": 475
+  }
+ }
+}

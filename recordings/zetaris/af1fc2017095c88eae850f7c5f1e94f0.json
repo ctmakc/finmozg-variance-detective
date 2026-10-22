@@ -1,0 +1,45 @@
+{
+ "sql": "SHOW LIGHTNING DATABASES",
+ "result": {
+  "headers": [
+   "name",
+   "description",
+   "id"
+  ],
+  "rows": [
+   [
+    "FM_BANK",
+    "Bank feed REST service, synthetic",
+    "952"
+   ],
+   [
+    "FM_BOC",
+    "Bank of Canada Valet FX, public",
+    "967"
+   ],
+   [
+    "FM_ORDERS",
+    "Order system export, synthetic",
+    "917"
+   ],
+   [
+    "NY_TAXI",
+    "NY Taxi sample data",
+    "6"
+   ],
+   [
+    "POKEAPI_REST",
+    "PokeAPI REST source",
+    "805"
+   ],
+   [
+    "TPCDS_DB",
+    "TPC-DS benchmark sample data",
+    "307"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 28,
+  "queryId": "48a03300-46bb-4f84-874c-cc19010371fc"
+ }
+}

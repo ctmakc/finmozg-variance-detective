@@ -1,0 +1,38 @@
+{
+ "sql": "SELECT period, SUM(amount_cad) AS total_amount_cad\nFROM lightning.metastore.finmozg.finance_usl.gl_balance\nWHERE account_code = '5100'\nGROUP BY period\nORDER BY period",
+ "result": {
+  "headers": [
+   "period",
+   "total_amount_cad"
+  ],
+  "rows": [
+   [
+    "2026-04",
+    "11902.15"
+   ],
+   [
+    "2026-05",
+    "11629.98"
+   ],
+   [
+    "2026-06",
+    "11978.53"
+   ],
+   [
+    "2026-07",
+    "12386.39"
+   ],
+   [
+    "2026-08",
+    "12051.26"
+   ],
+   [
+    "2026-09",
+    "24900.0"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 517,
+  "queryId": "867cbb0d-0805-4f63-b28f-991421ab4d35"
+ }
+}

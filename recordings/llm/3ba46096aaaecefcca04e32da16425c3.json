@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h3",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Wholesale channel share grew from 8.1% to 14.0% of revenue and from 11.0% to 16.7% of quantity, driven largely by Capital Wholesale Grocers (CUST-W01) whose revenue jumped from 17,527 to 42,505 CAD, while wholesale margin remains lower than retail margin.\",\n  \"amount_cad\": -3915,\n  \"evidence\": [\"E3-2\", \"E3-4\", \"E3-3\"],\n  \"entities\": [\"CUST-W01\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_vmxszmg7",
+  "latencyMs": 22772,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3692,
+   "completionTokens": 1956
+  }
+ }
+}

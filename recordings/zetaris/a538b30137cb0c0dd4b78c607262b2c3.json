@@ -1,0 +1,80 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.purchase_line",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "purchase_line_id",
+    "varchar(40)",
+    ""
+   ],
+   [
+    "ap_doc_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "vendor_invoice_no",
+    "varchar(40)",
+    ""
+   ],
+   [
+    "vendor_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "period",
+    "varchar(7)",
+    ""
+   ],
+   [
+    "sku",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "qty",
+    "double",
+    ""
+   ],
+   [
+    "currency",
+    "varchar(3)",
+    ""
+   ],
+   [
+    "unit_price_orig",
+    "double",
+    ""
+   ],
+   [
+    "contract_unit_price",
+    "double",
+    ""
+   ],
+   [
+    "fx_rate",
+    "double",
+    ""
+   ],
+   [
+    "unit_cost_cad",
+    "double",
+    ""
+   ],
+   [
+    "amount_cad",
+    "double",
+    ""
+   ]
+  ],
+  "total": 13,
+  "timeUsedMs": 33,
+  "queryId": "4d556bbe-7d9e-45bf-8813-2d0f973423b5"
+ }
+}

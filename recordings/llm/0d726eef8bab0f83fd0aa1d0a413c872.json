@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h4",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Vendor VEND-SNC paid above contract prices for SKUs NUT-ALM, NUT-CAS, NUT-PEC in September 2026, increasing average purchase cost per unit from 18.70 to 20.98 CAD and adding approximately 9,143 CAD of excess cost.\",\n  \"amount_cad\": -9143.33,\n  \"evidence\": [\n    \"E4-1\",\n    \"E4-2\",\n    \"E4-3\",\n    \"E4-4\"\n  ],\n  \"entities\": [\n    \"VEND-SNC\",\n    \"NUT-ALM\",\n    \"NUT-CAS\",\n    \"NUT-PEC\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_hf0khmwu",
+  "latencyMs": 22321,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 3570,
+   "completionTokens": 1367
+  }
+ }
+}

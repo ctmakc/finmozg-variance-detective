@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h1",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Overall average selling price per unit decreased from 21.95 CAD/unit in August to 21.49 CAD/unit in September, with no change in unit price for any SKU‑channel, indicating the shift is due to sales mix rather than price changes.\",\n  \"amount_cad\": null,\n  \"evidence\": [\"E1-1\", \"E1-3\"],\n  \"entities\": [\"NUT-CAS\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_uybnyyic",
+  "latencyMs": 23663,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 4968,
+   "completionTokens": 2064
+  }
+ }
+}

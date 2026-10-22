@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h6",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Packaging spend increased from August to September due to higher purchases from vendor VEND-MRP (Maple Ridge Packaging), rising from 12,051.26 CAD to 24,900.0 CAD.\",\n  \"amount_cad\": -12848.74,\n  \"evidence\": [\"E6-1\", \"E6-2\", \"E6-3\"],\n  \"entities\": [\"VEND-MRP\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_38qcggcm",
+  "latencyMs": 10165,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2252,
+   "completionTokens": 384
+  }
+ }
+}

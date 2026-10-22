@@ -1,0 +1,55 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.vendor_payment",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "txn_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "vendor_invoice_no",
+    "varchar(40)",
+    ""
+   ],
+   [
+    "booking_date",
+    "varchar(10)",
+    ""
+   ],
+   [
+    "period",
+    "varchar(7)",
+    ""
+   ],
+   [
+    "counterparty",
+    "varchar(100)",
+    ""
+   ],
+   [
+    "currency_orig",
+    "varchar(3)",
+    ""
+   ],
+   [
+    "amount_orig",
+    "double",
+    ""
+   ],
+   [
+    "amount_cad",
+    "double",
+    ""
+   ]
+  ],
+  "total": 8,
+  "timeUsedMs": 34,
+  "queryId": "4f604353-5961-4398-abd3-82103de37441"
+ }
+}

@@ -1,0 +1,164 @@
+{
+ "sql": "SELECT c.customer_name, c.channel,\n       SUM(CASE WHEN sl.period='2026-08' THEN sl.qty ELSE 0 END) AS qty_aug,\n       SUM(CASE WHEN sl.period='2026-09' THEN sl.qty ELSE 0 END) AS qty_sep,\n       SUM(CASE WHEN sl.period='2026-09' THEN sl.qty ELSE 0 END) - SUM(CASE WHEN sl.period='2026-08' THEN sl.qty ELSE 0 END) AS qty_diff\nFROM lightning.metastore.finmozg.finance_usl.sales_line sl\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\nWHERE sl.period IN ('2026-08','2026-09')\nGROUP BY c.customer_name, c.channel\nORDER BY qty_diff DESC",
+ "result": {
+  "headers": [
+   "customer_name",
+   "channel",
+   "qty_aug",
+   "qty_sep",
+   "qty_diff"
+  ],
+  "rows": [
+   [
+    "Capital Wholesale Grocers",
+    "wholesale",
+    "1102.0",
+    "2353.0",
+    "1251.0"
+   ],
+   [
+    "Vanier Village Grocer",
+    "retail",
+    "615.0",
+    "934.0",
+    "319.0"
+   ],
+   [
+    "Sandy Hill Spices",
+    "retail",
+    "571.0",
+    "794.0",
+    "223.0"
+   ],
+   [
+    "Perth Pantry",
+    "retail",
+    "709.0",
+    "866.0",
+    "157.0"
+   ],
+   [
+    "Kanata Kitchen Co.",
+    "retail",
+    "708.0",
+    "841.0",
+    "133.0"
+   ],
+   [
+    "Hintonburg Hearth",
+    "retail",
+    "719.0",
+    "841.0",
+    "122.0"
+   ],
+   [
+    "Manotick Mercantile",
+    "retail",
+    "680.0",
+    "799.0",
+    "119.0"
+   ],
+   [
+    "Carleton Place Cupboard",
+    "retail",
+    "693.0",
+    "795.0",
+    "102.0"
+   ],
+   [
+    "Nepean Nibbles",
+    "retail",
+    "871.0",
+    "916.0",
+    "45.0"
+   ],
+   [
+    "Riverview Relish",
+    "retail",
+    "785.0",
+    "826.0",
+    "41.0"
+   ],
+   [
+    "Stittsville Staples",
+    "retail",
+    "719.0",
+    "758.0",
+    "39.0"
+   ],
+   [
+    "Glebe Specialty Foods",
+    "retail",
+    "669.0",
+    "700.0",
+    "31.0"
+   ],
+   [
+    "Byward Market Pantry",
+    "retail",
+    "732.0",
+    "761.0",
+    "29.0"
+   ],
+   [
+    "Barrhaven Bites",
+    "retail",
+    "749.0",
+    "759.0",
+    "10.0"
+   ],
+   [
+    "Ottawa Valley Distributors",
+    "wholesale",
+    "206.0",
+    "209.0",
+    "3.0"
+   ],
+   [
+    "Smiths Falls Select",
+    "retail",
+    "646.0",
+    "634.0",
+    "-12.0"
+   ],
+   [
+    "Centretown Cravings",
+    "retail",
+    "780.0",
+    "723.0",
+    "-57.0"
+   ],
+   [
+    "Laurentian Foodservice Dist.",
+    "wholesale",
+    "292.0",
+    "227.0",
+    "-65.0"
+   ],
+   [
+    "Westboro Cellar",
+    "retail",
+    "803.0",
+    "738.0",
+    "-65.0"
+   ],
+   [
+    "Orleans Olive Bar",
+    "retail",
+    "724.0",
+    "638.0",
+    "-86.0"
+   ],
+   [
+    "Almonte Aisle",
+    "retail",
+    "788.0",
+    "615.0",
+    "-173.0"
+   ]
+  ],
+  "total": 21,
+  "timeUsedMs": 531,
+  "queryId": "5a7692b1-7b14-4545-8aba-974ab0491d4e"
+ }
+}

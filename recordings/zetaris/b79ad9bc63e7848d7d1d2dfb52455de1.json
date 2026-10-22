@@ -1,0 +1,87 @@
+{
+ "sql": "SELECT vendor_id, period,\n       SUM(amount_cad) AS total_amount_cad,\n       SUM(qty) AS total_qty,\n       SUM(amount_cad)/SUM(qty) AS avg_cost_per_unit_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE period IN ('2026-08','2026-09')\nGROUP BY vendor_id, period\nORDER BY vendor_id, period",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "period",
+   "total_amount_cad",
+   "total_qty",
+   "avg_cost_per_unit_cad"
+  ],
+  "rows": [
+   [
+    "VEND-LOI",
+    "2026-08",
+    "47729.259999999995",
+    "3657.0",
+    "13.05147935466229"
+   ],
+   [
+    "VEND-LOI",
+    "2026-09",
+    "55661.6",
+    "4145.0",
+    "13.428612786489746"
+   ],
+   [
+    "VEND-MRP",
+    "2026-08",
+    "12051.26",
+    "1.0",
+    "12051.26"
+   ],
+   [
+    "VEND-MRP",
+    "2026-09",
+    "24900.0",
+    "2.0",
+    "12450.0"
+   ],
+   [
+    "VEND-PRV",
+    "2026-08",
+    "30214.079999999998",
+    "3668.0",
+    "8.23720828789531"
+   ],
+   [
+    "VEND-PRV",
+    "2026-09",
+    "36248.94",
+    "4467.0",
+    "8.114828744123573"
+   ],
+   [
+    "VEND-RCK",
+    "2026-08",
+    "45125.729999999996",
+    "3513.0",
+    "12.84535439795047"
+   ],
+   [
+    "VEND-RCK",
+    "2026-09",
+    "52550.55",
+    "4050.0",
+    "12.975444444444445"
+   ],
+   [
+    "VEND-SNC",
+    "2026-08",
+    "69613.48999999999",
+    "3723.0",
+    "18.698224550094007"
+   ],
+   [
+    "VEND-SNC",
+    "2026-09",
+    "85295.93",
+    "4065.0",
+    "20.9830086100861"
+   ]
+  ],
+  "total": 10,
+  "timeUsedMs": 1314,
+  "queryId": "2ed563cd-4cc5-4795-b396-129a8f6b7d3b"
+ }
+}

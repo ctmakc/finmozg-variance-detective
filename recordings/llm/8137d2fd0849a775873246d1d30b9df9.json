@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h2",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Total units sold increased by 2,166 units from August to September 2026, driven primarily by wholesale customer Capital Wholesale Grocers (+1,251 units).\",\n  \"amount_cad\": null,\n  \"evidence\": [\n    \"E2-1\",\n    \"E2-2\",\n    \"E2-3\"\n  ],\n  \"entities\": [\n    \"Capital Wholesale Grocers\"\n  ],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_7yk5jsj2",
+  "latencyMs": 28443,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 2964,
+   "completionTokens": 588
+  }
+ }
+}

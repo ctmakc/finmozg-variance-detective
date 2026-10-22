@@ -1,0 +1,17 @@
+{
+ "agent": "Investigator-h7",
+ "result": {
+  "content": "{\n  \"supported\": true,\n  \"claim\": \"Marketing expense (account 6100) increased from 8,004.08 CAD in August 2026 to 42,000.0 CAD in September 2026, raising operating expenses by 33,995.92 CAD.\",\n  \"amount_cad\": -33995.92,\n  \"evidence\": [\"E7-1\"],\n  \"entities\": [\"6100\"],\n  \"confidence\": \"high\"\n}",
+  "toolCalls": [],
+  "provider": "meterless",
+  "requestedModel": "local-runtime/nemotron-3-super-ollama",
+  "servedBy": "local-runtime/nemotron-3-super-ollama",
+  "receiptId": "rcpt_req_sp18rs24",
+  "latencyMs": 8079,
+  "finishReason": "stop",
+  "usage": {
+   "promptTokens": 1746,
+   "completionTokens": 778
+  }
+ }
+}

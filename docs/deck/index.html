@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FINMOZG Variance Detective · deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@600;800&family=Fragment+Mono&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --pad:#0e1714; --pad-raised:#13201c; --rule:#22322d; --rule-strong:#34473f; --ink:#e6e2d3; --ink-dim:#9ca79f; --ink-faint:#849189; --tick:#8dd3ae; --redpencil:#f06a4d; --lamp:#e9c46a;
+    --f-display:"Besley", Georgia, serif; --f-ui:"Work Sans", system-ui, sans-serif; --f-mono:"Fragment Mono", ui-monospace, monospace; }
+  @page { size: 1600px 900px; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #070b0a; font: 400 22px/1.45 var(--f-ui); color: var(--ink); }
+  .slide { width: 1600px; height: 900px; background: var(--pad); position: relative; overflow: hidden; padding: 72px 96px; page-break-after: always; display: grid; grid-template-rows: auto 1fr auto; margin: 0 auto 24px; }
+  .slide::before { content: ""; position: absolute; top: 0; bottom: 0; left: 64px; width: 1px; background: var(--rule-strong); }
+  .kicker { font: 600 15px/1 var(--f-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dim); display: flex; gap: 14px; align-items: center; }
+  .kicker span { font: 400 14px/1 var(--f-mono); color: var(--ink-faint); border: 1px solid var(--rule-strong); padding: 4px 7px; letter-spacing: 0; }
+  h1, h2 { font-family: var(--f-display); letter-spacing: -0.02em; margin: 0; }
+  h1 { font-weight: 800; font-size: 92px; line-height: .98; }
+  h2 { font-weight: 600; font-size: 56px; line-height: 1.05; margin-top: 22px; max-width: 24ch; }
+  .foot { display: flex; justify-content: space-between; font: 400 14px/1 var(--f-mono); color: var(--ink-faint); border-top: 1px solid var(--rule); padding-top: 14px; }
+  .mono { font-family: var(--f-mono); }
+  .dim { color: var(--ink-dim); }
+  .red { color: var(--redpencil); }
+  .grn { color: var(--tick); }
+  .rows { border-top: 1px solid var(--rule-strong); margin-top: 28px; }
+  .row { display: grid; grid-template-columns: 300px 1fr; border-bottom: 1px solid var(--rule); }
+  .row > * { padding: 16px 18px; }
+  .row > :first-child { border-right: 1px solid var(--rule); font: 600 18px/1.3 var(--f-ui); color: var(--ink-dim); text-transform: uppercase; letter-spacing: .06em; }
+  .row b { font-weight: 600; }
+  .big { font: 800 150px/.9 var(--f-display); letter-spacing: -0.04em; }
+  .split { display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: start; margin-top: 30px; }
+  .shot { width: 100%; border: 1px solid var(--rule-strong); display: block; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 20px; margin-top: 24px; }
+  .tbl th, .tbl td { border-bottom: 1px solid var(--rule); padding: 11px 14px; text-align: left; }
+  .tbl th { font: 600 14px/1 var(--f-ui); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .tbl td.n { text-align: right; font-family: var(--f-mono); }
+  .strike { text-decoration: line-through; text-decoration-color: var(--redpencil); text-decoration-thickness: 2px; color: var(--ink-dim); }
+  ul.clean { list-style: none; padding: 0; margin: 24px 0 0; }
+  ul.clean li { padding: 12px 0 12px 34px; border-bottom: 1px solid var(--rule); position: relative; }
+  ul.clean li::before { content: "✓"; position: absolute; left: 4px; color: var(--tick); font-family: var(--f-mono); }
+  ul.next li::before { content: "→"; color: var(--ink-faint); }
+  svg text { font-family: var(--f-ui); }
+  svg text:not([fill]) { fill: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- 0 · title -->
+<section class="slide">
+  <div class="kicker"><span>Track 02</span> The Agent That Can Explain Why · Open Agent Hackathon 2026</div>
+  <div style="align-self:center">
+    <svg width="64" height="64" viewBox="0 0 32 32" style="margin-bottom:28px"><path d="M6 17l5.5 5.5L26 8" fill="none" stroke="#8dd3ae" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h1>FINMOZG<br><span class="dim" style="font-weight:600">Variance Detective</span></h1>
+    <p style="font-size:30px;max-width:30ch;margin-top:30px">Agents that tell a controller <b>why</b> gross margin moved, and prove every driver with rows from four systems, through Zetaris.</p>
+  </div>
+  <div class="foot"><span>Maksym Stepanenko · INNOVA CONSULT · Ottawa</span><span>github.com/ctmakc/finmozg-variance-detective</span></div>
+</section>
+
+<!-- 1 · problem -->
+<section class="slide">
+  <div class="kicker"><span>1</span> Problem and users</div>
+  <div class="split">
+    <div>
+      <div class="big">35.9%<span class="dim" style="font-size:80px"> →</span><br>29.2%</div>
+      <p class="red mono" style="font-size:26px;margin-top:18px">−6.78 pp gross margin, September</p>
+    </div>
+    <div>
+      <h2 style="margin-top:0">"Why?" lives in four systems that share no keys.</h2>
+      <div class="rows">
+        <div class="row"><span>General ledger</span><span>says <b>what</b> moved</span></div>
+        <div class="row"><span>Purchasing / AP</span><span>says <b>which vendor, at what price</b></span></div>
+        <div class="row"><span>Order export</span><span>says <b>which customers and products</b></span></div>
+        <div class="row"><span>Bank feed</span><span>says <b>what cash actually left</b></span></div>
+      </div>
+      <p class="dim" style="margin-top:22px">Users: the controller or fractional CFO of a 20–200-person company at month-end close, and the owner who reads the memo. Today: 1–2 days of spreadsheet exports per close, and booking errors mistaken for real costs.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Synthetic company: Northbound Pantry Co. (fictional) · real Bank of Canada USD/CAD</span><span>1 / 8</span></div>
+</section>
+
+<!-- 2 · solution -->
+<section class="slide">
+  <div class="kicker"><span>2</span> Solution</div>
+  <div class="split">
+    <div><h2 style="margin-top:0">Ask in plain English. Get a memo where every number opens to its rows.</h2>
+      <p class="dim" style="margin-top:26px">A team of agents plans hypotheses, queries all sources through one Zetaris semantic layer, computes an exact margin bridge, and lets a Skeptic veto anything without evidence.</p></div>
+    <table class="tbl">
+      <tr><th>Driver</th><th style="text-align:right">CAD</th><th style="text-align:right">pp</th><th>Named by the agents</th></tr>
+      <tr><td>Booking error</td><td class="n red">−12,450</td><td class="n red">−3.46</td><td>MRP-88213 booked twice, paid once</td></tr>
+      <tr><td>Supplier price</td><td class="n red">−9,116</td><td class="n red">−2.54</td><td>Sierra Nut Co. above contract</td></tr>
+      <tr><td>Customer mix</td><td class="n red">−6,517</td><td class="n red">−1.81</td><td>Capital Wholesale 1,102 → 2,353 units</td></tr>
+      <tr><td>USD/CAD</td><td class="n red">−425</td><td class="n red">−0.12</td><td>measured, immaterial</td></tr>
+      <tr><td>Volume</td><td class="n grn">+18,873</td><td class="n grn">+1.26</td><td>more units sold</td></tr>
+      <tr><td>Residual</td><td class="n">0</td><td class="n">0.00</td><td>shown openly</td></tr>
+      <tr><td colspan="4"><span class="strike">Marketing spend rose</span> <span class="red" style="font-size:17px">opex sits below gross margin</span></td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>Actions in the memo: reverse the duplicate entry, claim the over-contract amount from the vendor</span><span>2 / 8</span></div>
+</section>
+
+<!-- 3 · workflow -->
+<section class="slide">
+  <div class="kicker"><span>3</span> Agent workflow</div>
+  <svg viewBox="0 0 1400 620" width="1400" height="620" style="margin-top:14px">
+    <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#849189"/></marker>
+      <marker id="y" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0L10 5L0 10z" fill="#e9c46a"/></marker>
+      <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8dd3ae"/></marker></defs>
+    <g font-size="20">
+      <g transform="translate(0,30)"><rect width="200" height="74" fill="#13201c" stroke="#34473f"/><text x="100" y="33" text-anchor="middle" font-weight="600">Question</text><text x="100" y="58" text-anchor="middle" fill="#9ca79f" font-size="16">controller, plain English</text></g>
+      <g transform="translate(260,30)"><rect width="200" height="74" fill="#13201c" stroke="#8dd3ae"/><text x="100" y="33" text-anchor="middle" font-weight="600">Memory recall</text><text x="100" y="58" text-anchor="middle" fill="#8dd3ae" font-size="16">Meterless H-MEM</text></g>
+      <g transform="translate(520,30)"><rect width="200" height="74" fill="#13201c" stroke="#34473f"/><text x="100" y="33" text-anchor="middle" font-weight="600">Cartographer</text><text x="100" y="58" text-anchor="middle" fill="#9ca79f" font-size="16">DESCRIBE the USL</text></g>
+      <g transform="translate(780,30)"><rect width="200" height="74" fill="#13201c" stroke="#34473f"/><text x="100" y="33" text-anchor="middle" font-weight="600">Planner</text><text x="100" y="58" text-anchor="middle" fill="#9ca79f" font-size="16">hypothesis tree</text></g>
+      <g transform="translate(700,180)"><rect width="320" height="104" fill="#13201c" stroke="#34473f"/><text x="160" y="34" text-anchor="middle" font-weight="600">Investigators ×7, parallel</text><text x="160" y="60" text-anchor="middle" fill="#9ca79f" font-size="16">run_sql on Zetaris · repair from errors</text><text x="160" y="84" text-anchor="middle" fill="#9ca79f" font-size="16">every result = evidence E#</text></g>
+      <g transform="translate(1080,180)"><rect width="260" height="104" fill="#13201c" stroke="#34473f"/><text x="130" y="34" text-anchor="middle" font-weight="600">Quant</text><text x="130" y="60" text-anchor="middle" fill="#9ca79f" font-size="16">exact margin bridge</text><text x="130" y="84" text-anchor="middle" fill="#9ca79f" font-size="16">+ drill-downs, no LLM</text></g>
+      <g transform="translate(880,360)"><rect width="340" height="104" fill="#13201c" stroke="#f06a4d"/><text x="170" y="34" text-anchor="middle" font-weight="600">Skeptic (veto)</text><text x="170" y="60" text-anchor="middle" fill="#f06a4d" font-size="16">rules + Meterless Markovian review</text><text x="170" y="84" text-anchor="middle" fill="#9ca79f" font-size="16">checks every claim against Quant</text></g>
+      <g transform="translate(520,374)"><rect width="250" height="76" fill="#13201c" stroke="#34473f"/><text x="125" y="33" text-anchor="middle" font-weight="600">Writer + reviewer</text><text x="125" y="58" text-anchor="middle" fill="#9ca79f" font-size="16">memo, every figure cited</text></g>
+      <g transform="translate(200,374)"><rect width="250" height="76" fill="#13201c" stroke="#8dd3ae"/><text x="125" y="33" text-anchor="middle" font-weight="600">Confirm / Reject</text><text x="125" y="58" text-anchor="middle" fill="#8dd3ae" font-size="16">steward → H-MEM</text></g>
+      <g transform="translate(0,520)"><rect width="1340" height="70" fill="none" stroke="#8dd3ae" stroke-dasharray="6 6"/><text x="670" y="30" text-anchor="middle" font-weight="600" fill="#8dd3ae">Meterless World Model: one shared evidence graph for every agent</text><text x="670" y="54" text-anchor="middle" fill="#9ca79f" font-size="16">Question ← Hypothesis ← Finding ← Evidence → Vendor · Invoice · Customer · each write attributed to the agent that made it</text></g>
+      <g stroke="#849189" stroke-width="2" fill="none">
+        <path d="M200 67H256" marker-end="url(#a)"/><path d="M460 67H516" marker-end="url(#a)"/><path d="M720 67H776" marker-end="url(#a)"/>
+        <path d="M860 104V176" marker-end="url(#a)"/><path d="M940 104 C 940 140, 1210 130, 1210 176" marker-end="url(#a)"/>
+        <path d="M940 284V356" marker-end="url(#a)"/><path d="M1210 284V356" marker-end="url(#a)"/>
+        <path d="M880 412H774" marker-end="url(#a)"/><path d="M520 412H454" marker-end="url(#a)"/>
+      </g>
+      <path d="M900 360 C 860 330, 790 330, 760 290" stroke="#e9c46a" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#y)"/>
+      <text x="560" y="326" fill="#e9c46a" font-size="16">sends back, ≤2 rounds</text>
+      <path d="M300 374 C 300 300, 360 160, 360 108" stroke="#8dd3ae" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#g)"/>
+      <text x="90" y="250" fill="#8dd3ae" font-size="16">next close starts warm</text>
+    </g>
+  </svg>
+  <div class="foot"><span>Bounded: ≤3 SQL repairs, ≤2 Skeptic rounds, 8-minute run budget · JSONL trace per run</span><span>3 / 8</span></div>
+</section>
+
+<!-- 4 · stack -->
+<section class="slide">
+  <div class="kicker"><span>4</span> Technical stack</div>
+  <div class="rows" style="margin-top:40px">
+    <div class="row"><span>Data</span><span><b>Zetaris</b> local platform · 2 Postgres (JDBC), CSV file store, 2 REST sources (bank feed, live Bank of Canada) · Unified Semantic Layer <span class="mono">finance_usl</span></span></div>
+    <div class="row"><span>Power</span><span><b>Meterless Runtime</b> (Nightshift) as the primary AI provider, contract v4 · <b>NVIDIA Nemotron 3 Super</b> on a Runtime lane</span></div>
+    <div class="row"><span>Cognition</span><span><b>Meterless engines</b> H-MEM, World Model, Markovian (vendored, conformance 13/13, 8/8, 8/8)</span></div>
+    <div class="row"><span>App</span><span>TypeScript · Node 20 · zod-validated model JSON · vitest (37 tests) · node:http API with server-sent events · vanilla web UI</span></div>
+    <div class="row"><span>Build</span><span><b>Cursor</b> project and Cursor Agent CLI sessions, logged in <span class="mono">docs/cursor-sessions.md</span></span></div>
+    <div class="row"><span>Judge path</span><span><span class="mono">SAMPLE_MODE=true</span> replays recorded live runs · Docker image (CPU) · <span class="mono">POST /run</span> · <span class="mono">npm run eval</span> against planted ground truth</span></div>
+  </div>
+  <div class="foot"><span>Apache-2.0 · repo includes data generator, Zetaris setup scripts, traces</span><span>4 / 8</span></div>
+</section>
+
+<!-- 5 · sponsor use -->
+<section class="slide">
+  <div class="kicker"><span>5</span> How Zetaris and Meterless are used</div>
+  <div class="split" style="grid-template-columns:1fr 1fr">
+    <div>
+      <h2 style="margin-top:0;font-size:44px">Zetaris is the only door to the data</h2>
+      <ul class="clean">
+        <li>5 sources registered by script; agents query only <span class="mono">POST /sql-editor/sqls/run</span></li>
+        <li><span class="mono">finance_usl</span>: 9 business tables, PK/FK, activated from raw sources, BoC rate joined on invoice date</li>
+        <li><span class="mono">RUN DQ</span>: PK rule flags MRP-88213 (31 records, 2 invalid) before any agent asks</li>
+        <li>Investigators write Spark SQL and repair it from Zetaris error messages</li>
+      </ul>
+    </div>
+    <div>
+      <h2 style="margin-top:0;font-size:44px">Meterless is memory, shared state and power</h2>
+      <ul class="clean">
+        <li><b>H-MEM</b>: schema map (warm run skips discovery), confirmed findings, Skeptic rulings, audit ledger</li>
+        <li><b>World Model</b>: one evidence graph for 10+ agents, provenance per write</li>
+        <li><b>Markovian</b>: Skeptic reviews evidence rows in bounded chunks with carryover</li>
+        <li><b>Runtime</b>: every model call app → Meterless → Nemotron, signed receipt per call</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Evidence files: docs/evidence/zetaris-usl-checks.txt · conformance-*.txt · provider-check.txt</span><span>5 / 8</span></div>
+</section>
+
+<!-- 6 · unique -->
+<section class="slide">
+  <div class="kicker"><span>6</span> What was unique</div>
+  <div class="rows" style="margin-top:40px">
+    <div class="row"><span>Skeptic first</span><span>Deterministic veto against the Quant bridge and drill-down; it also <b>challenges false negatives</b>: "you found nothing, but the bridge measures CAD 6,517 for mix: find the rows".</span></div>
+    <div class="row"><span>DQ as evidence</span><span>Zetaris USL data-quality rules are part of the investigation: the duplicate is a primary-key violation in the semantic layer.</span></div>
+    <div class="row"><span>Cross-system proof</span><span>A cost claim needs AP <i>and</i> bank; the memo shows "booked twice, paid once" with both row sets.</span></div>
+    <div class="row"><span>Memory that changes the next close</span><span>A confirmed finding becomes the first check next month (H-MEM), visible in the UI.</span></div>
+    <div class="row"><span>Measured, not claimed</span><span>Planted ground truth + 22-check eval: 16/22 on the first run → 22/22 after the Skeptic and drill-down changes.</span></div>
+  </div>
+  <div class="foot"><span>Accounting conventions in the UI: tick marks, red-pencil strikes, double footing rule</span><span>6 / 8</span></div>
+</section>
+
+<!-- 7 · visuals -->
+<section class="slide">
+  <div class="kicker"><span>7</span> Product</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px;align-items:start">
+    <img class="shot" src="../img/ui-bridge-crop.png" alt="Headline and margin bridge with audit ticks">
+    <img class="shot" src="../img/ui-evidence-crop.png" alt="Evidence drawer: AP booked twice, bank paid once">
+  </div>
+  <div class="foot"><span>Live agent log · margin bridge with ticks · evidence drawer (SQL + rows + systems) · struck-out hypotheses · memo with citations · feedback</span><span>7 / 8</span></div>
+</section>
+
+<!-- 8 · future -->
+<section class="slide">
+  <div class="kicker"><span>8</span> Future enhancements</div>
+  <ul class="clean next" style="margin-top:40px;font-size:26px">
+    <li>Connect real ledgers through Zetaris (QuickBooks, Xero, NetSuite exports, bank APIs) and grow <span class="mono">finance_usl</span> per client</li>
+    <li>Inventory-aware costing (FIFO / weighted average) and budget-vs-actual bridges</li>
+    <li>Draft the fix: reversing journal entry and vendor credit request, queued for the controller's approval</li>
+    <li>Close calendar: run the detective nightly in the last week of the month, alert on new material drivers</li>
+    <li>Multi-entity and FX translation; more question types with their own Skeptic rules</li>
+    <li>Ship inside FINMOZG, our finance product for small companies</li>
+  </ul>
+  <div class="foot"><span>Decision support: a controller signs off before any entry, claim or report</span><span>8 / 8</span></div>
+</section>
+
+</body>
+</html>

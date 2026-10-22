@@ -1,0 +1,22 @@
+{
+ "sql": "SELECT\n  period,\n  AVG(fx_rate) AS avg_fx_rate\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE currency = 'USD' AND period IN ('2026-08','2026-09')\nGROUP BY period\nORDER BY period",
+ "result": {
+  "headers": [
+   "period",
+   "avg_fx_rate"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "1.3875"
+   ],
+   [
+    "2026-09",
+    "1.3917"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 1224,
+  "queryId": "e8bd2e6d-4233-4b18-ad6a-82c634dcb22a"
+ }
+}

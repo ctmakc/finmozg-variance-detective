@@ -1,0 +1,60 @@
+{
+ "sql": "WITH chan AS (\n  SELECT sl.period, c.channel, SUM(sl.revenue_cad) AS revenue, SUM(sl.qty) AS qty\n  FROM lightning.metastore.finmozg.finance_usl.sales_line sl\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\n  WHERE sl.period IN ('2026-08', '2026-09')\n  GROUP BY sl.period, c.channel\n)\nSELECT period,\n       channel,\n       revenue,\n       qty,\n       SUM(revenue) OVER (PARTITION BY period) AS total_revenue_period,\n       SUM(qty) OVER (PARTITION BY period) AS total_qty_period,\n       revenue / SUM(revenue) OVER (PARTITION BY period) AS revenue_share,\n       qty / SUM(qty) OVER (PARTITION BY period) AS qty_share\nFROM chan\nORDER BY period, channel",
+ "result": {
+  "headers": [
+   "period",
+   "channel",
+   "revenue",
+   "qty",
+   "total_revenue_period",
+   "total_qty_period",
+   "revenue_share",
+   "qty_share"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "retail",
+    "293696.0",
+    "12961.0",
+    "319554.56",
+    "14561.0",
+    "0.9190793584669861",
+    "0.8901174369892177"
+   ],
+   [
+    "2026-08",
+    "wholesale",
+    "25858.56",
+    "1600.0",
+    "319554.56",
+    "14561.0",
+    "0.08092064153301395",
+    "0.10988256301078222"
+   ],
+   [
+    "2026-09",
+    "retail",
+    "309190.0",
+    "13938.0",
+    "359443.83999999997",
+    "16727.0",
+    "0.8601900090985007",
+    "0.833263585819334"
+   ],
+   [
+    "2026-09",
+    "wholesale",
+    "50253.83999999999",
+    "2789.0",
+    "359443.83999999997",
+    "16727.0",
+    "0.13980999090149937",
+    "0.16673641418066598"
+   ]
+  ],
+  "total": 4,
+  "timeUsedMs": 675,
+  "queryId": "d2e90861-c6da-4825-a264-07e272931040"
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "sql": "WITH purchase_agg AS (\n  SELECT sku, period,\n         SUM(qty) AS total_qty,\n         SUM(amount_cad) AS total_cost_cad\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE period IN ('2026-08', '2026-09')\n  GROUP BY sku, period\n),\nsales_with_cost AS (\n  SELECT s.period, s.customer_id, s.sku, s.qty, s.revenue_cad,\n         pa.total_cost_cad / pa.total_qty AS unit_cost_cad,\n         s.qty * (pa.total_cost_cad / pa.total_qty) AS cost_cad\n  FROM lightning.metastore.finmozg.finance_usl.sales_line s\n  JOIN purchase_agg pa ON s.sku = pa.sku AND s.period = pa.period\n  WHERE s.period IN ('2026-08', '2026-09')\n),\nsales_channel AS (\n  SELECT swc.period, c.channel,\n         SUM(swc.revenue_cad) AS revenue_cad,\n         SUM(swc.cost_cad) AS cost_cad,\n         SUM(swc.qty) AS qty\n  FROM sales_with_cost swc\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON swc.customer_id = c.customer_id\n  GROUP BY swc.period, c.channel\n)\nSELECT period, channel,\n       revenue_cad, cost_cad,\n       (revenue_cad - cost_cad) AS gross_margin_cad,\n       qty,\n       (revenue_cad - cost_cad) / NULLIF(qty,0) AS margin_per_unit_cad\nFROM sales_channel\nORDER BY period, channel",
+ "result": {
+  "headers": [
+   "period",
+   "channel",
+   "revenue_cad",
+   "cost_cad",
+   "gross_margin_cad",
+   "qty",
+   "margin_per_unit_cad"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "retail",
+    "293696.0",
+    "173168.729997092",
+    "120527.27000290799",
+    "12961.0",
+    "9.2992261401827"
+   ],
+   [
+    "2026-08",
+    "wholesale",
+    "25858.56",
+    "19513.830002908075",
+    "6344.729997091927",
+    "1600.0",
+    "3.9654562481824542"
+   ],
+   [
+    "2026-09",
+    "retail",
+    "309190.0",
+    "189637.9040537753",
+    "119552.0959462247",
+    "13938.0",
+    "8.577421146952554"
+   ],
+   [
+    "2026-09",
+    "wholesale",
+    "50253.83999999999",
+    "40119.115946224694",
+    "10134.724053775295",
+    "2789.0",
+    "3.633820026452239"
+   ]
+  ],
+  "total": 4,
+  "timeUsedMs": 1994,
+  "queryId": "d0d379fb-e27f-49fc-af5e-cda11734e072"
+ }
+}

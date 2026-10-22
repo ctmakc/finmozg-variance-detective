@@ -1,0 +1,60 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.vendor_bill",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "vendor_invoice_no",
+    "varchar(40)",
+    ""
+   ],
+   [
+    "vendor_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "ap_doc_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "invoice_date",
+    "varchar(10)",
+    ""
+   ],
+   [
+    "period",
+    "varchar(7)",
+    ""
+   ],
+   [
+    "currency",
+    "varchar(3)",
+    ""
+   ],
+   [
+    "amount_orig",
+    "double",
+    ""
+   ],
+   [
+    "fx_rate",
+    "double",
+    ""
+   ],
+   [
+    "amount_cad",
+    "double",
+    ""
+   ]
+  ],
+  "total": 9,
+  "timeUsedMs": 37,
+  "queryId": "02cae653-1afe-4e20-9105-24a0f910a7d4"
+ }
+}

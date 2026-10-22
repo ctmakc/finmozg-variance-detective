@@ -1,0 +1,38 @@
+{
+ "sql": "SELECT period, SUM(amount_cad) AS total_amount_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE sku = 'PKG'\nGROUP BY period\nORDER BY period",
+ "result": {
+  "headers": [
+   "period",
+   "total_amount_cad"
+  ],
+  "rows": [
+   [
+    "2026-04",
+    "11902.15"
+   ],
+   [
+    "2026-05",
+    "11629.98"
+   ],
+   [
+    "2026-06",
+    "11978.53"
+   ],
+   [
+    "2026-07",
+    "12386.39"
+   ],
+   [
+    "2026-08",
+    "12051.26"
+   ],
+   [
+    "2026-09",
+    "24900.0"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 1429,
+  "queryId": "4642becd-4441-4614-b9dc-d8667a5b2235"
+ }
+}

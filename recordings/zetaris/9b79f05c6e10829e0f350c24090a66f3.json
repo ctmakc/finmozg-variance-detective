@@ -1,0 +1,66 @@
+{
+ "sql": "SELECT vendor_id, sku, period, SUM(qty) AS total_qty, SUM(amount_cad) AS total_amount_cad,\n       SUM(amount_cad)/SUM(qty) AS avg_cost_per_unit_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line\nWHERE vendor_id = 'VEND-SNC'\n  AND sku IN ('NUT-ALM','NUT-CAS','NUT-PEC')\n  AND period IN ('2026-08','2026-09')\nGROUP BY vendor_id, sku, period\nORDER BY period, sku",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "sku",
+   "period",
+   "total_qty",
+   "total_amount_cad",
+   "avg_cost_per_unit_cad"
+  ],
+  "rows": [
+   [
+    "VEND-SNC",
+    "NUT-ALM",
+    "2026-08",
+    "1045.0",
+    "17341.25",
+    "16.5944976076555"
+   ],
+   [
+    "VEND-SNC",
+    "NUT-CAS",
+    "2026-08",
+    "1408.0",
+    "26686.18",
+    "18.95325284090909"
+   ],
+   [
+    "VEND-SNC",
+    "NUT-PEC",
+    "2026-08",
+    "1270.0",
+    "25586.06",
+    "20.146503937007875"
+   ],
+   [
+    "VEND-SNC",
+    "NUT-ALM",
+    "2026-09",
+    "1142.0",
+    "21296.91",
+    "18.648782837127847"
+   ],
+   [
+    "VEND-SNC",
+    "NUT-CAS",
+    "2026-09",
+    "1606.0",
+    "34196.57",
+    "21.293007471980076"
+   ],
+   [
+    "VEND-SNC",
+    "NUT-PEC",
+    "2026-09",
+    "1317.0",
+    "29802.45",
+    "22.629043280182234"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 1387,
+  "queryId": "7bd159bc-e190-4da8-999e-045a0d9dac3b"
+ }
+}

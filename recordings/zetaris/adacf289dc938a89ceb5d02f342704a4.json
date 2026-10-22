@@ -1,0 +1,25 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.fx_rate",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "rate_date",
+    "varchar(10)",
+    ""
+   ],
+   [
+    "usdcad",
+    "double",
+    ""
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 35,
+  "queryId": "f53f032c-40a8-4a9c-a20e-9e3386f2fd03"
+ }
+}

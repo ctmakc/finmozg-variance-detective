@@ -1,0 +1,20 @@
+{
+ "sql": "WITH aug_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate_aug\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-08'\n),\nsep_avg AS (\n  SELECT AVG(fx_rate) AS fx_rate_sep\n  FROM lightning.metastore.finmozg.finance_usl.purchase_line\n  WHERE currency = 'USD' AND period = '2026-09'\n)\nSELECT\n  pl_sep.vendor_id,\n  v.vendor_name,\n  SUM(pl_sep.qty * pl_sep.unit_price_orig * (sep_avg.fx_rate_sep - aug_avg.fx_rate_aug)) AS vendor_fx_impact_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl_sep\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl_sep.vendor_id = v.vendor_id\nCROSS JOIN aug_avg\nCROSS JOIN sep_avg\nWHERE pl_sep.currency = 'USD' AND pl_sep.period = '2026-09'\nGROUP BY pl_sep.vendor_id, v.vendor_name\nORDER BY vendor_fx_impact_cad DESC\nLIMIT 1",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name",
+   "vendor_fx_impact_cad"
+  ],
+  "rows": [
+   [
+    "VEND-SNC",
+    "Sierra Nut Co.",
+    "257.4138839999989"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 3350,
+  "queryId": "f02f1498-0a2a-4c6a-9405-1a8f99612615"
+ }
+}

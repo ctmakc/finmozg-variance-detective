@@ -1,0 +1,40 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.product",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "sku",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "product_name",
+    "varchar(100)",
+    ""
+   ],
+   [
+    "category",
+    "varchar(30)",
+    ""
+   ],
+   [
+    "list_price_cad",
+    "double",
+    ""
+   ],
+   [
+    "wholesale_price_cad",
+    "double",
+    ""
+   ]
+  ],
+  "total": 5,
+  "timeUsedMs": 34,
+  "queryId": "0990269e-ff4f-4166-816b-eb2616379dcf"
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.sales_line",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "sales_line_id",
+    "varchar(40)",
+    ""
+   ],
+   [
+    "order_id",
+    "varchar(30)",
+    ""
+   ],
+   [
+    "period",
+    "varchar(7)",
+    ""
+   ],
+   [
+    "customer_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "sku",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "qty",
+    "double",
+    ""
+   ],
+   [
+    "unit_price_cad",
+    "double",
+    ""
+   ],
+   [
+    "revenue_cad",
+    "double",
+    ""
+   ]
+  ],
+  "total": 8,
+  "timeUsedMs": 36,
+  "queryId": "e16d1529-5ec2-44c8-bdfb-efb5ac9d7c3f"
+ }
+}

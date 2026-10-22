@@ -1,0 +1,30 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.customer",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "customer_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "customer_name",
+    "varchar(100)",
+    ""
+   ],
+   [
+    "channel",
+    "varchar(20)",
+    ""
+   ]
+  ],
+  "total": 3,
+  "timeUsedMs": 32,
+  "queryId": "753c2ad6-19e7-47ed-9819-5f70330d8a47"
+ }
+}

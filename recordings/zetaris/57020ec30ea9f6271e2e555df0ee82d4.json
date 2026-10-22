@@ -1,0 +1,31 @@
+{
+ "sql": "SELECT DISTINCT period FROM lightning.metastore.finmozg.finance_usl.gl_balance ORDER BY period",
+ "result": {
+  "headers": [
+   "period"
+  ],
+  "rows": [
+   [
+    "2026-04"
+   ],
+   [
+    "2026-05"
+   ],
+   [
+    "2026-06"
+   ],
+   [
+    "2026-07"
+   ],
+   [
+    "2026-08"
+   ],
+   [
+    "2026-09"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 481,
+  "queryId": "81940a3b-edf3-4cc9-bad8-1aae79cdfaef"
+ }
+}

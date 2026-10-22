@@ -1,0 +1,52 @@
+{
+ "sql": "SELECT s.customer_id, c.customer_name, c.channel,\nSUM(CASE WHEN s.period = '2026-08' THEN s.qty ELSE 0 END) AS qty_a, SUM(CASE WHEN s.period = '2026-09' THEN s.qty ELSE 0 END) AS qty_b\nFROM lightning.metastore.finmozg.finance_usl.sales_line s JOIN lightning.metastore.finmozg.finance_usl.customer c ON c.customer_id = s.customer_id\nWHERE s.period IN ('2026-08', '2026-09') GROUP BY s.customer_id, c.customer_name, c.channel\nORDER BY SUM(CASE WHEN s.period = '2026-09' THEN s.qty ELSE 0 END) - SUM(CASE WHEN s.period = '2026-08' THEN s.qty ELSE 0 END) DESC LIMIT 5",
+ "result": {
+  "headers": [
+   "customer_id",
+   "customer_name",
+   "channel",
+   "qty_a",
+   "qty_b"
+  ],
+  "rows": [
+   [
+    "CUST-W01",
+    "Capital Wholesale Grocers",
+    "wholesale",
+    "1102.0",
+    "2353.0"
+   ],
+   [
+    "CUST-R11",
+    "Vanier Village Grocer",
+    "retail",
+    "615.0",
+    "934.0"
+   ],
+   [
+    "CUST-R10",
+    "Sandy Hill Spices",
+    "retail",
+    "571.0",
+    "794.0"
+   ],
+   [
+    "CUST-R17",
+    "Perth Pantry",
+    "retail",
+    "709.0",
+    "866.0"
+   ],
+   [
+    "CUST-R04",
+    "Kanata Kitchen Co.",
+    "retail",
+    "708.0",
+    "841.0"
+   ]
+  ],
+  "total": 5,
+  "timeUsedMs": 613,
+  "queryId": "48c862e7-8e44-4cee-a770-8c187074fe99"
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "sql": "DESCRIBE lightning.metastore.finmozg.finance_usl.vendor",
+ "result": {
+  "headers": [
+   "col_name",
+   "data_type",
+   "comment"
+  ],
+  "rows": [
+   [
+    "vendor_id",
+    "varchar(20)",
+    ""
+   ],
+   [
+    "vendor_name",
+    "varchar(100)",
+    ""
+   ],
+   [
+    "currency",
+    "varchar(3)",
+    ""
+   ]
+  ],
+  "total": 3,
+  "timeUsedMs": 52,
+  "queryId": "cf4a6cae-c621-4d6c-90dc-ce2f574d1d3d"
+ }
+}

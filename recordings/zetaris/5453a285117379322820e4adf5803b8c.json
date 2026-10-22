@@ -1,0 +1,20 @@
+{
+ "sql": "SELECT pl.vendor_id, v.vendor_name, SUM(pl.amount_cad) AS sep_amount_cad\nFROM lightning.metastore.finmozg.finance_usl.purchase_line pl\nJOIN lightning.metastore.finmozg.finance_usl.vendor v ON pl.vendor_id = v.vendor_id\nWHERE pl.period = '2026-09' AND pl.sku = 'PKG'\nGROUP BY pl.vendor_id, v.vendor_name\nORDER BY sep_amount_cad DESC",
+ "result": {
+  "headers": [
+   "vendor_id",
+   "vendor_name",
+   "sep_amount_cad"
+  ],
+  "rows": [
+   [
+    "VEND-MRP",
+    "Maple Ridge Packaging",
+    "24900.0"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 1134,
+  "queryId": "bc305c00-c9a0-46f3-bfe4-5de6713235dd"
+ }
+}

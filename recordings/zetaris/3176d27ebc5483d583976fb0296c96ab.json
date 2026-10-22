@@ -1,0 +1,59 @@
+{
+ "sql": "SELECT sl.period, c.customer_id, c.customer_name, SUM(sl.revenue_cad) AS revenue, SUM(sl.qty) AS qty\nFROM lightning.metastore.finmozg.finance_usl.sales_line sl\nJOIN lightning.metastore.finmozg.finance_usl.customer c ON sl.customer_id = c.customer_id\nWHERE c.channel = 'wholesale' AND sl.period IN ('2026-08', '2026-09')\nGROUP BY sl.period, c.customer_id, c.customer_name\nORDER BY sl.period, revenue DESC",
+ "result": {
+  "headers": [
+   "period",
+   "customer_id",
+   "customer_name",
+   "revenue",
+   "qty"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "CUST-W01",
+    "Capital Wholesale Grocers",
+    "17526.6",
+    "1102.0"
+   ],
+   [
+    "2026-08",
+    "CUST-W02",
+    "Laurentian Foodservice Dist.",
+    "4570.799999999999",
+    "292.0"
+   ],
+   [
+    "2026-08",
+    "CUST-W03",
+    "Ottawa Valley Distributors",
+    "3761.1600000000003",
+    "206.0"
+   ],
+   [
+    "2026-09",
+    "CUST-W01",
+    "Capital Wholesale Grocers",
+    "42505.32",
+    "2353.0"
+   ],
+   [
+    "2026-09",
+    "CUST-W02",
+    "Laurentian Foodservice Dist.",
+    "4358.64",
+    "227.0"
+   ],
+   [
+    "2026-09",
+    "CUST-W03",
+    "Ottawa Valley Distributors",
+    "3389.8799999999997",
+    "209.0"
+   ]
+  ],
+  "total": 6,
+  "timeUsedMs": 601,
+  "queryId": "81273d26-d70d-4386-b08a-a820adc06432"
+ }
+}

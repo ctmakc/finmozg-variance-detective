@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT period, SUM(qty) AS total_qty, SUM(revenue_cad) AS total_revenue\nFROM lightning.metastore.finmozg.finance_usl.sales_line\nWHERE period IN ('2026-08', '2026-09')\nGROUP BY period\nORDER BY period",
+ "result": {
+  "headers": [
+   "period",
+   "total_qty",
+   "total_revenue"
+  ],
+  "rows": [
+   [
+    "2026-08",
+    "14561.0",
+    "319554.56000000006"
+   ],
+   [
+    "2026-09",
+    "16727.0",
+    "359443.84000000014"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 483,
+  "queryId": "ee871bcf-1ca3-4634-9bdc-265bec1d2b5a"
+ }
+}

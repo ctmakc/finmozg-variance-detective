@@ -1,0 +1,28 @@
+{
+ "sql": "WITH sales_cost AS (\n  SELECT s.period, s.customer_id, s.sku, s.qty, s.revenue_cad,\n         (pl.amount_cad / pl.qty) AS unit_cost_cad,\n         s.qty * (pl.amount_cad / pl.qty) AS cost_cad\n  FROM lightning.metastore.finmozg.finance_usl.sales_line s\n  JOIN lightning.metastore.finmozg.finance_usl.purchase_line pl\n    ON s.sku = pl.sku AND s.period = pl.period\n  WHERE s.period IN ('2026-08','2026-09')\n),\nchannel_agg AS (\n  SELECT sc.period, c.channel,\n         SUM(sc.revenue_cad) AS revenue,\n         SUM(sc.cost_cad) AS cost,\n         SUM(sc.qty) AS qty,\n         (SUM(sc.revenue_cad) - SUM(sc.cost_cad)) / NULLIF(SUM(sc.qty),0) AS margin_per_unit\n  FROM sales_cost sc\n  JOIN lightning.metastore.finmozg.finance_usl.customer c ON sc.customer_id = c.customer_id\n  GROUP BY sc.period, c.channel\n)\nSELECT \n  aug.channel,\n  aug.margin_per_unit AS margin_per_unit_aug,\n  aug.qty AS qty_aug,\n  sep.qty AS qty_sep\nFROM (\n  SELECT channel, margin_per_unit, qty FROM channel_agg WHERE period = '2026-08'\n) aug\nJOIN (\n  SELECT channel, qty FROM channel_agg WHERE period = '2026-09'\n) sep ON aug.channel = sep.channel",
+ "result": {
+  "headers": [
+   "channel",
+   "margin_per_unit_aug",
+   "qty_aug",
+   "qty_sep"
+  ],
+  "rows": [
+   [
+    "retail",
+    "9.299226140182704",
+    "12961.0",
+    "13938.0"
+   ],
+   [
+    "wholesale",
+    "3.9654562481824542",
+    "1600.0",
+    "2789.0"
+   ]
+  ],
+  "total": 2,
+  "timeUsedMs": 4889,
+  "queryId": "f00dd91c-2b3f-47d6-a689-4372e704116a"
+ }
+}

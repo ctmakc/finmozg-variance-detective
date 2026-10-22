@@ -1,0 +1,22 @@
+{
+ "sql": "WITH dup_bills AS (\n SELECT vendor_invoice_no, COUNT(*) AS bill_count, COLLECT_SET(ap_doc_id) AS ap_doc_ids\n FROM lightning.metastore.finmozg.finance_usl.vendor_bill\n GROUP BY vendor_invoice_no\n HAVING COUNT(*) > 1\n),\npay_counts AS (\n SELECT vendor_invoice_no, COUNT(*) AS payment_count\n FROM lightning.metastore.finmozg.finance_usl.vendor_payment\n GROUP BY vendor_invoice_no\n)\nSELECT d.vendor_invoice_no, d.bill_count, d.ap_doc_ids, COALESCE(p.payment_count,0) AS payment_count\nFROM dup_bills d\nLEFT JOIN pay_counts p ON d.vendor_invoice_no = p.vendor_invoice_no",
+ "result": {
+  "headers": [
+   "vendor_invoice_no",
+   "bill_count",
+   "ap_doc_ids",
+   "payment_count"
+  ],
+  "rows": [
+   [
+    "MRP-88213",
+    "2",
+    "[\"AP-00031\",\"AP-00030\"]",
+    "1"
+   ]
+  ],
+  "total": 1,
+  "timeUsedMs": 945,
+  "queryId": "4c6e0bb9-0e3b-416a-b961-51c76de7c1b6"
+ }
+}
