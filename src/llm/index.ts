@@ -128,7 +128,7 @@ export class Llm {
   }
 
   /** Ask for JSON, validate with zod, retry once with the validation error. */
-  async chatJson<T>(req: ChatRequest, schema: z.ZodType<T>): Promise<{ value: T; result: ChatResult }> {
+  async chatJson<T>(req: ChatRequest, schema: z.ZodType<T, z.ZodTypeDef, unknown>): Promise<{ value: T; result: ChatResult }> {
     let messages = req.messages;
     let lastErr = "";
     for (let attempt = 0; attempt < 2; attempt++) {

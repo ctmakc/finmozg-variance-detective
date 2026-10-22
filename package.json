@@ -15,7 +15,9 @@
     "zetaris:register": "tsx scripts/zetaris-register.ts",
     "zetaris:usl": "tsx scripts/zetaris-usl.ts",
     "provider:check": "tsx scripts/provider-check.ts",
-    "conformance": "bash scripts/conformance.sh"
+    "conformance": "bash scripts/conformance.sh",
+    "agent": "tsx src/cli.ts",
+    "feedback": "tsx src/cli.ts feedback"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
