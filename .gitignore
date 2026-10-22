@@ -9,3 +9,6 @@ logs/*
 dist/
 *.log
 scratch/
+.hmem-record/
+.hmem-video/
+.hmem-*/
