@@ -6,6 +6,7 @@
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
+import { DetectiveMemory } from "./memory/hmem.js";
 
 export const isSampleMode = () => process.env.SAMPLE_MODE === "true";
 
@@ -26,4 +27,30 @@ export function sampleMemoryDir(question: string, recordings = process.env.RECOR
   const snap = name ? join(recordings, "hmem", name) : "";
   if (snap && existsSync(snap)) cpSync(snap, tmp, { recursive: true });
   return tmp;
+}
+
+/**
+ * H-MEM ranks memories by recency, so a replay recalls the same memories only if "now" is the time of the
+ * recording. Pin the clock to the newest ledger timestamp in the snapshot; an empty snapshot keeps the real clock.
+ */
+export function snapshotClock(dir: string): (() => number) | undefined {
+  const ledger = join(dir, "ledger.jsonl");
+  if (!existsSync(ledger)) return undefined;
+  let latest = 0;
+  for (const line of readFileSync(ledger, "utf8").split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const t = Number(JSON.parse(line).timestamp);
+      if (Number.isFinite(t) && t > latest) latest = t;
+    } catch {
+      /* a torn last line must not break the replay */
+    }
+  }
+  return latest > 0 ? () => latest : undefined;
+}
+
+/** H-MEM for a SAMPLE_MODE replay: the recorded snapshot, with the clock pinned to when it was taken. */
+export function sampleMemory(question: string): DetectiveMemory {
+  const dir = sampleMemoryDir(question);
+  return new DetectiveMemory(dir, snapshotClock(dir));
 }

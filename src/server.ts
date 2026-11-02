@@ -9,15 +9,15 @@
  *   GET  /memory         H-MEM contents summary
  */
 import "dotenv/config";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, sep } from "node:path";
 import { applyFeedback } from "./agents/steward.js";
-import type { RunOutput, TraceEvent } from "./agents/types.js";
+import { isPeriod, type RunOutput, type TraceEvent } from "./agents/types.js";
 import { providerFromEnv } from "./llm/index.js";
 import { DetectiveMemory } from "./memory/hmem.js";
 import { newRunId, runInvestigation } from "./orchestrator.js";
-import { isSampleMode, sampleMemoryDir } from "./sample.js";
+import { isSampleMode, sampleMemory } from "./sample.js";
 import { ZetarisClient, zetarisConfigFromEnv } from "./zetaris/client.js";
 
 const PORT = Number(process.env.PORT ?? 8795);
@@ -39,13 +39,27 @@ function send(res: ServerResponse, status: number, body: unknown) {
   res.end(JSON.stringify(body));
 }
 
+class HttpError extends Error {
+  constructor(readonly status: number, message: string) {
+    super(message);
+  }
+}
+
 async function readBody(req: IncomingMessage): Promise<any> {
   let raw = "";
   for await (const chunk of req) {
     raw += chunk;
-    if (raw.length > 100_000) throw new Error("body too large");
+    if (raw.length > 100_000) throw new HttpError(413, "body too large");
   }
-  return raw ? JSON.parse(raw) : {};
+  if (!raw) return {};
+  let body: unknown;
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    throw new HttpError(400, "body must be JSON");
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) throw new HttpError(400, "body must be a JSON object");
+  return body;
 }
 
 function loadRun(id: string): RunOutput | undefined {
@@ -64,7 +78,7 @@ function startRun(input: { question: string; periodA?: string; periodB?: string 
   let paced = 0;
   entry.done = runInvestigation(input, {
     runId,
-    memory: isSampleMode() ? new DetectiveMemory(sampleMemoryDir(input.question)) : memory,
+    memory: isSampleMode() ? sampleMemory(input.question) : memory,
     onEvent: (e) => {
       // Sample mode replays in milliseconds; pace the stream so the timeline is readable (labelled as a replay).
       const send = () => {
@@ -95,7 +109,7 @@ function serveStatic(req: IncomingMessage, res: ServerResponse): boolean {
   const url = new URL(req.url ?? "/", "http://x");
   const rel = normalize(url.pathname === "/" ? "/index.html" : url.pathname).replace(/^(\.\.[/\\])+/, "");
   const p = join(UI_DIR, rel);
-  if (!p.startsWith(UI_DIR) || !existsSync(p)) return false;
+  if (!(p === UI_DIR || p.startsWith(UI_DIR + sep)) || !existsSync(p) || !statSync(p).isFile()) return false;
   res.writeHead(200, { "content-type": MIME[extname(p)] ?? "application/octet-stream", "cache-control": "no-cache" });
   res.end(readFileSync(p));
   return true;
@@ -139,6 +153,7 @@ const server = createServer(async (req, res) => {
     if (req.method === "POST" && path === "/run") {
       const body = await readBody(req);
       if (!body.question || typeof body.question !== "string") return send(res, 400, { error: "question (string) is required" });
+      for (const k of ["periodA", "periodB"] as const) if (body[k] !== undefined && body[k] !== "" && !isPeriod(body[k])) return send(res, 400, { error: `${k} must be YYYY-MM` });
       if (running >= 2) return send(res, 429, { error: "two investigations are already running; try again shortly" });
       const runId = startRun({ question: body.question.slice(0, 500), periodA: body.periodA, periodB: body.periodB });
       if (url.searchParams.get("wait") === "1") return send(res, 200, await live.get(runId)!.done);
@@ -196,6 +211,7 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && serveStatic(req, res)) return;
     send(res, 404, { error: "not found" });
   } catch (err) {
+    if (err instanceof HttpError) return send(res, err.status, { error: err.message });
     send(res, 500, { error: String((err as Error).message ?? err) });
   }
 });

@@ -4,7 +4,7 @@
  */
 import { computeMarginBridge, type BridgeResult, type PeriodCell, type PeriodInput } from "../quant/bridge.js";
 import { type SqlResult, asObjects } from "../zetaris/client.js";
-import type { BridgeComponent, Emit, EvidenceItem } from "./types.js";
+import { type BridgeComponent, type Emit, type EvidenceItem, isPeriod } from "./types.js";
 
 export const USL = "lightning.metastore.finmozg.finance_usl";
 
@@ -25,10 +25,20 @@ export interface QuantResult {
   evidence: EvidenceItem[];
 }
 
-const num = (s: string | undefined) => (s === undefined || s === "" ? 0 : Number(s));
+/**
+ * SQL value → number. NULL (empty string) is 0; anything else must be a finite number. A malformed ledger value
+ * ("N/A", "1,234.50", "12abc") fails the Quant step loudly instead of turning every bridge line into NaN.
+ */
+export function num(s: string | undefined, what = "value"): number {
+  if (s === undefined || s.trim() === "") return 0;
+  const v = Number(s.trim());
+  if (!Number.isFinite(v)) throw new Error(`Quant: non-numeric ${what} ${JSON.stringify(s.slice(0, 40))} in the ledger rows`);
+  return v;
+}
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
 export function quantQueries(a: string, b: string) {
+  if (!isPeriod(a) || !isPeriod(b)) throw new Error(`Quant: periods must be YYYY-MM, got ${JSON.stringify(a).slice(0, 40)} and ${JSON.stringify(b).slice(0, 40)}`);
   const periods = `('${a}', '${b}')`;
   return {
     sales: `SELECT s.period, s.sku, c.channel, SUM(s.qty) AS qty, SUM(s.revenue_cad) AS revenue_cad
@@ -57,23 +67,30 @@ ORDER BY SUM(CASE WHEN s.period = '${b}' THEN s.qty ELSE 0 END) - SUM(CASE WHEN 
 }
 
 export function buildPeriodInput(period: string, sales: Record<string, string>[], costs: Record<string, string>[], glPackaging: number, bookingError: number): PeriodInput {
-  const costBySku = new Map(costs.filter((c) => c.period === period).map((c) => [c.sku, c]));
+  // The costs query groups by (period, sku, currency): a SKU bought in CAD and in USD in the same period has two
+  // rows. The CAD unit cost is taken over all of them; the USD split (FX vs supplier price) only when every row
+  // for the SKU is USD, because amount_orig cannot be summed across currencies.
+  const costRowsBySku = new Map<string, Record<string, string>[]>();
+  for (const c of costs.filter((x) => x.period === period)) costRowsBySku.set(c.sku, [...(costRowsBySku.get(c.sku) ?? []), c]);
   const cells: PeriodCell[] = sales
     .filter((s) => s.period === period)
     .map((s) => {
-      const qty = num(s.qty);
-      const c = costBySku.get(s.sku);
-      const purchasedQty = num(c?.qty);
-      const unitCostCad = purchasedQty ? num(c?.amount_cad) / purchasedQty : 0;
-      const isUsd = c?.currency === "USD";
+      const qty = num(s.qty, `sales qty (${period} ${s.sku})`);
+      const rows = costRowsBySku.get(s.sku) ?? [];
+      const sum = (col: string) => rows.reduce((t, c) => t + num(c[col], `purchase ${col} (${period} ${s.sku})`), 0);
+      const purchasedQty = sum("qty");
+      const unitCostCad = purchasedQty ? sum("amount_cad") / purchasedQty : 0;
+      const isUsd = rows.length > 0 && rows.every((c) => c.currency === "USD");
+      const c = rows[0];
+      const contract = c?.contract_unit_price?.trim() ? num(c.contract_unit_price, `contract_unit_price (${period} ${s.sku})`) : undefined;
       return {
         sku: s.sku,
         channel: s.channel,
         qty,
-        unitPriceCad: qty ? num(s.revenue_cad) / qty : 0,
+        unitPriceCad: qty ? num(s.revenue_cad, `revenue_cad (${period} ${s.sku})`) / qty : 0,
         unitCostCad,
         ...(isUsd
-          ? { isUsd: true, unitPriceUsd: purchasedQty ? num(c?.amount_orig) / purchasedQty : 0, fxRate: num(c?.fx_rate), contractUnitPriceUsd: num(c?.contract_unit_price) }
+          ? { isUsd: true, unitPriceUsd: purchasedQty ? sum("amount_orig") / purchasedQty : 0, fxRate: num(c?.fx_rate, `fx_rate (${period} ${s.sku})`), ...(contract === undefined ? {} : { contractUnitPriceUsd: contract }) }
           : {}),
       };
     });
@@ -94,8 +111,31 @@ export function rateBridge(b: BridgeResult) {
     { key: "bookingError", pp: pp(b.bookingError) },
     { key: "packagingReal", pp: pp(b.packagingReal) },
     { key: "residual", pp: pp(b.residual) },
-  ].map((i) => ({ key: i.key, pp: Math.round(i.pp * 100) / 100 }));
-  return { gmPctA: Math.round(b.gmPctA * 10000) / 100, gmPctB: Math.round(b.gmPctB * 10000) / 100, deltaPp: Math.round((b.gmPctB - b.gmPctA) * 10000) / 100, items };
+  ];
+  // Work in integer hundredths of a pp. The headline change is the difference of the two rounded GM%s, so the
+  // memo reads consistently ("35.93% → 29.15%, −6.78 pp"); the lines are rounded with the largest-remainder
+  // method so that, as printed, they add up exactly to that change.
+  const centsA = Math.round(b.gmPctA * 10000);
+  const centsB = Math.round(b.gmPctB * 10000);
+  const target = centsB - centsA;
+  const raw = items.map((i) => i.pp * 100);
+  const cents = raw.map((x) => Math.round(x));
+  let gap = target - cents.reduce((s, x) => s + x, 0);
+  // Only spread a rounding gap (a few hundredths); a larger gap means the inputs do not reconcile, and is left visible.
+  if (Math.abs(gap) <= items.length) {
+    const order = raw.map((x, i) => ({ i, rem: x - cents[i] })).sort((p, q) => (gap > 0 ? q.rem - p.rem : p.rem - q.rem));
+    for (let k = 0; gap !== 0 && k < order.length; k++) {
+      const step = gap > 0 ? 1 : -1;
+      cents[order[k].i] += step;
+      gap -= step;
+    }
+  }
+  return {
+    gmPctA: centsA / 100,
+    gmPctB: centsB / 100,
+    deltaPp: target / 100,
+    items: items.map((i, k) => ({ key: i.key, pp: cents[k] / 100 })),
+  };
 }
 
 export const COMPONENT_META: { key: keyof BridgeResult; label: string; driverType: BridgeComponent["driverType"] }[] = [

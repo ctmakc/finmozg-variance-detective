@@ -37,7 +37,7 @@ export function factsBlock(plan: Plan, quant: QuantResult | null, findings: Find
   const unresolved = findings.filter((x) => x.verdict?.verdict === "needs_more");
   if (unresolved.length) {
     lines.push("Measured by the bridge but not traced to named rows (say so; list under open questions):");
-    for (const f of unresolved) lines.push(`- ${f.id} [${f.driverType}] Investigator: ${f.claim} | Skeptic: ${f.verdict?.reason} | evidence ${f.evidenceIds.map((e) => `[${e}]`).join(" ")}`);
+    for (const f of unresolved) lines.push(`- ${f.id} [${f.driverType}] Investigator: ${f.claim} | Skeptic: ${f.verdict?.reason} | evidence ${f.evidenceIds.filter((id) => evidence.has(id)).map((e) => `[${e}]`).join(" ") || "none"}`);
   }
   if (rejected.length) {
     lines.push("Rejected hypotheses:");
@@ -46,17 +46,29 @@ export function factsBlock(plan: Plan, quant: QuantResult | null, findings: Find
   return lines.join("\n");
 }
 
+const MULTIPLIER: Record<string, number> = { k: 1e3, thousand: 1e3, m: 1e6, mn: 1e6, million: 1e6 };
+const AMOUNT = String.raw`(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d+))?(?:\s?(k|thousand|mn|million|m)\b)?`;
+/** "CAD 12,345", "CAD −12,345", "-$12k", "C$ 1.2 million", and the amount-first form "12,345 CAD". */
+const MEMO_AMOUNTS = [new RegExp(String.raw`(?:CAD|C?\$)\s?[-−–]?\s?${AMOUNT}`, "gi"), new RegExp(String.raw`${AMOUNT}\s?CAD\b`, "gi")];
+
 /** CAD amounts ≥ 1,000 written in the memo that match no figure in the facts (within 1 %). */
 export function unknownAmounts(memo: string, facts: string): string[] {
   const parse = (s: string) => Number(s.replace(/[,\s]/g, ""));
   const known = [...facts.matchAll(/(\d{1,3}(?:,\d{3})+|\d{4,})(?:\.\d+)?/g)].map((m) => parse(m[1]));
   const out: string[] = [];
-  for (const m of memo.matchAll(/(?:CAD|\$)\s?-?(\d{1,3}(?:,\d{3})+|\d{4,})(?:\.\d+)?/g)) {
-    const v = parse(m[1]);
-    if (v < 1000) continue;
-    if (!known.some((k) => Math.abs(k - v) <= Math.max(1, k * 0.01))) out.push(m[0]);
+  for (const re of MEMO_AMOUNTS) {
+    for (const m of memo.matchAll(re)) {
+      const v = parse(`${m[1]}${m[2] ? `.${m[2]}` : ""}`) * (m[3] ? MULTIPLIER[m[3].toLowerCase()] : 1);
+      if (v < 1000) continue;
+      if (!known.some((k) => Math.abs(k - v) <= Math.max(1, k * 0.01))) out.push(m[0].trim());
+    }
   }
   return [...new Set(out)];
+}
+
+/** Evidence ids cited in square brackets, including lists such as "[E1-1, Q-gl]". */
+export function citedIds(memo: string): string[] {
+  return [...memo.matchAll(/\[([^\]\n]{1,200})\]/g)].flatMap((m) => m[1].split(/[,;]\s*|\s+/)).filter((t) => /^(?:E\d[\w-]*|Q-[\w-]+)$/.test(t));
 }
 
 const SECTIONS = ["Answer", "Drivers", "Rejected explanations", "Unexplained residual", "Open questions"];
@@ -89,8 +101,7 @@ export function reviewMemo(memo: string, facts: string, evidenceIds: Set<string>
   const issues: string[] = [];
   const unknown = unknownAmounts(memo, facts);
   if (unknown.length) issues.push(`Amounts not in the facts: ${unknown.join(", ")}`);
-  const cited = [...memo.matchAll(/\[((?:E|Q-)[\w-]+)\]/g)].map((m) => m[1]);
-  const bad = cited.filter((c) => !evidenceIds.has(c));
+  const bad = citedIds(memo).filter((c) => !evidenceIds.has(c));
   if (bad.length) issues.push(`Unknown evidence ids: ${[...new Set(bad)].join(", ")}`);
   if (!/residual|unexplained/i.test(memo)) issues.push("The memo must state the unexplained residual.");
   return issues;

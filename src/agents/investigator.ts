@@ -46,6 +46,54 @@ export function sourcesOf(sql: string): string[] {
   return [...out];
 }
 
+const READ_ONLY_START = /^(?:SELECT|WITH|DESCRIBE|DESC|SHOW|EXPLAIN)\b/i;
+const WRITE_WORDS = /\b(?:INSERT|UPDATE|DELETE|MERGE|UPSERT|DROP|CREATE|ALTER|TRUNCATE|GRANT|REVOKE|REFRESH|CACHE|UNCACHE|LOAD|MSCK|COPY|CALL|EXEC|EXECUTE)\b/i;
+
+/**
+ * The Investigator's SQL is written by a model whose prompt includes user text, so "read-only" cannot rest on the
+ * prompt alone. Returns why a statement is refused, or null if it is a single read-only query. String literals and
+ * comments are blanked first so that a value like 'DELETE' or a comment does not trip the check.
+ */
+export function readOnlySqlProblem(sql: string): string | null {
+  const code = blankLiteralsAndComments(sql).trim().replace(/;\s*$/, "");
+  if (!code) return "empty statement";
+  if (code.includes(";")) return "only one statement per call";
+  if (!READ_ONLY_START.test(code)) return "only SELECT / WITH / DESCRIBE / SHOW queries are allowed";
+  const w = code.match(WRITE_WORDS);
+  if (w) return `write or DDL keyword ${w[0].toUpperCase()} is not allowed`;
+  return null;
+}
+
+/** One left-to-right pass, so a quote inside a comment (or "--" inside a string) is read the way the SQL parser reads it. */
+function blankLiteralsAndComments(sql: string): string {
+  let out = "";
+  for (let i = 0; i < sql.length; ) {
+    const c = sql[i];
+    if (c === "-" && sql[i + 1] === "-") {
+      while (i < sql.length && sql[i] !== "\n") i++;
+      out += " ";
+    } else if (c === "/" && sql[i + 1] === "*") {
+      const end = sql.indexOf("*/", i + 2);
+      i = end < 0 ? sql.length : end + 2;
+      out += " ";
+    } else if (c === "'" || c === '"' || c === "`") {
+      i++;
+      while (i < sql.length) {
+        if (sql[i] === "\\" && c !== "`") i += 2;
+        else if (sql[i] === c && sql[i + 1] === c) i += 2;
+        else if (sql[i] === c) break;
+        else i++;
+      }
+      i++;
+      out += `${c}${c}`;
+    } else {
+      out += c;
+      i++;
+    }
+  }
+  return out;
+}
+
 function rowsForModel(headers: string[], rows: string[][], total: number): string {
   const shown = rows.slice(0, ROWS_TO_MODEL);
   return [`columns: ${headers.join(" | ")}`, ...shown.map((r) => r.join(" | ")), total > shown.length ? `(${total - shown.length} more rows not shown)` : `(${total} rows)`].join("\n");
@@ -102,6 +150,12 @@ ${a.memoryHints ? `Memory from earlier closes: ${a.memoryHints}\n` : ""}${a.skep
       const sql = (args.sql ?? "").trim().replace(/;\s*$/, "");
       if (!sql || sqlCalls >= MAX_TOOL_CALLS) {
         messages.push({ role: "tool", tool_call_id: call.id, content: sql ? "Query budget used up. Give your JSON answer now." : "ERROR: missing sql argument" });
+        continue;
+      }
+      const refused = readOnlySqlProblem(sql);
+      if (refused) {
+        a.emit(a.agent, "sql_refused", { sql: sql.slice(0, 500), reason: refused });
+        messages.push({ role: "tool", tool_call_id: call.id, content: `ERROR: query refused (${refused}). Run_sql is read-only: send one SELECT statement.` });
         continue;
       }
       sqlCalls++;

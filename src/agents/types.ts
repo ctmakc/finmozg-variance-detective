@@ -11,10 +11,14 @@ export const HypothesisSchema = z.object({
 });
 export type Hypothesis = z.infer<typeof HypothesisSchema>;
 
+/** A ledger period, YYYY-MM. Periods are interpolated into SQL, so anything else is refused. */
+export const PERIOD_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+export const isPeriod = (p: unknown): p is string => typeof p === "string" && PERIOD_RE.test(p);
+
 export const PlanSchema = z.object({
   metric: z.enum(["gross_margin", "cogs", "opex", "fx", "other"]),
-  periodA: z.string().regex(/^\d{4}-\d{2}$/),
-  periodB: z.string().regex(/^\d{4}-\d{2}$/),
+  periodA: z.string().regex(PERIOD_RE),
+  periodB: z.string().regex(PERIOD_RE),
   answerable: z.boolean(),
   missingData: z.string().optional().nullable(),
   hypotheses: z.array(HypothesisSchema).max(9),

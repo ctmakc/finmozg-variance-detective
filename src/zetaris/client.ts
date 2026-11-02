@@ -118,11 +118,21 @@ export class ZetarisClient {
       if (this.mode === "record") this.save(key, sql, { error: message, status });
       throw new ZetarisError(message, status, sql);
     }
-    const body = JSON.parse(text) as { headers?: string[]; data?: unknown[][]; total?: number; timeUsed?: number };
+    let body: { headers?: unknown; data?: unknown; total?: number; timeUsed?: number };
+    try {
+      body = JSON.parse(text);
+    } catch {
+      throw new ZetarisError(`Zetaris returned a non-JSON response (HTTP ${status}): ${text.slice(0, 200)}`, status, sql);
+    }
+    const data = body?.data ?? [];
+    const headers = body?.headers ?? [];
+    if (!Array.isArray(data) || !data.every(Array.isArray) || !Array.isArray(headers)) {
+      throw new ZetarisError(`Zetaris returned an unexpected result shape (HTTP ${status}): headers and data must be arrays`, status, sql);
+    }
     const result: SqlResult = {
-      headers: body.headers ?? [],
-      rows: (body.data ?? []).map((r) => r.map((v) => (v === null || v === undefined ? "" : String(v)))),
-      total: body.total ?? (body.data ?? []).length,
+      headers: headers.map(String),
+      rows: (data as unknown[][]).map((r) => r.map((v) => (v === null || v === undefined ? "" : String(v)))),
+      total: typeof body.total === "number" ? body.total : data.length,
       timeUsedMs: body.timeUsed ?? Date.now() - started,
       queryId,
     };

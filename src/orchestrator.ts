@@ -11,7 +11,7 @@ import { runInvestigator } from "./agents/investigator.js";
 import { runPlanner } from "./agents/planner.js";
 import { type QuantResult, runQuant, USL } from "./agents/quant.js";
 import { MAX_SKEPTIC_ROUNDS, runSkeptic } from "./agents/skeptic.js";
-import type { EvidenceItem, Finding, Hypothesis, RunInput, RunOutput, TraceEvent } from "./agents/types.js";
+import { type EvidenceItem, type Finding, type Hypothesis, isPeriod, type RunInput, type RunOutput, type TraceEvent } from "./agents/types.js";
 import { runWriter } from "./agents/writer.js";
 import { EvidenceGraph } from "./evidence/worldModel.js";
 import { Llm } from "./llm/index.js";
@@ -104,6 +104,9 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
   const findings: Finding[] = [];
 
   try {
+    // Periods end up inside SQL text: refuse anything that is not YYYY-MM before any query runs.
+    for (const p of [input.periodA, input.periodB]) if (p !== undefined && p !== "" && !isPeriod(p)) throw new Error(`Invalid period ${JSON.stringify(p).slice(0, 40)}: use YYYY-MM`);
+
     // 1. Memory first.
     const recall = memory.recall(input.question, 6);
     stats.memoryRecalled = recall.memories.filter((m) => !m.tags.includes("schema-map")).length;
