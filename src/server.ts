@@ -9,9 +9,9 @@
  *   GET  /memory         H-MEM contents summary
  */
 import "dotenv/config";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, sep } from "node:path";
 import { applyFeedback } from "./agents/steward.js";
 import { isPeriod, type RunOutput, type TraceEvent } from "./agents/types.js";
 import { providerFromEnv } from "./llm/index.js";
@@ -39,13 +39,27 @@ function send(res: ServerResponse, status: number, body: unknown) {
   res.end(JSON.stringify(body));
 }
 
+class HttpError extends Error {
+  constructor(readonly status: number, message: string) {
+    super(message);
+  }
+}
+
 async function readBody(req: IncomingMessage): Promise<any> {
   let raw = "";
   for await (const chunk of req) {
     raw += chunk;
-    if (raw.length > 100_000) throw new Error("body too large");
+    if (raw.length > 100_000) throw new HttpError(413, "body too large");
   }
-  return raw ? JSON.parse(raw) : {};
+  if (!raw) return {};
+  let body: unknown;
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    throw new HttpError(400, "body must be JSON");
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) throw new HttpError(400, "body must be a JSON object");
+  return body;
 }
 
 function loadRun(id: string): RunOutput | undefined {
@@ -95,7 +109,7 @@ function serveStatic(req: IncomingMessage, res: ServerResponse): boolean {
   const url = new URL(req.url ?? "/", "http://x");
   const rel = normalize(url.pathname === "/" ? "/index.html" : url.pathname).replace(/^(\.\.[/\\])+/, "");
   const p = join(UI_DIR, rel);
-  if (!p.startsWith(UI_DIR) || !existsSync(p)) return false;
+  if (!(p === UI_DIR || p.startsWith(UI_DIR + sep)) || !existsSync(p) || !statSync(p).isFile()) return false;
   res.writeHead(200, { "content-type": MIME[extname(p)] ?? "application/octet-stream", "cache-control": "no-cache" });
   res.end(readFileSync(p));
   return true;
@@ -197,6 +211,7 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && serveStatic(req, res)) return;
     send(res, 404, { error: "not found" });
   } catch (err) {
+    if (err instanceof HttpError) return send(res, err.status, { error: err.message });
     send(res, 500, { error: String((err as Error).message ?? err) });
   }
 });
