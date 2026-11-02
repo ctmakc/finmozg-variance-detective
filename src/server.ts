@@ -17,7 +17,7 @@ import type { RunOutput, TraceEvent } from "./agents/types.js";
 import { providerFromEnv } from "./llm/index.js";
 import { DetectiveMemory } from "./memory/hmem.js";
 import { newRunId, runInvestigation } from "./orchestrator.js";
-import { isSampleMode, sampleMemoryDir } from "./sample.js";
+import { isSampleMode, sampleMemory } from "./sample.js";
 import { ZetarisClient, zetarisConfigFromEnv } from "./zetaris/client.js";
 
 const PORT = Number(process.env.PORT ?? 8795);
@@ -64,7 +64,7 @@ function startRun(input: { question: string; periodA?: string; periodB?: string 
   let paced = 0;
   entry.done = runInvestigation(input, {
     runId,
-    memory: isSampleMode() ? new DetectiveMemory(sampleMemoryDir(input.question)) : memory,
+    memory: isSampleMode() ? sampleMemory(input.question) : memory,
     onEvent: (e) => {
       // Sample mode replays in milliseconds; pace the stream so the timeline is readable (labelled as a replay).
       const send = () => {
