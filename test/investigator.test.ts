@@ -33,10 +33,10 @@ describe("runInvestigator (model and Zetaris mocked)", () => {
   });
 
   it("feeds a Zetaris error back to the model and counts the successful retry as a repair", async () => {
-    const { llm, provider } = fakeLlm([{ toolCalls: [toolCall("c1", { sql: "SELEC broken" })] }, { toolCalls: [toolCall("c2", { sql: "SELECT 1 FROM finance_usl.purchase_line" })] }, answer({ evidence: ["E2-1", "E2-2"] })]);
+    const { llm, provider } = fakeLlm([{ toolCalls: [toolCall("c1", { sql: "SELECT no_such_col FROM finance_usl.purchase_line" })] }, { toolCalls: [toolCall("c2", { sql: "SELECT 1 FROM finance_usl.purchase_line" })] }, answer({ evidence: ["E2-1", "E2-2"] })]);
     let n = 0;
     const runSql = async (sql: string) => {
-      if (n++ === 0) throw new ZetarisError("ParseException: mismatched input 'SELEC'", 400, sql);
+      if (n++ === 0) throw new ZetarisError("AnalysisException: cannot resolve no_such_col", 400, sql);
       return LINES;
     };
     const { finding, evidence } = await runInvestigator(args(llm, runSql));
@@ -45,7 +45,7 @@ describe("runInvestigator (model and Zetaris mocked)", () => {
     expect(finding.evidenceIds).toEqual(["E2-1", "E2-2"]);
     const toolMsg = provider.requests[1].messages.find((m) => m.role === "tool")!;
     expect(toolMsg.content).toContain("ERROR from Zetaris");
-    expect(toolMsg.content).toContain("mismatched input");
+    expect(toolMsg.content).toContain("cannot resolve no_such_col");
   });
 
   it("does not run a tool call whose arguments are not valid JSON", async () => {
