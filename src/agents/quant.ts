@@ -110,8 +110,31 @@ export function rateBridge(b: BridgeResult) {
     { key: "bookingError", pp: pp(b.bookingError) },
     { key: "packagingReal", pp: pp(b.packagingReal) },
     { key: "residual", pp: pp(b.residual) },
-  ].map((i) => ({ key: i.key, pp: Math.round(i.pp * 100) / 100 }));
-  return { gmPctA: Math.round(b.gmPctA * 10000) / 100, gmPctB: Math.round(b.gmPctB * 10000) / 100, deltaPp: Math.round((b.gmPctB - b.gmPctA) * 10000) / 100, items };
+  ];
+  // Work in integer hundredths of a pp. The headline change is the difference of the two rounded GM%s, so the
+  // memo reads consistently ("35.93% → 29.15%, −6.78 pp"); the lines are rounded with the largest-remainder
+  // method so that, as printed, they add up exactly to that change.
+  const centsA = Math.round(b.gmPctA * 10000);
+  const centsB = Math.round(b.gmPctB * 10000);
+  const target = centsB - centsA;
+  const raw = items.map((i) => i.pp * 100);
+  const cents = raw.map((x) => Math.round(x));
+  let gap = target - cents.reduce((s, x) => s + x, 0);
+  // Only spread a rounding gap (a few hundredths); a larger gap means the inputs do not reconcile, and is left visible.
+  if (Math.abs(gap) <= items.length) {
+    const order = raw.map((x, i) => ({ i, rem: x - cents[i] })).sort((p, q) => (gap > 0 ? q.rem - p.rem : p.rem - q.rem));
+    for (let k = 0; gap !== 0 && k < order.length; k++) {
+      const step = gap > 0 ? 1 : -1;
+      cents[order[k].i] += step;
+      gap -= step;
+    }
+  }
+  return {
+    gmPctA: centsA / 100,
+    gmPctB: centsB / 100,
+    deltaPp: target / 100,
+    items: items.map((i, k) => ({ key: i.key, pp: cents[k] / 100 })),
+  };
 }
 
 export const COMPONENT_META: { key: keyof BridgeResult; label: string; driverType: BridgeComponent["driverType"] }[] = [
