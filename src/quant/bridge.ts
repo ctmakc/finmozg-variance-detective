@@ -150,11 +150,14 @@ export function computeMarginBridge(
       a.unitPriceUsd !== undefined ||
       b.unitPriceUsd !== undefined;
 
-    if (usd) {
+    // The FX / supplier-price split needs a USD baseline in both periods. A cell that is new in B (new SKU or new
+    // channel) has no base rate: with fxA = 0 its whole CAD cost would be reported as "FX". Such cells stay in
+    // other goods cost. A cell that is gone in B has qty_B = 0 and contributes nothing either way.
+    const fxA = a.fxRate ?? 0;
+    const fxB = b.fxRate ?? 0;
+    if (usd && fxA > 0 && fxB > 0) {
       const uA = a.unitPriceUsd ?? 0;
       const uB = b.unitPriceUsd ?? 0;
-      const fxA = a.fxRate ?? 0;
-      const fxB = b.fxRate ?? 0;
       const contract = b.contractUnitPriceUsd ?? a.contractUnitPriceUsd ?? uA;
 
       fx += -b.qty * uB * (fxB - fxA);
