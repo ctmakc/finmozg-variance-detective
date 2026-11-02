@@ -66,15 +66,22 @@ ORDER BY SUM(CASE WHEN s.period = '${b}' THEN s.qty ELSE 0 END) - SUM(CASE WHEN 
 }
 
 export function buildPeriodInput(period: string, sales: Record<string, string>[], costs: Record<string, string>[], glPackaging: number, bookingError: number): PeriodInput {
-  const costBySku = new Map(costs.filter((c) => c.period === period).map((c) => [c.sku, c]));
+  // The costs query groups by (period, sku, currency): a SKU bought in CAD and in USD in the same period has two
+  // rows. The CAD unit cost is taken over all of them; the USD split (FX vs supplier price) only when every row
+  // for the SKU is USD, because amount_orig cannot be summed across currencies.
+  const costRowsBySku = new Map<string, Record<string, string>[]>();
+  for (const c of costs.filter((x) => x.period === period)) costRowsBySku.set(c.sku, [...(costRowsBySku.get(c.sku) ?? []), c]);
   const cells: PeriodCell[] = sales
     .filter((s) => s.period === period)
     .map((s) => {
       const qty = num(s.qty, `sales qty (${period} ${s.sku})`);
-      const c = costBySku.get(s.sku);
-      const purchasedQty = num(c?.qty, `purchase qty (${period} ${s.sku})`);
-      const unitCostCad = purchasedQty ? num(c?.amount_cad, `purchase amount_cad (${period} ${s.sku})`) / purchasedQty : 0;
-      const isUsd = c?.currency === "USD";
+      const rows = costRowsBySku.get(s.sku) ?? [];
+      const sum = (col: string) => rows.reduce((t, c) => t + num(c[col], `purchase ${col} (${period} ${s.sku})`), 0);
+      const purchasedQty = sum("qty");
+      const unitCostCad = purchasedQty ? sum("amount_cad") / purchasedQty : 0;
+      const isUsd = rows.length > 0 && rows.every((c) => c.currency === "USD");
+      const c = rows[0];
+      const contract = c?.contract_unit_price?.trim() ? num(c.contract_unit_price, `contract_unit_price (${period} ${s.sku})`) : undefined;
       return {
         sku: s.sku,
         channel: s.channel,
@@ -82,7 +89,7 @@ export function buildPeriodInput(period: string, sales: Record<string, string>[]
         unitPriceCad: qty ? num(s.revenue_cad, `revenue_cad (${period} ${s.sku})`) / qty : 0,
         unitCostCad,
         ...(isUsd
-          ? { isUsd: true, unitPriceUsd: purchasedQty ? num(c?.amount_orig) / purchasedQty : 0, fxRate: num(c?.fx_rate), contractUnitPriceUsd: num(c?.contract_unit_price) }
+          ? { isUsd: true, unitPriceUsd: purchasedQty ? sum("amount_orig") / purchasedQty : 0, fxRate: num(c?.fx_rate, `fx_rate (${period} ${s.sku})`), ...(contract === undefined ? {} : { contractUnitPriceUsd: contract }) }
           : {}),
       };
     });
