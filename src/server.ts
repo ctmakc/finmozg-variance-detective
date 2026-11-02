@@ -13,7 +13,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { applyFeedback } from "./agents/steward.js";
-import type { RunOutput, TraceEvent } from "./agents/types.js";
+import { isPeriod, type RunOutput, type TraceEvent } from "./agents/types.js";
 import { providerFromEnv } from "./llm/index.js";
 import { DetectiveMemory } from "./memory/hmem.js";
 import { newRunId, runInvestigation } from "./orchestrator.js";
@@ -139,6 +139,7 @@ const server = createServer(async (req, res) => {
     if (req.method === "POST" && path === "/run") {
       const body = await readBody(req);
       if (!body.question || typeof body.question !== "string") return send(res, 400, { error: "question (string) is required" });
+      for (const k of ["periodA", "periodB"] as const) if (body[k] !== undefined && body[k] !== "" && !isPeriod(body[k])) return send(res, 400, { error: `${k} must be YYYY-MM` });
       if (running >= 2) return send(res, 429, { error: "two investigations are already running; try again shortly" });
       const runId = startRun({ question: body.question.slice(0, 500), periodA: body.periodA, periodB: body.periodB });
       if (url.searchParams.get("wait") === "1") return send(res, 200, await live.get(runId)!.done);

@@ -4,7 +4,7 @@
  */
 import { computeMarginBridge, type BridgeResult, type PeriodCell, type PeriodInput } from "../quant/bridge.js";
 import { type SqlResult, asObjects } from "../zetaris/client.js";
-import type { BridgeComponent, Emit, EvidenceItem } from "./types.js";
+import { type BridgeComponent, type Emit, type EvidenceItem, isPeriod } from "./types.js";
 
 export const USL = "lightning.metastore.finmozg.finance_usl";
 
@@ -38,6 +38,7 @@ export function num(s: string | undefined, what = "value"): number {
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
 export function quantQueries(a: string, b: string) {
+  if (!isPeriod(a) || !isPeriod(b)) throw new Error(`Quant: periods must be YYYY-MM, got ${JSON.stringify(a).slice(0, 40)} and ${JSON.stringify(b).slice(0, 40)}`);
   const periods = `('${a}', '${b}')`;
   return {
     sales: `SELECT s.period, s.sku, c.channel, SUM(s.qty) AS qty, SUM(s.revenue_cad) AS revenue_cad
