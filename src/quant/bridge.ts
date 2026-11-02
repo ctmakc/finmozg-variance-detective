@@ -82,10 +82,42 @@ export function periodTotals(period: PeriodInput): PeriodTotals {
   };
 }
 
+/** Quantity-weighted average of a per-unit field over two cells (falls back to a plain average at zero quantity). */
+function wavg(a: number | undefined, qa: number, b: number | undefined, qb: number, wa = qa, wb = qb): number | undefined {
+  if (a === undefined) return b;
+  if (b === undefined) return a;
+  return wa + wb === 0 ? (a + b) / 2 : (a * wa + b * wb) / (wa + wb);
+}
+
+/** Two rows for the same SKU and channel are one cell: sum the quantities, weight the unit values. */
+function mergeCells(x: PeriodCell, y: PeriodCell): PeriodCell {
+  const q = x.qty + y.qty;
+  const usdX = (x.unitPriceUsd ?? 0) * x.qty;
+  const usdY = (y.unitPriceUsd ?? 0) * y.qty;
+  const merged: PeriodCell = {
+    sku: x.sku,
+    channel: x.channel,
+    qty: q,
+    unitPriceCad: wavg(x.unitPriceCad, x.qty, y.unitPriceCad, y.qty)!,
+    unitCostCad: wavg(x.unitCostCad, x.qty, y.unitCostCad, y.qty)!,
+  };
+  const unitPriceUsd = wavg(x.unitPriceUsd, x.qty, y.unitPriceUsd, y.qty);
+  // the rate is weighted by USD amount, so that u × fx still gives the CAD cost of the merged cell
+  const fxRate = wavg(x.fxRate, x.qty, y.fxRate, y.qty, usdX, usdY);
+  const contractUnitPriceUsd = wavg(x.contractUnitPriceUsd, x.qty, y.contractUnitPriceUsd, y.qty);
+  if (unitPriceUsd !== undefined) merged.unitPriceUsd = unitPriceUsd;
+  if (fxRate !== undefined) merged.fxRate = fxRate;
+  if (contractUnitPriceUsd !== undefined) merged.contractUnitPriceUsd = contractUnitPriceUsd;
+  if (x.isUsd || y.isUsd) merged.isUsd = true;
+  return merged;
+}
+
 function indexCells(cells: PeriodCell[]): Map<string, PeriodCell> {
   const m = new Map<string, PeriodCell>();
   for (const c of cells) {
-    m.set(cellKey(c.sku, c.channel), c);
+    const k = cellKey(c.sku, c.channel);
+    const prev = m.get(k);
+    m.set(k, prev ? mergeCells(prev, c) : c);
   }
   return m;
 }
