@@ -25,7 +25,16 @@ export interface QuantResult {
   evidence: EvidenceItem[];
 }
 
-const num = (s: string | undefined) => (s === undefined || s === "" ? 0 : Number(s));
+/**
+ * SQL value → number. NULL (empty string) is 0; anything else must be a finite number. A malformed ledger value
+ * ("N/A", "1,234.50", "12abc") fails the Quant step loudly instead of turning every bridge line into NaN.
+ */
+export function num(s: string | undefined, what = "value"): number {
+  if (s === undefined || s.trim() === "") return 0;
+  const v = Number(s.trim());
+  if (!Number.isFinite(v)) throw new Error(`Quant: non-numeric ${what} ${JSON.stringify(s.slice(0, 40))} in the ledger rows`);
+  return v;
+}
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
 export function quantQueries(a: string, b: string) {
@@ -61,16 +70,16 @@ export function buildPeriodInput(period: string, sales: Record<string, string>[]
   const cells: PeriodCell[] = sales
     .filter((s) => s.period === period)
     .map((s) => {
-      const qty = num(s.qty);
+      const qty = num(s.qty, `sales qty (${period} ${s.sku})`);
       const c = costBySku.get(s.sku);
-      const purchasedQty = num(c?.qty);
-      const unitCostCad = purchasedQty ? num(c?.amount_cad) / purchasedQty : 0;
+      const purchasedQty = num(c?.qty, `purchase qty (${period} ${s.sku})`);
+      const unitCostCad = purchasedQty ? num(c?.amount_cad, `purchase amount_cad (${period} ${s.sku})`) / purchasedQty : 0;
       const isUsd = c?.currency === "USD";
       return {
         sku: s.sku,
         channel: s.channel,
         qty,
-        unitPriceCad: qty ? num(s.revenue_cad) / qty : 0,
+        unitPriceCad: qty ? num(s.revenue_cad, `revenue_cad (${period} ${s.sku})`) / qty : 0,
         unitCostCad,
         ...(isUsd
           ? { isUsd: true, unitPriceUsd: purchasedQty ? num(c?.amount_orig) / purchasedQty : 0, fxRate: num(c?.fx_rate), contractUnitPriceUsd: num(c?.contract_unit_price) }
