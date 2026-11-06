@@ -28,7 +28,17 @@ export interface QuantResult {
 const num = (s: string | undefined) => (s === undefined || s === "" ? 0 : Number(s));
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
+/** Periods are 'YYYY-MM' strings; anything else must never be spliced into SQL. */
+export const PERIOD_RE = /^\d{4}-\d{2}$/;
+
+export function assertPeriod(p: unknown, name = "period"): string {
+  if (typeof p !== "string" || !PERIOD_RE.test(p)) throw new Error(`${name} must be a 'YYYY-MM' string, got ${JSON.stringify(String(p)).slice(0, 40)}`);
+  return p;
+}
+
 export function quantQueries(a: string, b: string) {
+  assertPeriod(a, "periodA");
+  assertPeriod(b, "periodB");
   const periods = `('${a}', '${b}')`;
   return {
     sales: `SELECT s.period, s.sku, c.channel, SUM(s.qty) AS qty, SUM(s.revenue_cad) AS revenue_cad

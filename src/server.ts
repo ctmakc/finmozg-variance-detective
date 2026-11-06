@@ -15,9 +15,9 @@ import { extname, join, normalize } from "node:path";
 import { applyFeedback } from "./agents/steward.js";
 import type { RunOutput, TraceEvent } from "./agents/types.js";
 import { providerFromEnv } from "./llm/index.js";
-import { DetectiveMemory } from "./memory/hmem.js";
-import { newRunId, runInvestigation } from "./orchestrator.js";
-import { isSampleMode, sampleMemoryDir } from "./sample.js";
+import { DetectiveMemory, reloadMemoryIfIdle } from "./memory/hmem.js";
+import { COMPANY, newRunId, runInvestigation } from "./orchestrator.js";
+import { isSampleMode, sampleMemoryClock, sampleMemoryDir } from "./sample.js";
 import { ZetarisClient, zetarisConfigFromEnv } from "./zetaris/client.js";
 
 const PORT = Number(process.env.PORT ?? 8795);
@@ -33,6 +33,8 @@ interface LiveRun {
 const live = new Map<string, LiveRun>();
 let memory = new DetectiveMemory();
 let running = 0;
+/** Runs in flight that write through the shared `memory` instance (sample-mode runs use their own copy). */
+let usingSharedMemory = 0;
 
 function send(res: ServerResponse, status: number, body: unknown) {
   res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
@@ -60,11 +62,13 @@ function startRun(input: { question: string; periodA?: string; periodB?: string 
   const entry: LiveRun = { events: [], clients: new Set(), done: Promise.resolve(null as never) };
   live.set(runId, entry);
   running++;
+  const shared = !isSampleMode();
+  if (shared) usingSharedMemory++;
   const pace = isSampleMode() ? Number(process.env.SAMPLE_PACE_MS ?? 110) : 0;
   let paced = 0;
   entry.done = runInvestigation(input, {
     runId,
-    memory: isSampleMode() ? new DetectiveMemory(sampleMemoryDir(input.question)) : memory,
+    memory: isSampleMode() ? new DetectiveMemory(sampleMemoryDir(input.question), sampleMemoryClock(input.question)) : memory,
     onEvent: (e) => {
       // Sample mode replays in milliseconds; pace the stream so the timeline is readable (labelled as a replay).
       const send = () => {
@@ -83,8 +87,42 @@ function startRun(input: { question: string; periodA?: string; periodB?: string 
       }
       return r;
     })
+    .catch((err) => {
+      // A failure before the orchestrator's own try/catch (e.g. an unknown LLM_PROVIDER) must not become an
+      // unhandled rejection: that would take the whole server down.
+      const message = String((err as Error)?.message ?? err).slice(0, 500);
+      console.error(`run ${runId} failed: ${message}`);
+      for (const c of entry.clients) {
+        c.write(`event: done\ndata: ${JSON.stringify({ runId, status: "failed" })}\n\n`);
+        c.end();
+      }
+      entry.clients.clear();
+      const failed: RunOutput = {
+        runId,
+        question: input.question,
+        company: COMPANY,
+        syntheticData: true,
+        plan: { metric: "other", periodA: input.periodA ?? "", periodB: input.periodB ?? "", answerable: false, missingData: null, hypotheses: [] },
+        periodA: input.periodA ?? "",
+        periodB: input.periodB ?? "",
+        headline: {},
+        bridge: [],
+        findings: [],
+        evidence: [],
+        rejected: [],
+        openQuestions: [],
+        memo: `The investigation stopped early: ${message}`,
+        memoryUsed: [],
+        stats: { sqlCalls: 0, sqlErrors: 0, sqlRepairs: 0, llmCalls: 0, skepticRounds: 0, memoryRecalled: 0, warmStart: false, durationMs: 0, provider: "", servedBy: [] },
+        status: "failed",
+        error: message,
+      };
+      entry.result = failed;
+      return failed;
+    })
     .finally(() => {
       running--;
+      if (shared) usingSharedMemory--;
     });
   return runId;
 }
@@ -189,7 +227,7 @@ const server = createServer(async (req, res) => {
     }
     if (req.method === "GET" && path === "/health") return send(res, 200, await health());
     if (req.method === "GET" && path === "/memory") {
-      memory = new DetectiveMemory();
+      memory = reloadMemoryIfIdle(memory, usingSharedMemory > 0);
       const all = memory.engine.store.all().filter((x) => !x.tags.includes("schema-map"));
       return send(res, 200, { stats: memory.stats(), memories: all.slice(-20).reverse().map((x) => ({ id: x.id, content: x.content, tags: x.tags, layer: x.layer, source: x.source, confidence: x.confidence })) });
     }

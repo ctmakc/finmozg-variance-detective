@@ -27,3 +27,23 @@ export function sampleMemoryDir(question: string, recordings = process.env.RECOR
   if (snap && existsSync(snap)) cpSync(snap, tmp, { recursive: true });
   return tmp;
 }
+
+/**
+ * H-MEM ranks memories with a recency decay on the clock. Replaying a snapshot against today's clock changes the
+ * recall (and so the prompts, and so the recording keys) as the recording ages, and replays stop matching.
+ * Pin the clock to one minute after the snapshot's last ledger entry. Undefined when there is no snapshot.
+ */
+export function sampleMemoryClock(question: string, recordings = process.env.RECORDINGS_DIR ?? "recordings"): (() => number) | undefined {
+  const name = inputNameForQuestion(question);
+  const ledger = name ? join(recordings, "hmem", name, "ledger.jsonl") : "";
+  if (!ledger || !existsSync(ledger)) return undefined;
+  let last = 0;
+  for (const line of readFileSync(ledger, "utf8").split("\n")) {
+    if (!line.trim()) continue;
+    const ts = Number(JSON.parse(line).timestamp);
+    if (Number.isFinite(ts) && ts > last) last = ts;
+  }
+  if (!last) return undefined;
+  const at = last + 60_000;
+  return () => at;
+}

@@ -142,3 +142,13 @@ export class DetectiveMemory {
     };
   }
 }
+
+/**
+ * The HTTP server re-reads H-MEM from disk on GET /memory (to pick up `npm run feedback` writes). Each instance
+ * persists its whole record set and numbers ids from its own counter, so a second instance created while a run
+ * still writes through the first one makes the two overwrite each other's memories and reuse ids. Only reload
+ * when nothing holds the current instance.
+ */
+export function reloadMemoryIfIdle(current: DetectiveMemory, busy: boolean, load: () => DetectiveMemory = () => new DetectiveMemory()): DetectiveMemory {
+  return busy ? current : load();
+}

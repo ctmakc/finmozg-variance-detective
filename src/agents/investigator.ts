@@ -46,6 +46,26 @@ export function sourcesOf(sql: string): string[] {
   return [...out];
 }
 
+const READ_ONLY_START = /^(SELECT|WITH|SHOW|DESCRIBE|DESC|EXPLAIN)\b/i;
+const WRITE_KEYWORD = /\b(INSERT|UPDATE|DELETE|MERGE|DROP|CREATE|ALTER|TRUNCATE|GRANT|REVOKE|REPLACE\s+INTO|OVERWRITE)\b/i;
+
+/**
+ * The run_sql tool is declared read-only, but the SQL is written by a model (and the rows it reads can carry
+ * prompt injections). Accept one SELECT / WITH / SHOW / DESCRIBE / EXPLAIN statement with no write keyword
+ * outside string literals and comments; never send anything else to Zetaris.
+ */
+export function isReadOnlySql(sql: string): boolean {
+  // One pass, so a quote inside a comment or "--" inside a string literal cannot confuse the other rule.
+  const code = sql
+    .replace(/'(?:[^'\\]|\\.|'')*'|"(?:[^"\\]|\\.)*"|`[^`]*`|--[^\n]*|\/\*[\s\S]*?\*\//g, (m) => (m.startsWith("--") || m.startsWith("/*") ? " " : "''"))
+    .trim()
+    .replace(/;\s*$/, "");
+  const head = code.replace(/^\(+\s*/, "");
+  if (!READ_ONLY_START.test(head)) return false;
+  if (code.includes(";")) return false;
+  return !WRITE_KEYWORD.test(code);
+}
+
 function rowsForModel(headers: string[], rows: string[][], total: number): string {
   const shown = rows.slice(0, ROWS_TO_MODEL);
   return [`columns: ${headers.join(" | ")}`, ...shown.map((r) => r.join(" | ")), total > shown.length ? `(${total - shown.length} more rows not shown)` : `(${total} rows)`].join("\n");
@@ -105,6 +125,11 @@ ${a.memoryHints ? `Memory from earlier closes: ${a.memoryHints}\n` : ""}${a.skep
         continue;
       }
       sqlCalls++;
+      if (!isReadOnlySql(sql)) {
+        a.emit(a.agent, "sql_rejected", { sql: sql.slice(0, 300), reason: "not a read-only statement" });
+        messages.push({ role: "tool", tool_call_id: call.id, content: "ERROR: run_sql accepts one read-only SELECT (or WITH … SELECT, SHOW, DESCRIBE) statement only. Nothing was run." });
+        continue;
+      }
       const id = a.nextEvidenceId();
       try {
         const res = await a.runSql(sql, `${a.agent}:${id}`);

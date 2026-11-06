@@ -9,7 +9,7 @@ import { join } from "node:path";
 import { runCartographer, schemaPrompt } from "./agents/cartographer.js";
 import { runInvestigator } from "./agents/investigator.js";
 import { runPlanner } from "./agents/planner.js";
-import { type QuantResult, runQuant, USL } from "./agents/quant.js";
+import { assertPeriod, type QuantResult, runQuant, USL } from "./agents/quant.js";
 import { MAX_SKEPTIC_ROUNDS, runSkeptic } from "./agents/skeptic.js";
 import type { EvidenceItem, Finding, Hypothesis, RunInput, RunOutput, TraceEvent } from "./agents/types.js";
 import { runWriter } from "./agents/writer.js";
@@ -104,6 +104,9 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
   const findings: Finding[] = [];
 
   try {
+    // User-supplied periods are spliced into SQL below: accept only 'YYYY-MM'.
+    if (input.periodA !== undefined) assertPeriod(input.periodA, "periodA");
+    if (input.periodB !== undefined) assertPeriod(input.periodB, "periodB");
     // 1. Memory first.
     const recall = memory.recall(input.question, 6);
     stats.memoryRecalled = recall.memories.filter((m) => !m.tags.includes("schema-map")).length;
@@ -116,7 +119,7 @@ export async function runInvestigation(input: RunInput, deps: RunDeps = {}): Pro
 
     // 3. Planner.
     const periods = asObjects(await runSql(`SELECT DISTINCT period FROM ${USL}.gl_balance ORDER BY period`, "orchestrator:periods")).map((p) => p.period);
-    const lastTwo = (input.periodA && input.periodB ? [input.periodA, input.periodB] : periods.slice(-2)).map((p) => `'${p}'`).join(", ");
+    const lastTwo = (input.periodA && input.periodB ? [input.periodA, input.periodB] : periods.slice(-2)).map((p) => `'${String(p).replace(/'/g, "''")}'`).join(", ");
     const pnl = asObjects(await runSql(`SELECT period, account_code, account_name, account_type, amount_cad FROM ${USL}.gl_balance WHERE period IN (${lastTwo}) ORDER BY account_code, period`, "orchestrator:pnl"))
       .map((g) => `${g.period} ${g.account_code} ${g.account_name} (${g.account_type}) CAD ${Math.round(Number(g.amount_cad)).toLocaleString("en-CA")}`)
       .join("\n");
